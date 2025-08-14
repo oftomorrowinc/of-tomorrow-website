@@ -1,18 +1,35 @@
 {
-  "name": "temp",
+  "name": "of-tomorrow-website",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "Of Tomorrow, Inc. - Innovation for the Future",
+  "author": "Of Tomorrow, Inc.",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "typecheck": "astro check"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.4",
     "@astrojs/mdx": "^4.3.3",
+    "@astrojs/react": "^4.3.0",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.5.0",
+    "@astrojs/tailwind": "^6.0.2",
     "astro": "^5.13.0",
-    "sharp": "^0.34.2"
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "decap-cms-app": "^3.8.3",
+    "lucide-react": "^0.539.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "sharp": "^0.34.2",
+    "tailwind-merge": "^3.3.1",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2"
   }
 }

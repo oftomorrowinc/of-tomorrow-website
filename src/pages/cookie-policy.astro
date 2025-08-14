@@ -1,0 +1,507 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { ArrowLeft, Cookie, Shield, BarChart3, Target, Settings, Info } from 'lucide-react';
+
+const companyInfo = {
+  name: import.meta.env.COMPANY_NAME || 'Of Tomorrow, Inc.',
+  email: import.meta.env.COMPANY_EMAIL || 'contact@oftomorrow.inc',
+  privacyEmail: import.meta.env.PRIVACY_CONTACT_EMAIL || 'privacy@oftomorrow.inc',
+};
+
+const lastUpdated = new Date().toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+// Cookie data for the detailed table
+const cookieData = [
+  {
+    category: 'Necessary',
+    name: 'of-tomorrow-cookie-consent',
+    purpose: 'Stores your cookie consent preferences',
+    duration: '1 year',
+    type: 'First-party',
+    icon: 'shield'
+  },
+  {
+    category: 'Necessary',
+    name: 'of-tomorrow-banner-dismissed',
+    purpose: 'Remembers if you have dismissed the cookie banner',
+    duration: 'Session',
+    type: 'First-party',
+    icon: 'shield'
+  },
+  {
+    category: 'Analytics',
+    name: '_ga',
+    purpose: 'Distinguishes unique users for Google Analytics',
+    duration: '2 years',
+    type: 'Third-party (Google)',
+    icon: 'chart'
+  },
+  {
+    category: 'Analytics',
+    name: '_ga_*',
+    purpose: 'Used by Google Analytics to persist session state',
+    duration: '2 years',
+    type: 'Third-party (Google)',
+    icon: 'chart'
+  },
+  {
+    category: 'Analytics',
+    name: '_gid',
+    purpose: 'Distinguishes users for Google Analytics',
+    duration: '1 day',
+    type: 'Third-party (Google)',
+    icon: 'chart'
+  },
+  {
+    category: 'Marketing',
+    name: '_fbp',
+    purpose: 'Used by Meta Pixel to store and track visits',
+    duration: '3 months',
+    type: 'Third-party (Meta)',
+    icon: 'target'
+  },
+  {
+    category: 'Marketing',
+    name: '_fbc',
+    purpose: 'Used by Meta Pixel to store last visit',
+    duration: '2 years',
+    type: 'Third-party (Meta)',
+    icon: 'target'
+  }
+];
+---
+
+<Layout title="Cookie Policy - Of Tomorrow, Inc.">
+  <main class="min-h-screen bg-white">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-progress-orange to-progress-orange/90 text-white">
+      <div class="container mx-auto px-4 py-12">
+        <div class="flex items-center gap-4 mb-6">
+          <a 
+            href="/" 
+            class="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors text-sm"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </a>
+        </div>
+        
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0 bg-white/10 rounded-lg p-3">
+            <Cookie className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 class="font-brand text-3xl sm:text-4xl font-bold mb-2">
+              Cookie Policy
+            </h1>
+            <p class="text-white/90 text-lg">
+              Understanding how we use cookies and similar technologies
+            </p>
+            <p class="text-white/70 text-sm mt-2">
+              Last updated: {lastUpdated}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-12">
+      <div class="max-w-4xl mx-auto">
+        
+        <!-- Quick Actions -->
+        <div class="bg-bg-secondary rounded-lg p-6 mb-12">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="font-brand text-lg font-semibold text-text-primary mb-2">
+                Manage Your Cookie Preferences
+              </h2>
+              <p class="text-text-secondary text-sm">
+                You can change your cookie settings at any time using the button below.
+              </p>
+            </div>
+            <button 
+              onclick="window.dispatchEvent(new CustomEvent('openCookieSettings'))"
+              class="inline-flex items-center gap-2 bg-tomorrow-blue text-white px-4 py-2 rounded-lg hover:bg-tomorrow-blue/90 transition-colors text-sm font-medium"
+            >
+              <Settings className="h-4 w-4" />
+              Cookie Settings
+            </button>
+          </div>
+        </div>
+
+        <div class="prose prose-lg max-w-none">
+          
+          <!-- Introduction -->
+          <section class="mb-12">
+            <h2 class="font-brand text-2xl font-semibold text-text-primary mb-6">
+              What Are Cookies?
+            </h2>
+            
+            <div class="space-y-6">
+              <p class="text-text-secondary">
+                Cookies are small text files that are placed on your device when you visit our website. 
+                They help us provide you with a better experience by remembering your preferences and 
+                understanding how you use our site.
+              </p>
+              
+              <div class="bg-bg-secondary rounded-lg p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="text-center">
+                    <div class="bg-white rounded-lg p-3 w-fit mx-auto mb-2">
+                      <Cookie className="h-6 w-6 text-tomorrow-blue" />
+                    </div>
+                    <h3 class="font-medium text-text-primary text-sm">Small Files</h3>
+                    <p class="text-text-secondary text-xs">Tiny text files stored on your device</p>
+                  </div>
+                  
+                  <div class="text-center">
+                    <div class="bg-white rounded-lg p-3 w-fit mx-auto mb-2">
+                      <Settings className="h-6 w-6 text-progress-orange" />
+                    </div>
+                    <h3 class="font-medium text-text-primary text-sm">Remember Preferences</h3>
+                    <p class="text-text-secondary text-xs">Keep track of your settings and choices</p>
+                  </div>
+                  
+                  <div class="text-center">
+                    <div class="bg-white rounded-lg p-3 w-fit mx-auto mb-2">
+                      <BarChart3 className="h-6 w-6 text-innovation-purple" />
+                    </div>
+                    <h3 class="font-medium text-text-primary text-sm">Improve Experience</h3>
+                    <p class="text-text-secondary text-xs">Help us understand and enhance our site</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Cookie Categories -->
+          <section class="mb-12">
+            <h2 class="font-brand text-2xl font-semibold text-text-primary mb-6">
+              Types of Cookies We Use
+            </h2>
+            
+            <div class="space-y-6">
+              <!-- Necessary Cookies -->
+              <div class="border border-border-gray rounded-lg p-6">
+                <div class="flex items-start gap-4">
+                  <div class="flex-shrink-0 bg-tomorrow-blue/10 rounded-lg p-3">
+                    <Shield className="h-6 w-6 text-tomorrow-blue" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h3 class="font-brand text-lg font-medium text-text-primary">
+                        Necessary Cookies
+                      </h3>
+                      <span class="text-xs bg-tomorrow-blue/10 text-tomorrow-blue px-2 py-1 rounded-full font-medium">
+                        Always Active
+                      </span>
+                    </div>
+                    <p class="text-text-secondary mb-4">
+                      These cookies are essential for our website to function properly. They enable basic 
+                      features like security, network management, and accessibility. You cannot disable 
+                      these cookies as they are necessary for the site to work.
+                    </p>
+                    <div class="bg-bg-secondary rounded-lg p-4">
+                      <h4 class="font-medium text-text-primary text-sm mb-2">Examples:</h4>
+                      <ul class="text-text-secondary text-sm space-y-1">
+                        <li>• Cookie consent preferences</li>
+                        <li>• Session management</li>
+                        <li>• Security and authentication</li>
+                        <li>• Basic website functionality</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Analytics Cookies -->
+              <div class="border border-border-gray rounded-lg p-6">
+                <div class="flex items-start gap-4">
+                  <div class="flex-shrink-0 bg-progress-orange/10 rounded-lg p-3">
+                    <BarChart3 className="h-6 w-6 text-progress-orange" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h3 class="font-brand text-lg font-medium text-text-primary">
+                        Analytics Cookies
+                      </h3>
+                      <span class="text-xs bg-border-gray text-text-secondary px-2 py-1 rounded-full font-medium">
+                        Optional
+                      </span>
+                    </div>
+                    <p class="text-text-secondary mb-4">
+                      These cookies help us understand how visitors interact with our website by 
+                      collecting anonymous information. This data helps us improve our website 
+                      and user experience.
+                    </p>
+                    <div class="bg-bg-secondary rounded-lg p-4">
+                      <h4 class="font-medium text-text-primary text-sm mb-2">We use this data to:</h4>
+                      <ul class="text-text-secondary text-sm space-y-1">
+                        <li>• Understand which pages are most popular</li>
+                        <li>• Identify technical issues</li>
+                        <li>• Improve website performance</li>
+                        <li>• Analyze user behavior patterns</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Marketing Cookies -->
+              <div class="border border-border-gray rounded-lg p-6">
+                <div class="flex items-start gap-4">
+                  <div class="flex-shrink-0 bg-innovation-purple/10 rounded-lg p-3">
+                    <Target className="h-6 w-6 text-innovation-purple" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h3 class="font-brand text-lg font-medium text-text-primary">
+                        Marketing Cookies
+                      </h3>
+                      <span class="text-xs bg-border-gray text-text-secondary px-2 py-1 rounded-full font-medium">
+                        Optional
+                      </span>
+                    </div>
+                    <p class="text-text-secondary mb-4">
+                      These cookies track visitors across websites to display relevant advertisements 
+                      and measure the effectiveness of our marketing campaigns.
+                    </p>
+                    <div class="bg-bg-secondary rounded-lg p-4">
+                      <h4 class="font-medium text-text-primary text-sm mb-2">Used for:</h4>
+                      <ul class="text-text-secondary text-sm space-y-1">
+                        <li>• Displaying relevant advertisements</li>
+                        <li>• Measuring ad campaign effectiveness</li>
+                        <li>• Social media integration</li>
+                        <li>• Retargeting and remarketing</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Detailed Cookie List -->
+          <section class="mb-12">
+            <h2 class="font-brand text-2xl font-semibold text-text-primary mb-6">
+              Detailed Cookie Information
+            </h2>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full border border-border-gray rounded-lg">
+                <thead>
+                  <tr class="bg-bg-secondary">
+                    <th class="text-left p-4 font-brand font-medium text-text-primary text-sm">Cookie Name</th>
+                    <th class="text-left p-4 font-brand font-medium text-text-primary text-sm">Category</th>
+                    <th class="text-left p-4 font-brand font-medium text-text-primary text-sm">Purpose</th>
+                    <th class="text-left p-4 font-brand font-medium text-text-primary text-sm">Duration</th>
+                    <th class="text-left p-4 font-brand font-medium text-text-primary text-sm">Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cookieData.map((cookie, index) => (
+                    <tr class={`border-t border-border-gray ${index % 2 === 0 ? 'bg-white' : 'bg-bg-secondary/30'}`}>
+                      <td class="p-4">
+                        <div class="flex items-center gap-2">
+                          {cookie.icon === 'shield' && <Shield className="h-4 w-4 text-tomorrow-blue flex-shrink-0" />}
+                          {cookie.icon === 'chart' && <BarChart3 className="h-4 w-4 text-progress-orange flex-shrink-0" />}
+                          {cookie.icon === 'target' && <Target className="h-4 w-4 text-innovation-purple flex-shrink-0" />}
+                          <code class="text-sm bg-border-gray/30 px-2 py-1 rounded text-text-primary">
+                            {cookie.name}
+                          </code>
+                        </div>
+                      </td>
+                      <td class="p-4">
+                        <span class={`text-xs px-2 py-1 rounded-full font-medium ${
+                          cookie.category === 'Necessary' ? 'bg-tomorrow-blue/10 text-tomorrow-blue' :
+                          cookie.category === 'Analytics' ? 'bg-progress-orange/10 text-progress-orange' :
+                          'bg-innovation-purple/10 text-innovation-purple'
+                        }`}>
+                          {cookie.category}
+                        </span>
+                      </td>
+                      <td class="p-4 text-text-secondary text-sm">{cookie.purpose}</td>
+                      <td class="p-4 text-text-secondary text-sm">{cookie.duration}</td>
+                      <td class="p-4 text-text-secondary text-sm">{cookie.type}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Third-Party Services -->
+          <section class="mb-12">
+            <h2 class="font-brand text-2xl font-semibold text-text-primary mb-6">
+              Third-Party Services
+            </h2>
+            
+            <div class="space-y-6">
+              <p class="text-text-secondary">
+                We use the following third-party services that may set cookies on your device:
+              </p>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border border-border-gray rounded-lg p-6">
+                  <div class="flex items-start gap-3 mb-4">
+                    <div class="bg-progress-orange/10 rounded-lg p-2">
+                      <BarChart3 className="h-5 w-5 text-progress-orange" />
+                    </div>
+                    <div>
+                      <h3 class="font-brand font-medium text-text-primary">Google Analytics</h3>
+                      <p class="text-text-secondary text-sm">Website traffic and user behavior analysis</p>
+                    </div>
+                  </div>
+                  <div class="space-y-2 text-sm">
+                    <p class="text-text-secondary">
+                      <strong>Purpose:</strong> Understand how users interact with our website
+                    </p>
+                    <p class="text-text-secondary">
+                      <strong>Data collected:</strong> Anonymous usage statistics, page views, session duration
+                    </p>
+                    <p class="text-text-secondary">
+                      <strong>Privacy Policy:</strong> 
+                      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="text-tomorrow-blue hover:underline">
+                        Google Privacy Policy
+                      </a>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="border border-border-gray rounded-lg p-6">
+                  <div class="flex items-start gap-3 mb-4">
+                    <div class="bg-innovation-purple/10 rounded-lg p-2">
+                      <Target className="h-5 w-5 text-innovation-purple" />
+                    </div>
+                    <div>
+                      <h3 class="font-brand font-medium text-text-primary">Meta Pixel</h3>
+                      <p class="text-text-secondary text-sm">Marketing and advertising measurement</p>
+                    </div>
+                  </div>
+                  <div class="space-y-2 text-sm">
+                    <p class="text-text-secondary">
+                      <strong>Purpose:</strong> Measure ad campaign effectiveness and enable retargeting
+                    </p>
+                    <p class="text-text-secondary">
+                      <strong>Data collected:</strong> Website visits, conversions, user interactions
+                    </p>
+                    <p class="text-text-secondary">
+                      <strong>Privacy Policy:</strong> 
+                      <a href="https://www.facebook.com/privacy/explanation" target="_blank" rel="noopener" class="text-tomorrow-blue hover:underline">
+                        Meta Privacy Policy
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Managing Cookies -->
+          <section class="mb-12">
+            <h2 class="font-brand text-2xl font-semibold text-text-primary mb-6">
+              Managing Your Cookie Preferences
+            </h2>
+            
+            <div class="space-y-6">
+              <div class="bg-bg-secondary rounded-lg p-6">
+                <h3 class="font-brand font-medium text-text-primary mb-3">
+                  Our Cookie Settings
+                </h3>
+                <p class="text-text-secondary mb-4">
+                  You can manage your cookie preferences at any time using our cookie settings panel. 
+                  Your choices will be remembered for future visits.
+                </p>
+                <button 
+                  onclick="window.dispatchEvent(new CustomEvent('openCookieSettings'))"
+                  class="inline-flex items-center gap-2 bg-tomorrow-blue text-white px-4 py-2 rounded-lg hover:bg-tomorrow-blue/90 transition-colors text-sm font-medium"
+                >
+                  <Settings className="h-4 w-4" />
+                  Open Cookie Settings
+                </button>
+              </div>
+
+              <div class="border border-border-gray rounded-lg p-6">
+                <h3 class="font-brand font-medium text-text-primary mb-3">
+                  Browser Cookie Controls
+                </h3>
+                <p class="text-text-secondary mb-4">
+                  Most web browsers allow you to control cookies through their settings preferences. 
+                  However, limiting cookies may impact your experience on our website.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener" 
+                     class="text-tomorrow-blue hover:underline text-sm">Chrome Settings</a>
+                  <a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop" target="_blank" rel="noopener" 
+                     class="text-tomorrow-blue hover:underline text-sm">Firefox Settings</a>
+                  <a href="https://support.apple.com/guide/safari/manage-cookies-and-website-data-sfri11471/mac" target="_blank" rel="noopener" 
+                     class="text-tomorrow-blue hover:underline text-sm">Safari Settings</a>
+                  <a href="https://support.microsoft.com/en-us/help/17442/windows-internet-explorer-delete-manage-cookies" target="_blank" rel="noopener" 
+                     class="text-tomorrow-blue hover:underline text-sm">Edge Settings</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Contact Information -->
+          <section class="mb-12">
+            <h2 class="font-brand text-2xl font-semibold text-text-primary mb-6">
+              Questions About Cookies?
+            </h2>
+            
+            <div class="border border-border-gray rounded-lg p-6">
+              <p class="text-text-secondary mb-4">
+                If you have any questions about our use of cookies or this Cookie Policy, 
+                please don't hesitate to contact us:
+              </p>
+              
+              <div class="space-y-2 text-text-secondary">
+                <p><strong>Privacy Contact:</strong> <a href={`mailto:${companyInfo.privacyEmail}`} class="text-tomorrow-blue hover:underline">{companyInfo.privacyEmail}</a></p>
+                <p><strong>General Contact:</strong> <a href={`mailto:${companyInfo.email}`} class="text-tomorrow-blue hover:underline">{companyInfo.email}</a></p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Updates -->
+          <section class="mb-12">
+            <h2 class="font-brand text-2xl font-semibold text-text-primary mb-6">
+              Policy Updates
+            </h2>
+            
+            <div class="bg-bg-secondary rounded-lg p-6">
+              <p class="text-text-secondary">
+                We may update this Cookie Policy from time to time to reflect changes in our 
+                practices or for other operational, legal, or regulatory reasons. Please check 
+                this page periodically for any updates.
+              </p>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .prose h2 {
+    @apply font-brand;
+  }
+  
+  .prose h3 {
+    @apply font-brand;
+  }
+  
+  table {
+    @apply text-sm;
+  }
+  
+  table th {
+    @apply border-b border-border-gray;
+  }
+</style>

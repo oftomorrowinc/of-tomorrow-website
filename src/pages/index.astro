@@ -1,49 +1,540 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
+import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users } from 'lucide-react';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Layout title="Of Tomorrow, Inc. - Innovation for the Future">
+  <!-- Navigation Header -->
+  <header class="sticky top-0 z-50 w-full border-b border-border-gray bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <div class="container mx-auto flex h-16 items-center px-4">
+      <div class="flex items-center space-x-2">
+        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-tomorrow-blue">
+          <Rocket className="h-6 w-6 text-white" />
+        </div>
+        <span class="font-brand font-bold text-xl">OF TOMORROW</span>
+      </div>
+      <nav class="ml-auto flex gap-6">
+        <a href="#services" class="text-sm font-medium text-text-secondary hover:text-tomorrow-blue transition-colors">
+          Services
+        </a>
+        <a href="#about" class="text-sm font-medium text-text-secondary hover:text-tomorrow-blue transition-colors">
+          About
+        </a>
+        <a href="#products" class="text-sm font-medium text-text-secondary hover:text-tomorrow-blue transition-colors">
+          Products
+        </a>
+        <a href="#contact" class="text-sm font-medium text-text-secondary hover:text-tomorrow-blue transition-colors">
+          Contact
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
+      <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div class="container mx-auto px-4 py-24 sm:py-32">
+        <div class="mx-auto max-w-4xl text-center">
+          <h1 class="font-brand text-4xl font-bold tracking-tight text-text-primary sm:text-6xl">
+            Built for <span class="text-tomorrow-blue">Tomorrow</span>
+          </h1>
+          <p class="mt-6 text-lg leading-8 text-text-secondary font-body">
+            Making dreams executable through technology and innovation. We stand at the intersection of imagination and implementation, 
+            where AI and emerging technologies amplify human creativity.
+          </p>
+          <div class="mt-10 flex items-center justify-center gap-x-6">
+            <button
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-900 text-slate-50 hover:bg-slate-900/90 h-11 px-8 gap-2"
+              data-track-type="primary-cta" 
+              data-track-location="hero" 
+              data-track-text="Explore Our Vision"
+              id="hero-explore-btn"
+            >
+              Explore Our Vision
+              <ArrowRight className="h-4 w-4" />
+            </button>
+            <button
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 h-11 px-8"
+              data-track-type="secondary-cta" 
+              data-track-location="hero" 
+              data-track-text="View Our Work"
+              id="hero-work-btn"
+            >
+              View Our Work
+            </button>
+          </div>
+        </div>
+        
+        <!-- Animated decoration -->
+        <div class="mt-16 flex justify-center">
+          <div class="relative">
+            <div class="absolute -inset-4 bg-gradient-to-r from-tomorrow-blue to-progress-orange rounded-lg blur opacity-25 animate-pulse"></div>
+            <div class="relative bg-white rounded-lg p-8 shadow-lg max-w-2xl">
+              <p class="text-progress-orange font-brand font-semibold text-lg">MAKING DREAMS EXECUTABLE</p>
+              <p class="mt-2 text-text-secondary">Technology with purpose. Innovation with impact.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-2xl text-center mb-16">
+          <h2 class="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl font-brand">
+            What We Build
+          </h2>
+          <p class="mt-4 text-lg text-text-secondary">
+            From apps to art, we create experiences that bridge the gap between imagination and reality.
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div 
+            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            data-track-type="service-card"
+            data-track-service="Apps & Software"
+            id="service-apps"
+          >
+            <div class="flex flex-col space-y-1.5 p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-tomorrow-blue/10">
+                <Code className="h-6 w-6 text-tomorrow-blue" />
+              </div>
+              <h3 class="text-2xl font-semibold leading-none tracking-tight">Apps & Software</h3>
+              <p class="text-sm text-muted-foreground">
+                Next-generation applications that make complex technology accessible and inspiring
+              </p>
+            </div>
+            <div class="p-6 pt-0">
+              <p class="text-sm text-text-secondary">
+                Building tools that amplify human potential through elegant, intuitive interfaces.
+              </p>
+            </div>
+          </div>
+
+          <div 
+            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            data-track-type="service-card"
+            data-track-service="Books & Content"
+            id="service-books"
+          >
+            <div class="flex flex-col space-y-1.5 p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-progress-orange/10">
+                <BookOpen className="h-6 w-6 text-progress-orange" />
+              </div>
+              <h3 class="text-2xl font-semibold leading-none tracking-tight">Books & Content</h3>
+              <p class="text-sm text-muted-foreground">
+                Stories and insights that capture the essence of progress and possibility
+              </p>
+            </div>
+            <div class="p-6 pt-0">
+              <p class="text-sm text-text-secondary">
+                Publishing narratives that inspire and educate about our technological future.
+              </p>
+            </div>
+          </div>
+
+          <div 
+            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            data-track-type="service-card"
+            data-track-service="Interactive Events"
+            id="service-events"
+          >
+            <div class="flex flex-col space-y-1.5 p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-innovation-purple/10">
+                <Calendar className="h-6 w-6 text-innovation-purple" />
+              </div>
+              <h3 class="text-2xl font-semibold leading-none tracking-tight">Interactive Events</h3>
+              <p class="text-sm text-muted-foreground">
+                Experiences that bring communities together around shared visions of tomorrow
+              </p>
+            </div>
+            <div class="p-6 pt-0">
+              <p class="text-sm text-text-secondary">
+                Creating moments where technology and human connection converge.
+              </p>
+            </div>
+          </div>
+
+          <div 
+            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            data-track-type="service-card"
+            data-track-service="Digital Art"
+            id="service-art"
+          >
+            <div class="flex flex-col space-y-1.5 p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-creative-pink/10">
+                <Palette className="h-6 w-6 text-creative-pink" />
+              </div>
+              <h3 class="text-2xl font-semibold leading-none tracking-tight">Digital Art</h3>
+              <p class="text-sm text-muted-foreground">
+                Visual experiences that capture the optimism of the space age
+              </p>
+            </div>
+            <div class="p-6 pt-0">
+              <p class="text-sm text-text-secondary">
+                Blending retro-futuristic aesthetics with modern digital capabilities.
+              </p>
+            </div>
+          </div>
+
+          <div 
+            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            data-track-type="service-card"
+            data-track-service="Collaborative Intelligence"
+            id="service-collab"
+          >
+            <div class="flex flex-col space-y-1.5 p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-growth-teal/10">
+                <Users className="h-6 w-6 text-growth-teal" />
+              </div>
+              <h3 class="text-2xl font-semibold leading-none tracking-tight">Collaborative Intelligence</h3>
+              <p class="text-sm text-muted-foreground">
+                Building on the shoulders of giants through shared knowledge
+              </p>
+            </div>
+            <div class="p-6 pt-0">
+              <p class="text-sm text-text-secondary">
+                Fostering collective innovation through AI-enhanced collaboration tools.
+              </p>
+            </div>
+          </div>
+
+          <div 
+            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            data-track-type="service-card"
+            data-track-service="Future Ventures"
+            id="service-ventures"
+          >
+            <div class="flex flex-col space-y-1.5 p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-info/10">
+                <Rocket className="h-6 w-6 text-info" />
+              </div>
+              <h3 class="text-2xl font-semibold leading-none tracking-tight">Future Ventures</h3>
+              <p class="text-sm text-muted-foreground">
+                Exploring new frontiers in technology and human potential
+              </p>
+            </div>
+            <div class="p-6 pt-0">
+              <p class="text-sm text-text-secondary">
+                Constantly pushing boundaries to discover what's possible tomorrow.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-24 bg-bg-secondary">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-2xl text-center mb-16">
+          <h2 class="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl font-brand">
+            The Of Tomorrow Family
+          </h2>
+          <p class="mt-4 text-lg text-text-secondary">
+            Specialized ventures building the future, one innovation at a time.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+          <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-tomorrow-blue to-tomorrow-blue/80 p-8 text-white">
+            <div class="relative z-10">
+              <h3 class="text-2xl font-bold font-brand mb-4">Translations Of Tomorrow</h3>
+              <p class="mb-6 text-white/90">
+                Breaking down language barriers with AI-powered translation tools that preserve context and culture.
+              </p>
+              <a 
+                href="https://translations.oftomorrow.net" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                data-track-type="external-link"
+                data-track-destination="translations.oftomorrow.net"
+                id="translations-link"
+              >
+                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-200 bg-white text-tomorrow-blue hover:bg-white/90 h-10 px-4 py-2">
+                  Visit Site
+                </button>
+              </a>
+            </div>
+            <div class="absolute -right-8 -bottom-8 h-32 w-32 rounded-full bg-white/10"></div>
+            <div class="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-white/5"></div>
+          </div>
+
+          <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-progress-orange to-progress-orange/80 p-8 text-white">
+            <div class="relative z-10">
+              <h3 class="text-2xl font-bold font-brand mb-4">Education Of Tomorrow</h3>
+              <p class="mb-6 text-white/90">
+                Reimagining learning experiences with adaptive, personalized educational platforms.
+              </p>
+              <button 
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-200 bg-white text-progress-orange hover:bg-white/90 h-10 px-4 py-2"
+                data-track-type="coming-soon"
+                data-track-product="Education Of Tomorrow"
+                id="education-btn"
+              >
+                Coming Soon
+              </button>
+            </div>
+            <div class="absolute -right-8 -bottom-8 h-32 w-32 rounded-full bg-white/10"></div>
+            <div class="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-white/5"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-4xl">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl font-brand">
+              Our Story
+            </h2>
+          </div>
+          
+          <div class="prose prose-lg mx-auto text-text-secondary">
+            <p class="lead font-medium text-text-primary">
+              Of Tomorrow, Inc. stands at the intersection of imagination and innovation, where the bright optimism 
+              of the 1960s space age meets today's technological possibilities.
+            </p>
+            
+            <p>
+              We believe in a future where technology amplifies human creativity rather than replacing it. Our work 
+              embodies the spirit of Popular Science magazine's golden era, when the future felt limitless and every 
+              innovation promised a "great big beautiful tomorrow."
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-12 not-prose">
+              <div 
+                class="bg-bg-secondary rounded-lg p-6 cursor-pointer hover:shadow-md transition-shadow"
+                data-track-type="content-card"
+                data-track-content="mission"
+                id="mission-card"
+              >
+                <h3 class="font-brand font-semibold text-lg text-text-primary mb-2">Our Mission</h3>
+                <p class="text-text-secondary">
+                  Transform the bright promise of tomorrow into today's reality through technology and media that inspires.
+                </p>
+              </div>
+              <div 
+                class="bg-bg-secondary rounded-lg p-6 cursor-pointer hover:shadow-md transition-shadow"
+                data-track-type="content-card"
+                data-track-content="vision"
+                id="vision-card"
+              >
+                <h3 class="font-brand font-semibold text-lg text-text-primary mb-2">Our Vision</h3>
+                <p class="text-text-secondary">
+                  A world where technology amplifies human creativity and makes every ambitious dream achievable.
+                </p>
+              </div>
+            </div>
+
+            <p>
+              We see AI and emerging technologies as the shoulders upon which human potential stands, ready for 
+              exponential growth. By creating apps, books, events, and art that bridge the gap between imagination 
+              and implementation, we're making complex technology accessible and inspiring for everyone.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-gradient-to-br from-tomorrow-blue to-tomorrow-blue/90">
+      <div class="container mx-auto px-4">
+        <div class="mx-auto max-w-2xl text-center">
+          <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl font-brand">
+            Ready to Build Tomorrow?
+          </h2>
+          <p class="mt-4 text-lg text-white/90">
+            Let's transform your ambitious ideas into executable realities.
+          </p>
+          <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <button 
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-slate-900 hover:bg-white/90 h-11 px-8 gap-2"
+              data-track-type="primary-cta"
+              data-track-location="contact"
+              data-track-text="Start a Conversation"
+              id="contact-conversation-btn"
+            >
+              Start a Conversation
+              <ArrowRight className="h-4 w-4" />
+            </button>
+            <button 
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white/10 text-white border-white/20 hover:bg-white/20 h-11 px-8"
+              data-track-type="secondary-cta"
+              data-track-location="contact"
+              data-track-text="View Our Portfolio"
+              id="contact-portfolio-btn"
+            >
+              View Our Portfolio
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Updated Footer with GDPR Links -->
+  <Footer />
+</Layout>
+
+<script>
+  // Enhanced section view tracking
+  function setupSectionTracking() {
+    const sections = document.querySelectorAll('section[id]');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+          const sectionId = entry.target.id;
+          if (window.tracker) {
+            window.tracker.trackContentEngagement('section', sectionId, 'view');
+            window.tracker.trackEvent('section_view', {
+              section_name: sectionId,
+              viewport_percentage: Math.round(entry.intersectionRatio * 100)
+            });
+          }
+        }
+      });
+    }, { threshold: [0.5] });
+
+    sections.forEach(section => observer.observe(section));
+  }
+
+  // Setup event tracking for interactive elements
+  function setupElementTracking() {
+    // Hero buttons
+    const heroExploreBtn = document.getElementById('hero-explore-btn');
+    if (heroExploreBtn) {
+      heroExploreBtn.addEventListener('click', () => {
+        if (window.tracker) {
+          window.tracker.trackButtonClick('Explore Our Vision', 'primary-cta', 'hero');
+          window.tracker.trackJourneyMilestone('hero_cta_click', 'awareness', 50);
+        }
+      });
+    }
+
+    const heroWorkBtn = document.getElementById('hero-work-btn');
+    if (heroWorkBtn) {
+      heroWorkBtn.addEventListener('click', () => {
+        if (window.tracker) {
+          window.tracker.trackButtonClick('View Our Work', 'secondary-cta', 'hero');
+          window.tracker.trackBusinessEvent('portfolio_interest', {source: 'hero'});
+        }
+      });
+    }
+
+    // Service cards
+    const serviceCards = {
+      'service-apps': 'Apps & Software',
+      'service-books': 'Books & Content',
+      'service-events': 'Interactive Events',
+      'service-art': 'Digital Art',
+      'service-collab': 'Collaborative Intelligence',
+      'service-ventures': 'Future Ventures'
+    };
+
+    Object.entries(serviceCards).forEach(([id, serviceName]) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener('click', () => {
+          if (window.tracker) {
+            window.tracker.trackServiceInterest(serviceName);
+            window.tracker.trackContentEngagement('service', serviceName.toLowerCase().replace(/\s+/g, '_'), 'click');
+          }
+        });
+      }
+    });
+
+    // External link
+    const translationsLink = document.getElementById('translations-link');
+    if (translationsLink) {
+      translationsLink.addEventListener('click', () => {
+        if (window.tracker) {
+          window.tracker.trackExternalLink('https://translations.oftomorrow.net', 'Visit Site');
+          window.tracker.trackConversion('visit_translation_site', 25, 'USD', {source: 'products_section'});
+        }
+      });
+    }
+
+    // Coming soon button
+    const educationBtn = document.getElementById('education-btn');
+    if (educationBtn) {
+      educationBtn.addEventListener('click', () => {
+        if (window.tracker) {
+          window.tracker.trackButtonClick('Coming Soon', 'coming-soon', 'education-product');
+          window.tracker.trackBusinessEvent('product_interest', {product: 'education_of_tomorrow'});
+        }
+      });
+    }
+
+    // About cards
+    const missionCard = document.getElementById('mission-card');
+    if (missionCard) {
+      missionCard.addEventListener('click', () => {
+        if (window.tracker) {
+          window.tracker.trackContentEngagement('about', 'mission', 'click');
+        }
+      });
+    }
+
+    const visionCard = document.getElementById('vision-card');
+    if (visionCard) {
+      visionCard.addEventListener('click', () => {
+        if (window.tracker) {
+          window.tracker.trackContentEngagement('about', 'vision', 'click');
+        }
+      });
+    }
+
+    // Contact buttons
+    const contactConversationBtn = document.getElementById('contact-conversation-btn');
+    if (contactConversationBtn) {
+      contactConversationBtn.addEventListener('click', () => {
+        if (window.tracker) {
+          window.tracker.trackButtonClick('Start a Conversation', 'primary-cta', 'contact');
+          window.tracker.trackConversion('contact_intent', 100, 'USD', {source: 'contact_section'});
+        }
+      });
+    }
+
+    const contactPortfolioBtn = document.getElementById('contact-portfolio-btn');
+    if (contactPortfolioBtn) {
+      contactPortfolioBtn.addEventListener('click', () => {
+        if (window.tracker) {
+          window.tracker.trackButtonClick('View Our Portfolio', 'secondary-cta', 'contact');
+          window.tracker.trackBusinessEvent('portfolio_request', {source: 'contact_section'});
+        }
+      });
+    }
+  }
+
+  // Initialize enhanced tracking when page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    setupSectionTracking();
+    setupElementTracking();
+    
+    // Track initial page engagement
+    setTimeout(() => {
+      if (window.tracker) {
+        window.tracker.trackEvent('page_engagement', {
+          engagement_type: 'initial_load',
+          time_on_page: 3000,
+          scroll_position: window.scrollY
+        });
+      }
+    }, 3000);
+  });
+</script>
+
+<style>
+  .bg-grid-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230066FF' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+</style>

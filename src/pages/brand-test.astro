@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Brand Test - Of Tomorrow, Inc.">
+  <div class="min-h-screen bg-bg-primary p-lg">
+    <header class="text-center mb-2xl">
+      <h1 class="font-brand text-4xl font-bold text-tomorrow-blue mb-md">Of Tomorrow, Inc.</h1>
+      <p class="font-body text-text-secondary text-lg">Brand Configuration Test</p>
+    </header>
+    
+    <main class="max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-xl mb-2xl">
+        <!-- Brand Colors -->
+        <div class="bg-bg-secondary p-xl rounded-lg border border-border-gray">
+          <h2 class="font-brand text-2xl font-semibold text-text-primary mb-lg">Brand Colors</h2>
+          <div class="grid grid-cols-2 gap-md">
+            <div class="bg-tomorrow-blue h-16 rounded-md"></div>
+            <div class="bg-progress-orange h-16 rounded-md"></div>
+            <div class="bg-innovation-purple h-16 rounded-md"></div>
+            <div class="bg-growth-teal h-16 rounded-md"></div>
+            <div class="bg-creative-pink h-16 rounded-md"></div>
+            <div class="bg-warning h-16 rounded-md"></div>
+          </div>
+        </div>
+
+        <!-- Typography -->
+        <div class="bg-bg-secondary p-xl rounded-lg border border-border-gray">
+          <h2 class="font-brand text-2xl font-semibold text-text-primary mb-lg">Typography</h2>
+          <div class="space-y-md">
+            <div>
+              <p class="font-brand text-lg font-bold text-tomorrow-blue">Space Grotesk (Brand)</p>
+              <p class="font-body text-sm text-text-secondary">Headings & brand elements</p>
+            </div>
+            <div>
+              <p class="font-body text-lg text-text-primary">Inter (Body)</p>
+              <p class="font-body text-sm text-text-secondary">Body text & UI elements</p>
+            </div>
+            <div>
+              <p class="font-code text-sm text-text-primary bg-bg-primary p-sm rounded border">JetBrains Mono (Code)</p>
+              <p class="font-body text-sm text-text-secondary">Code snippets</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spacing & Shadows -->
+      <div class="bg-bg-secondary p-xl rounded-lg border border-border-gray mb-2xl">
+        <h2 class="font-brand text-2xl font-semibold text-text-primary mb-lg">Spacing & Shadows</h2>
+        <div class="flex flex-wrap gap-lg">
+          <div class="bg-bg-primary p-xs rounded shadow-sm">xs (4px)</div>
+          <div class="bg-bg-primary p-sm rounded shadow-sm">sm (8px)</div>
+          <div class="bg-bg-primary p-md rounded shadow-md">md (16px)</div>
+          <div class="bg-bg-primary p-lg rounded shadow-lg">lg (24px)</div>
+          <div class="bg-bg-primary p-xl rounded shadow-lg">xl (32px)</div>
+          <div class="bg-bg-primary p-2xl rounded shadow-lg">2xl (48px)</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="text-center space-x-md">
+        <button class="bg-tomorrow-blue text-white px-xl py-md rounded-md font-body font-semibold hover:opacity-90 transition-opacity">
+          Primary Action
+        </button>
+        <button class="bg-progress-orange text-white px-xl py-md rounded-md font-body font-semibold hover:opacity-90 transition-opacity">
+          Secondary Action
+        </button>
+        <button class="border border-tomorrow-blue text-tomorrow-blue px-xl py-md rounded-md font-body font-semibold hover:bg-tomorrow-blue hover:text-white transition-colors">
+          Tertiary Action
+        </button>
+      </div>
+    </main>
+  </div>
+</Layout>

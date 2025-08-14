@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users } from 'lucide-react';
+import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail } from 'lucide-react';
 ---
 
 <Layout title="Of Tomorrow, Inc. - Innovation for the Future">
@@ -355,26 +355,18 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users } from 'lu
           <p class="mt-4 text-lg text-white/90">
             Let's transform your ambitious ideas into executable realities.
           </p>
-          <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-slate-900 hover:bg-white/90 h-11 px-8 gap-2"
-              data-track-type="primary-cta"
+          <div class="mt-10 flex justify-center">
+            <a 
+              href="mailto:ideas@oftomorrow.net?subject=Let's Build Tomorrow Together"
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-slate-900 hover:bg-white/90 h-12 px-10 gap-3 text-base"
+              data-track-type="email-cta"
               data-track-location="contact"
-              data-track-text="Start a Conversation"
-              id="contact-conversation-btn"
+              data-track-text="Drop us an email"
+              id="contact-email-btn"
             >
-              Start a Conversation
-              <ArrowRight className="h-4 w-4" />
-            </button>
-            <button 
-              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white/10 text-white border-white/20 hover:bg-white/20 h-11 px-8"
-              data-track-type="secondary-cta"
-              data-track-location="contact"
-              data-track-text="View Our Portfolio"
-              id="contact-portfolio-btn"
-            >
-              View Our Portfolio
-            </button>
+              <Mail className="h-5 w-5" />
+              Drop us an email: ideas@oftomorrow.net
+            </a>
           </div>
         </div>
       </div>
@@ -493,23 +485,17 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users } from 'lu
       });
     }
 
-    // Contact buttons
-    const contactConversationBtn = document.getElementById('contact-conversation-btn');
-    if (contactConversationBtn) {
-      contactConversationBtn.addEventListener('click', () => {
+    // Contact email button
+    const contactEmailBtn = document.getElementById('contact-email-btn');
+    if (contactEmailBtn) {
+      contactEmailBtn.addEventListener('click', () => {
         if (window.tracker) {
-          window.tracker.trackButtonClick('Start a Conversation', 'primary-cta', 'contact');
-          window.tracker.trackConversion('contact_intent', 100, 'USD', {source: 'contact_section'});
-        }
-      });
-    }
-
-    const contactPortfolioBtn = document.getElementById('contact-portfolio-btn');
-    if (contactPortfolioBtn) {
-      contactPortfolioBtn.addEventListener('click', () => {
-        if (window.tracker) {
-          window.tracker.trackButtonClick('View Our Portfolio', 'secondary-cta', 'contact');
-          window.tracker.trackBusinessEvent('portfolio_request', {source: 'contact_section'});
+          window.tracker.trackButtonClick('Drop us an email', 'email-cta', 'contact');
+          window.tracker.trackConversion('email_contact_intent', 150, 'USD', {
+            source: 'contact_section',
+            email: 'ideas@oftomorrow.net'
+          });
+          window.tracker.trackJourneyMilestone('email_cta_click', 'consideration', 75);
         }
       });
     }

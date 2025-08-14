@@ -1,6 +1,6 @@
 # Of Tomorrow, Inc. Brand Guidelines
 
-*Version 1.0 | August 2025*
+*Version 2.0 | August 2025*
 
 ---
 
@@ -23,25 +23,25 @@
 
 ### Brand Story
 
-Of Tomorrow, Inc. stands at the intersection of imagination and innovation, where the bright optimism of the 1960s space age meets today's technological possibilities. We create apps, books, interactive events, and art that capture the essence of progress—technology making dreams come true.
+Of Tomorrow, Inc. stands at the intersection of imagination and innovation, where the bright optimism of the golden age of Popular Science and Popular Mechanics meets today's technological possibilities. We create apps, books, interactive events, and art that capture the essence of progress—technology engineering tomorrow's possibilities for everyone, everywhere.
 
-Our company embodies the spirit of Popular Science magazine's golden era, when the future felt limitless and every innovation promised a "great big beautiful tomorrow." We believe AI and emerging technologies are the shoulders upon which human potential stands, ready for exponential growth.
+Our company embodies the spirit of Popular Science and Popular Mechanics' golden era, when the future felt limitless and every innovation promised universal progress and a "great big beautiful tomorrow." We believe technology's greatest promise lies not in replacing human potential, but in amplifying it for everyone, everywhere—making complex technology accessible to all people.
 
 ### Brand Purpose
-**Why we exist:** To transform the bright promise of tomorrow into today's reality through technology and media.
+**Why we exist:** To engineer tomorrow's possibilities into today's reality through inclusive technology and media that serves all people.
 
 ### Brand Vision
-**Where we're going:** A world where technology amplifies human creativity and makes every ambitious dream achievable.
+**Where we're going:** An inclusive tomorrow where technology amplifies human creativity and makes ambitious possibilities achievable for everyone, everywhere.
 
 ### Brand Mission
-**How we get there:** By creating apps, books, events, and art that bridge the gap between imagination and implementation, making complex technology accessible and inspiring.
+**How we get there:** By creating apps, books, events, and art that bridge the gap between imagination and implementation, making complex technology universally accessible and inspiring humanity's highest aspirations.
 
 ### Brand Values
 
 - **Optimistic Futurism**: We see technology as humanity's greatest enabler
 - **Collective Intelligence**: Building on the shoulders of shared knowledge
-- **Accessible Innovation**: Making complex concepts beautifully simple
-- **Exponential Thinking**: Small innovations can create massive change
+- **Accessible Innovation**: Making complex concepts beautifully simple and universally accessible
+- **Exponential Thinking**: Small innovations can create massive change for all people
 - **Creative Problem-Solving**: Every challenge is an opportunity for breakthrough
 
 ### Brand Personality
@@ -54,7 +54,7 @@ Our company embodies the spirit of Popular Science magazine's golden era, when t
 - **Innovative**: Constantly exploring new ways to create and connect
 
 **Brand Archetype:** The Visionary + The Creator
-*We envision possibilities others can't see and bring them to life through elegant technology.*
+*We envision possibilities others can't see and bring them to life through elegant technology that serves everyone, everywhere.*
 
 ---
 
@@ -62,7 +62,7 @@ Our company embodies the spirit of Popular Science magazine's golden era, when t
 
 ### Design Philosophy
 
-Our visual identity draws from the golden age of Popular Science magazine (1960s-70s), when technological optimism was at its peak. We blend retro-futuristic aesthetics with modern usability, creating a brand that feels both nostalgically inspiring and cutting-edge contemporary.
+Our visual identity draws from the golden age of Popular Science and Popular Mechanics magazines (1940s-1950s), when technological optimism represented pure possibility and universal progress. We blend retro-futuristic aesthetics with modern usability, creating a brand that feels both nostalgically inspiring and cutting-edge contemporary.
 
 **Key Visual Principles:**
 - Clean, geometric forms inspired by space age design
@@ -240,14 +240,14 @@ Code:       14px / JetBrains Mono Regular
 
 ### Tone Variations by Context
 
-**Marketing & Website:** Inspirational, forward-looking, confident
-*"Tomorrow's breakthrough apps are built on today's boldest ideas."*
+**Marketing & Website:** Inspirational, forward-looking, confident, inclusive
+*"Tomorrow's breakthrough apps are built on today's boldest ideas, engineered for everyone."*
 
 **Product Documentation:** Clear, helpful, encouraging
 *"Let's walk through this step-by-step. You've got this."*
 
 **Social Media:** Conversational, enthusiastic, community-focused
-*"Amazing what happens when great minds build on great ideas! 🚀"*
+*"Amazing what happens when we engineer possibilities together! 🚀"*
 
 **Error Messages:** Helpful, reassuring, solution-focused
 *"Looks like something went sideways. Let's get you back on track."*
@@ -269,11 +269,11 @@ Code:       14px / JetBrains Mono Regular
 - Use past tense when discussing the future
 
 **Key Phrases:**
-- "Built for tomorrow"
+- "Engineering tomorrow's possibilities"
+- "Built for tomorrow, for everyone"
 - "Standing on shoulders of giants"
-- "Making dreams executable"
-- "The future is collaborative"
-- "Technology with purpose"
+- "The future is collaborative and inclusive"
+- "Technology that serves all people"
 
 ---
 
@@ -355,7 +355,7 @@ Graduated domains:
 **T-Shirts**
 - Simple logo applications
 - Vintage-inspired color treatments
-- "Building Tomorrow" tagline options
+- "Engineering Tomorrow's Possibilities" tagline options
 
 **Stickers**
 - Symbol-only versions
@@ -521,4 +521,4 @@ Before implementing any new brand applications, reach out to the brand team for 
 *"The future belongs to those who believe in the beauty of their dreams."*
 *– Eleanor Roosevelt*
 
-**Of Tomorrow, Inc.** – Making dreams executable, one innovation at a time.
+**Of Tomorrow, Inc.** – Engineering tomorrow's possibilities, one innovation at a time.

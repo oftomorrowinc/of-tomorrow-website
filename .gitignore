@@ -6,7 +6,6 @@ dist/
 .astro/
 
 # Environment variables
-.env
 .env.local
 .env.production
 .env.staging

@@ -120,7 +120,7 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
               href="https://translations.oftomorrow.net" 
               target="_blank" 
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-3 bg-white text-purple-700 hover:bg-purple-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 hover:shadow-2xl shadow-xl"
+              class="inline-flex items-center gap-3 bg-white text-purple-700 hover:bg-purple-50 hover:text-purple-800 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl"
               data-track-type="hero-cta"
               data-track-destination="translations.oftomorrow.net"
               data-track-location="tot-hero"
@@ -183,33 +183,6 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
       </div>
     </section>
 
-    <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
-      <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
-      <div class="container mx-auto px-4 py-24 sm:py-32">
-        <div class="mx-auto max-w-4xl text-center">
-          <h1 class="font-brand text-4xl font-bold tracking-tight text-text-primary sm:text-6xl">
-            Built for <span class="text-tomorrow-blue">Tomorrow</span>, for Everyone
-          </h1>
-          <p class="mt-6 text-lg leading-8 text-text-secondary font-body">
-            Engineering tomorrow's possibilities into today's reality. We stand at the intersection of imagination and implementation, 
-            where technology amplifies human creativity for everyone, everywhere.
-          </p>
-        </div>
-        
-        <!-- Animated decoration -->
-        <div class="mt-16 flex justify-center">
-          <div class="relative">
-            <div class="absolute -inset-4 bg-gradient-to-r from-tomorrow-blue to-progress-orange rounded-lg blur opacity-25 animate-pulse"></div>
-            <div class="relative bg-white rounded-lg p-8 shadow-lg max-w-2xl">
-              <p class="text-progress-orange font-brand font-semibold text-lg">ENGINEERING TOMORROW'S POSSIBILITIES</p>
-              <p class="mt-2 text-text-secondary">Technology that serves all people. Innovation with universal impact.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Services Section -->
     <section id="services" class="py-24 bg-white">
       <div class="container mx-auto px-4">
@@ -224,13 +197,13 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
         
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div 
-            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            class="service-card rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
             data-track-type="service-card"
             data-track-service="Apps & Software"
             id="service-apps"
           >
             <div class="flex flex-col space-y-1.5 p-6">
-              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-tomorrow-blue/10">
+              <div class="service-icon mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-tomorrow-blue/10 transition-transform duration-600">
                 <Code className="h-6 w-6 text-tomorrow-blue" />
               </div>
               <h3 class="text-2xl font-semibold leading-none tracking-tight">Apps & Software</h3>
@@ -246,13 +219,13 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
           </div>
 
           <div 
-            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            class="service-card rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
             data-track-type="service-card"
             data-track-service="Books & Content"
             id="service-books"
           >
             <div class="flex flex-col space-y-1.5 p-6">
-              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-progress-orange/10">
+              <div class="service-icon mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-600 bg-progress-orange/10">
                 <BookOpen className="h-6 w-6 text-progress-orange" />
               </div>
               <h3 class="text-2xl font-semibold leading-none tracking-tight">Books & Content</h3>
@@ -268,13 +241,13 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
           </div>
 
           <div 
-            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            class="service-card rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
             data-track-type="service-card"
             data-track-service="Interactive Events"
             id="service-events"
           >
             <div class="flex flex-col space-y-1.5 p-6">
-              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-innovation-purple/10">
+              <div class="service-icon mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-600 bg-innovation-purple/10">
                 <Calendar className="h-6 w-6 text-innovation-purple" />
               </div>
               <h3 class="text-2xl font-semibold leading-none tracking-tight">Interactive Events</h3>
@@ -290,13 +263,13 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
           </div>
 
           <div 
-            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            class="service-card rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
             data-track-type="service-card"
             data-track-service="Digital Art"
             id="service-art"
           >
             <div class="flex flex-col space-y-1.5 p-6">
-              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-creative-pink/10">
+              <div class="service-icon mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-600 bg-creative-pink/10">
                 <Palette className="h-6 w-6 text-creative-pink" />
               </div>
               <h3 class="text-2xl font-semibold leading-none tracking-tight">Digital Art</h3>
@@ -312,13 +285,13 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
           </div>
 
           <div 
-            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            class="service-card rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
             data-track-type="service-card"
             data-track-service="Collaborative Intelligence"
             id="service-collab"
           >
             <div class="flex flex-col space-y-1.5 p-6">
-              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-growth-teal/10">
+              <div class="service-icon mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-600 bg-growth-teal/10">
                 <Users className="h-6 w-6 text-growth-teal" />
               </div>
               <h3 class="text-2xl font-semibold leading-none tracking-tight">Collaborative Intelligence</h3>
@@ -334,13 +307,13 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
           </div>
 
           <div 
-            class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            class="service-card rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
             data-track-type="service-card"
             data-track-service="Future Ventures"
             id="service-ventures"
           >
             <div class="flex flex-col space-y-1.5 p-6">
-              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-info/10">
+              <div class="service-icon mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-600 bg-info/10">
                 <Rocket className="h-6 w-6 text-info" />
               </div>
               <h3 class="text-2xl font-semibold leading-none tracking-tight">Future Ventures</h3>
@@ -444,7 +417,7 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
             <img 
               src="/images/eb1.png" 
               alt="Electric Brain AI Computer - Version 1" 
-              class="w-full h-auto rounded-lg shadow-xl hover:shadow-2xl"
+              class="electric-brain-img w-full h-auto rounded-lg shadow-xl hover:shadow-2xl transition-all duration-500"
               loading="lazy"
             />
           </div>
@@ -452,7 +425,7 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
             <img 
               src="/images/eb2.png" 
               alt="Electric Brain AI Computer - Version 2" 
-              class="w-full h-auto rounded-lg shadow-xl hover:shadow-2xl"
+              class="electric-brain-img w-full h-auto rounded-lg shadow-xl hover:shadow-2xl transition-all duration-500"
               loading="lazy"
             />
           </div>
@@ -460,7 +433,7 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
             <img 
               src="/images/eb3.png" 
               alt="Electric Brain AI Computer - Version 3" 
-              class="w-full h-auto rounded-lg shadow-xl hover:shadow-2xl"
+              class="electric-brain-img w-full h-auto rounded-lg shadow-xl hover:shadow-2xl transition-all duration-500"
               loading="lazy"
             />
           </div>
@@ -552,7 +525,7 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
               id="contact-email-btn"
             >
               <Mail className="h-5 w-5" />
-              Drop us an email: ideas@oftomorrow.net
+              Beam us your ideas: ideas@oftomorrow.net
             </a>
           </div>
         </div>
@@ -724,4 +697,98 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
     animation: floatReverse 6s ease-in-out infinite;
     animation-delay: 3s;
   }
+  
+  /* New: Scan line effect */
+  @keyframes scanline {
+    0% { transform: translateX(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+  
+  .service-card {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .service-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 102, 255, 0.2), transparent);
+    pointer-events: none;
+  }
+  
+  .service-card:hover::after {
+    animation: scanline 1.5s ease-in-out;
+  }
+  
+  /* New: Retro glow effect */
+  @keyframes retroGlow {
+    0%, 100% { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+    50% { box-shadow: 0 0 20px rgba(0, 102, 255, 0.3), 0 0 40px rgba(0, 102, 255, 0.1); }
+  }
+  
+  .service-card:hover {
+    animation: retroGlow 2s ease-in-out infinite;
+  }
+  
+  /* New: Icon rotation on hover */
+  .service-card:hover .service-icon {
+    transform: rotate(360deg);
+    transition: transform 0.6s ease;
+  }
+  
+  /* New: Charging button effect */
+  @keyframes charge {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  
+  .btn-charge {
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(255, 255, 255, 0.3) 50%, 
+      transparent 100%);
+    background-size: 200% 100%;
+  }
+  
+  .btn-charge:hover {
+    animation: charge 2s linear infinite;
+  }
+  
+  /* New: Electric Brain power-up effect */
+  @keyframes powerUp {
+    0% { filter: brightness(1) sepia(0); }
+    50% { filter: brightness(1.2) sepia(0.3); }
+    100% { filter: brightness(1) sepia(0); }
+  }
+  
+  .electric-brain-img:hover {
+    animation: powerUp 2s ease-in-out infinite;
+    box-shadow: 0 0 30px rgba(255, 184, 77, 0.4);
+  }
+  
+  /* New: Fade in animation for sections */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in-section {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+  
+  .fade-in-section:nth-child(1) { animation-delay: 0.1s; }
+  .fade-in-section:nth-child(2) { animation-delay: 0.2s; }
+  .fade-in-section:nth-child(3) { animation-delay: 0.3s; }
 </style>

@@ -1,7 +1,7 @@
 ---
 title: 'BYOLLM is open source'
 description: 'BYOLLM – Bring Your Own LLM – lets you use your own AI on websites you authorize. A small program on your machine lets you use your own models and subscripti...'
-pubDate: 'Sep 25 2026'
+pubDate: 'Sep 26 2026'
 ---
 
 BYOLLM – Bring Your Own LLM – lets you use your own AI on websites you
@@ -36,7 +36,7 @@ device, encrypted end-to-end; byollm.cloud can't read them. Sites never
 learn which model you use, and your subscriptions are never shared. And
 sites that don't pay for AI can charge you less – or nothing.
 
-The age of zero marginal cost apps Satya Nadella declared as dead, we can now declare reborn.
+Zero-marginal-cost apps were supposed to be over. Run the inference on the user's own compute and they are back.
 
 ## For people who build sites
 
@@ -95,14 +95,8 @@ packages run one hosted service and a small number of integrations; beyond
 that they have little mileage. If you integrate one and something is
 wrong, the repository is where to say so.
 
-Things that we know are limiting now: No tool use. Devices have to stay online. ???? We actually have plans to fix all of these, but we wanted to get this live and let people watch us, and contribute to, building in public.
+Things we know are limiting right now: no tool use, no access to your local files, no streaming (a result comes back whole), only two job kinds so far (`llm.generate` and `llm.chat` – no embeddings or images yet), and your device has to be online for your jobs to run. We have plans for every one of these, but we wanted it live so people can watch – and contribute to – building in public.
 
 byo-llm.com · github.com/oftomorrowinc/byollm · npmjs.com/package/byollm
-
-*(The "Where it is early" paragraph is the byo-llm.com banner, verbatim, so
-the blog and the site say the same thing. The code sample is byo-llm.com's
-with `audience: "private"` – the site's copy is being corrected to match
-this week; if the site still says `"self"` when you publish, hold the post
-until it does, or the two will disagree in public.)*
 
 ---

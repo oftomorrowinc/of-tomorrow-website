@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Globe, Sparkles, Languages } from 'lucide-react';
+import { ABOUT_SHORT_LEDE } from '@byollm/protocol';
 ---
 
 <Layout title="Of Tomorrow, Inc. - Innovation for the Future">
@@ -41,147 +42,118 @@ import { ArrowRight, Rocket, Code, BookOpen, Calendar, Palette, Users, Mail, Glo
   </header>
 
   <main>
-    <!-- Translations Of Tomorrow Hero Feature -->
-    <section class="relative py-24 overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800">
-      <!-- Background Pattern -->
-      <div class="absolute inset-0 opacity-10">
-        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23FFFFFF" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-      </div>
-      
-      <!-- Floating geometric shapes -->
-      <div class="absolute top-20 left-10 w-20 h-20 bg-white/5 rounded-full blur-xl animate-pulse"></div>
-      <div class="absolute bottom-20 right-10 w-32 h-32 bg-purple-400/10 rounded-full blur-2xl animate-pulse" style="animation-delay: 1s;"></div>
-      <div class="absolute top-40 right-1/3 w-16 h-16 bg-indigo-400/10 rounded-lg rotate-45 blur-xl animate-pulse" style="animation-delay: 0.5s;"></div>
-      
-      <div class="container mx-auto px-4 relative z-10">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
-          <!-- Content Side -->
-          <div class="text-white">
-            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <Sparkles className="h-4 w-4 text-yellow-300" />
-              <span class="text-sm font-medium">NOW AVAILABLE FROM OF TOMORROW</span>
-            </div>
-            
-            <h2 class="font-brand text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Translations Of Tomorrow
-              <span class="block text-3xl sm:text-4xl lg:text-5xl mt-2 text-purple-200">Transform Your Books for Global Audiences</span>
-            </h2>
-            
-            <p class="text-xl text-purple-100 mb-8 leading-relaxed">
-              Professional AI-powered translation that preserves your unique voice and style 
-              across 13 major languages. Reach millions of new readers worldwide.
-            </p>
-            
-            <!-- Features Grid -->
-            <div class="grid grid-cols-2 gap-4 mb-10">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <Globe className="h-5 w-5 text-purple-200" />
-                </div>
-                <div>
-                  <p class="text-sm text-purple-200">Languages</p>
-                  <p class="font-semibold">13 Major Markets</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-purple-200" />
-                </div>
-                <div>
-                  <p class="text-sm text-purple-200">Author Control</p>
-                  <p class="font-semibold">Define Key Terms</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-purple-200" />
-                </div>
-                <div>
-                  <p class="text-sm text-purple-200">Context-Aware</p>
-                  <p class="font-semibold">Literary Quality</p>
-                </div>
-              </div>
-              
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <Users className="h-5 w-5 text-purple-200" />
-                </div>
-                <div>
-                  <p class="text-sm text-purple-200">Reach</p>
-                  <p class="font-semibold">Global Markets</p>
-                </div>
-              </div>
-            </div>
-            
-            <!-- CTA Button -->
-            <a 
-              href="https://translations.oftomorrow.net" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-3 bg-white text-purple-700 hover:bg-purple-50 hover:text-purple-800 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl"
-              data-track-type="hero-cta"
-              data-track-destination="translations.oftomorrow.net"
-              data-track-location="tot-hero"
-              id="tot-hero-cta"
-            >
-              Start Translating Today
-              <ArrowRight className="h-5 w-5" />
-            </a>
-          </div>
-          
-          <!-- Screenshots Side -->
-          <div class="relative lg:h-[600px] h-[400px]">
-            <!-- Dashboard Screenshot (back) -->
-            <div class="absolute top-0 right-0 lg:right-10 w-full max-w-[500px] transform rotate-3 hover:rotate-2 transition-transform duration-500 hover:z-10 float-animation">
-              <div class="bg-white rounded-xl shadow-2xl overflow-hidden border-4 border-white/20 backdrop-blur-sm">
-                <img 
-                  src="/images/tot2.png" 
-                  alt="Translations Of Tomorrow Dashboard" 
-                  class="w-full h-auto"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-            
-            <!-- Author Page Screenshot (front) -->
-            <div class="absolute bottom-0 left-0 lg:left-10 w-full max-w-[500px] transform -rotate-3 hover:-rotate-2 transition-transform duration-500 hover:z-20 float-animation-reverse">
-              <div class="bg-white rounded-xl shadow-2xl overflow-hidden border-4 border-white/20 backdrop-blur-sm">
-                <img 
-                  src="/images/tot.png" 
-                  alt="Translations Of Tomorrow Author Page" 
-                  class="w-full h-auto"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-            
-            <!-- Decorative Elements -->
-            <div class="absolute -top-4 -right-4 w-24 h-24 bg-yellow-400/20 rounded-full blur-2xl"></div>
-            <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-400/20 rounded-full blur-2xl"></div>
-          </div>
+      <!-- BYOLLM Hero Feature -->
+      <!--
+        The paragraph is `ABOUT_SHORT_LEDE`, imported from `@byollm/protocol`
+        rather than typed here: it is the description of record, it is on npm,
+        on the dashboard's welcome and on byollm.cloud's landing, and a fifth
+        hand-written copy is a fifth thing to forget. The tiles are phrases from
+        ABOUT.md.
+
+        No screenshot column — `/images/byollm1.png` and `byollm2.png` were not
+        captured, and a card with an empty half reads worse than one that lets
+        the text breathe. Add them back beside the text when they exist.
+      -->
+      <section class="relative py-24 overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
         </div>
-        
-        <!-- Bottom Stats Bar -->
-        <div class="mt-16 bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div>
-              <p class="text-3xl font-bold text-white font-brand">13</p>
-              <p class="text-purple-200 text-sm mt-1">Languages Supported</p>
-            </div>
-            <div>
-              <p class="text-3xl font-bold text-white font-brand">5M+</p>
-              <p class="text-purple-200 text-sm mt-1">Words Translated</p>
-            </div>
-            <div>
-              <p class="text-3xl font-bold text-white font-brand">From $29</p>
-              <p class="text-purple-200 text-sm mt-1">Game-Changing Pricing</p>
+
+        <!-- Floating geometric shapes -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-white/5 rounded-full blur-xl animate-pulse"></div>
+        <div class="absolute bottom-20 right-10 w-32 h-32 bg-purple-400/10 rounded-full blur-2xl animate-pulse" style="animation-delay: 1s;"></div>
+
+        <div class="container mx-auto px-4 relative z-10">
+          <div class="max-w-3xl mx-auto text-center">
+            <div class="text-white">
+              <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+                <Sparkles className="h-4 w-4 text-yellow-300" />
+                <span class="text-sm font-medium">NOW OPEN SOURCE FROM OF TOMORROW</span>
+              </div>
+
+              <h2 class="font-brand text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                BYOLLM
+                <span class="block text-3xl sm:text-4xl lg:text-5xl mt-2 text-purple-200">Bring Your Own LLM</span>
+              </h2>
+
+              <p class="text-xl text-purple-100 mb-10 leading-relaxed">
+                {ABOUT_SHORT_LEDE}
+              </p>
+
+              <!-- Features Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 text-left max-w-2xl mx-auto">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Globe className="h-5 w-5 text-purple-200" />
+                  </div>
+                  <div>
+                    <p class="text-sm text-purple-200">Your model</p>
+                    <p class="font-semibold">everywhere you go</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Sparkles className="h-5 w-5 text-purple-200" />
+                  </div>
+                  <div>
+                    <p class="text-sm text-purple-200">Encrypted</p>
+                    <p class="font-semibold">end-to-end</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Users className="h-5 w-5 text-purple-200" />
+                  </div>
+                  <div>
+                    <p class="text-sm text-purple-200">Sites</p>
+                    <p class="font-semibold">never learn which model</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Code className="h-5 w-5 text-purple-200" />
+                  </div>
+                  <div>
+                    <p class="text-sm text-purple-200">Developers</p>
+                    <p class="font-semibold">Zero AI bills</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CTA Buttons -->
+              <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="https://byo-llm.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center gap-3 bg-white text-purple-700 hover:bg-purple-50 hover:text-purple-800 font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                  data-track-type="hero-cta"
+                  data-track-destination="byo-llm.com"
+                  data-track-location="byollm-hero"
+                  id="byollm-hero-cta"
+                >
+                  See the open source project
+                  <ArrowRight className="h-5 w-5" />
+                </a>
+
+                <a
+                  href="https://byollm.cloud/early-access"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center gap-3 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold px-8 py-4 rounded-xl transition-all duration-300 border border-white/30"
+                  data-track-type="hero-cta-secondary"
+                  data-track-destination="byollm.cloud"
+                  data-track-location="byollm-hero"
+                  id="byollm-hero-cta-cloud"
+                >
+                  Early access to the cloud
+                </a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
     <!-- Services Section -->
     <section id="services" class="py-24 bg-white">

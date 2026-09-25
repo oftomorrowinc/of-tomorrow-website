@@ -1,7 +1,7 @@
 ---
 title: 'BYOLLM is open source'
 description: 'BYOLLM – Bring Your Own LLM – lets you use your own AI on websites you authorize. A small program on your machine lets you use your own models and subscripti...'
-pubDate: 'Sep 26 2026'
+pubDate: 'Sep 25 2026'
 ---
 
 BYOLLM – Bring Your Own LLM – lets you use your own AI on websites you

@@ -46,7 +46,7 @@ people to prepay just to try you. Free trials that cost you nothing to
 offer. One small integration; your users choose the models.
 
 ```ts
-// app/api/byollm/[...route]/route.ts
+// app/byollm/[...route]/route.ts
 import { createHandler } from "@byollm/server/next";
 import { store } from "@/lib/byollm";
 export const { POST } = createHandler({

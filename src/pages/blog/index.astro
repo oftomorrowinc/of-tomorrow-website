@@ -53,6 +53,10 @@ const posts = (await getCollection('blog')).sort(
 			ul li a {
 				display: block;
 			}
+			.moved {
+				margin: 0 0 2rem;
+				text-align: center;
+			}
 			.title {
 				margin: 0;
 				color: rgb(var(--black));
@@ -90,6 +94,7 @@ const posts = (await getCollection('blog')).sort(
 		<Header />
 		<main>
 			<section>
+				<p class="moved">New posts are at <a href="https://todd.oftomorrow.net">todd.oftomorrow.net</a>.</p>
 				<ul>
 					{
 						posts.map((post) => (

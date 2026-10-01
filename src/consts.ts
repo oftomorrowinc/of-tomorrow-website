@@ -6,5 +6,5 @@ export const SITE_DESCRIPTION = 'Notes from Of Tomorrow, Inc.';
 
 // Placeholders Todd fills before launch (docs/design/README.md). Rendered as
 // written so a missing value shows on the page rather than hiding.
-export const FOUNDED_YEAR = '[YEAR]';
-export const CONTACT_EMAIL = '[CONTACT EMAIL]';
+export const FOUNDED_YEAR = '2019';
+export const CONTACT_EMAIL = 'support@oftomorrow.net';

@@ -28,7 +28,11 @@ test.describe('home: the magazine', () => {
     const cards = page.getByTestId('building-card');
     await expect(cards).toHaveCount(3);
     const hrefs = await cards.locator('a').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
-    expect(hrefs).toEqual(['https://byo-llm.com', 'https://byollm.cloud', 'https://translations.oftomorrow.net']);
+    expect(hrefs).toEqual([
+      'https://byo-llm.com',
+      'https://byollm.cloud/early-access',
+      'https://translations.oftomorrow.net',
+    ]);
     await expect(cards.nth(0)).toContainText('BYOLLM');
     await expect(cards.nth(1)).toContainText('BYOLLM Cloud');
     await expect(cards.nth(2)).toContainText('Translations Of Tomorrow');
@@ -51,8 +55,8 @@ test.describe('home: the magazine', () => {
   test('both illustrations, with captions', async ({ page }) => {
     await page.goto('/');
     for (const [id, src, caption] of [
-      ['fig-1', '/images/art/cover-workbench.webp', /^\s*Fig\. 1 — \S/],
-      ['fig-2', '/images/art/house-cutaway.webp', /^\s*Fig\. 2 — \S/],
+      ['fig-1', '/images/art/cover-workbench.webp', 'Fig. 1 — A machine the size of a toaster, and the town it talks to.'],
+      ['fig-2', '/images/art/house-cutaway.webp', 'Fig. 2 — Every room has its own small machine. None of them phones home.'],
     ] as const) {
       const fig = page.getByTestId(id);
       const img = fig.locator('img');
@@ -64,6 +68,32 @@ test.describe('home: the magazine', () => {
       await expect(fig.locator('figcaption')).toHaveText(caption);
     }
     await expect(page.getByTestId('fig-2').locator('img')).toHaveAttribute('loading', 'lazy');
+  });
+
+  test("the mockup's copy, word for word", async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByTestId('deck')).toHaveText(
+      "We have to build it. Small, single-purpose tools, well connected, running on the compute you already own – open source where it counts, and shown to you while it's being made.",
+    );
+    await expect(page.getByTestId('fig-1').locator('figcaption')).toHaveText(
+      'Fig. 1 — A machine the size of a toaster, and the town it talks to.',
+    );
+    await expect(page.getByTestId('fig-2').locator('figcaption')).toHaveText(
+      'Fig. 2 — Every room has its own small machine. None of them phones home.',
+    );
+    await expect(page.getByTestId('building-tag')).toHaveText('Three things, all real');
+    const cards = page.getByTestId('building-card');
+    await expect(cards.nth(0).locator('a')).toHaveText('Open source · 0.1.2 →');
+    await expect(cards.nth(1).locator('a')).toHaveText('Early access →');
+    await expect(cards.nth(2).locator('a')).toHaveText('Visit the site →');
+    await expect(page.getByTestId('write-line')).toHaveText('Building something, or want to? The door is open.');
+    await expect(page.getByTestId('footer-copyright')).toHaveText('© 2026 Of Tomorrow, Inc.');
+    await expect(page.getByTestId('footer-links').locator('a')).toHaveText([
+      'byo-llm.com',
+      'byollm.cloud',
+      'todd.oftomorrow.net',
+      'Privacy',
+    ]);
   });
 
   test('phone: stacked header, 52px headline, full-width buttons, no horizontal scroll at 390px', async ({ page }) => {

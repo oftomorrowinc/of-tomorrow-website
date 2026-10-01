@@ -2,37 +2,34 @@
 import Layout from '../layouts/Layout.astro';
 import Masthead from '../components/Masthead.astro';
 import Footer from '../components/Footer.astro';
-import { ABOUT_SHORT_LEDE } from '@byollm/protocol';
 import { CONTACT_EMAIL } from '../consts';
 import { latestWorkshopPosts, WORKSHOP_URL } from '../lib/workshop';
 
-// The BYOLLM cards take their words from `ABOUT_SHORT_LEDE` in
-// `@byollm/protocol`, the description of record, rather than a hand-typed
-// copy: its first two sentences are BYOLLM, its last is BYOLLM Cloud.
-const lede = ABOUT_SHORT_LEDE.split(/(?<=\.)\s+(?=[A-Z])/);
-const cloudIndex = lede.findIndex((s) => s.startsWith('BYOLLM Cloud'));
-
+// The copy is the mockup's, word for word (docs/design/README.md, "The copy").
 const building = [
 	{
 		n: '01',
 		name: 'BYOLLM',
-		copy: lede.slice(0, cloudIndex).join(' '),
+		copy: 'Bring Your Own LLM. Use your own AI on websites you authorize – your models, your subscriptions, a small program on your machine. Open source, MIT.',
 		href: 'https://byo-llm.com',
-		cta: 'byo-llm.com',
+		cta: 'Open source · 0.1.2',
+		destination: 'byo-llm.com',
 	},
 	{
 		n: '02',
 		name: 'BYOLLM Cloud',
-		copy: lede.slice(cloudIndex).join(' '),
-		href: 'https://byollm.cloud',
-		cta: 'byollm.cloud',
+		copy: 'The same protocol, hosted: a dashboard for the sites you use, and early access while we open the doors a few people at a time.',
+		href: 'https://byollm.cloud/early-access',
+		cta: 'Early access',
+		destination: 'byollm.cloud',
 	},
 	{
 		n: '03',
 		name: 'Translations Of Tomorrow',
-		copy: 'Breaking down language barriers for everyone with AI-powered translation tools that preserve context and culture.',
+		copy: 'Chapter-by-chapter book translation that keeps the context and the culture – built for independent authors, run on their own AI.',
 		href: 'https://translations.oftomorrow.net',
-		cta: 'translations.oftomorrow.net',
+		cta: 'Visit the site',
+		destination: 'translations.oftomorrow.net',
 	},
 ];
 
@@ -61,8 +58,8 @@ const button =
 				>
 					A great big beautiful tomorrow doesn't arrive in your feed.
 				</h1>
-				<p class="mb-0 mt-6 max-w-[40ch] text-[20px] leading-[1.55] text-body-muted sm:text-[22px]">
-					We have to build it. So let's get building.
+				<p class="mb-0 mt-6 max-w-[40ch] text-[20px] leading-[1.55] text-body-muted sm:text-[22px]" data-testid="deck">
+					We have to build it. Small, single-purpose tools, well connected, running on the compute you already own – open source where it counts, and shown to you while it's being made.
 				</p>
 				<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
 					<a
@@ -101,7 +98,7 @@ const button =
 					fetchpriority="high"
 				/>
 				<figcaption class="label mt-2 text-[13px] text-teal">
-					Fig. 1 — The workbench: a machine with a job, and the city it is for.
+					Fig. 1 — A machine the size of a toaster, and the town it talks to.
 				</figcaption>
 			</figure>
 		</section>
@@ -110,10 +107,13 @@ const button =
 	<!-- NOW BUILDING, on ink -->
 	<section id="now-building" class="bg-ink text-paper">
 		<div class="mx-auto max-w-magazine px-6 py-12 lg:py-16">
-			<h2 class="m-0 mb-8 font-display text-[40px] font-black uppercase leading-none">Now building</h2>
+			<div class="mb-8 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+				<h2 class="m-0 font-display text-[40px] font-black uppercase leading-none">Now building</h2>
+				<p class="label m-0 text-[14px] text-mustard" data-testid="building-tag">Three things, all real</p>
+			</div>
 			<ol class="m-0 grid list-none grid-cols-1 gap-8 p-0 md:grid-cols-3">
 				{
-					building.map(({ n, name, copy, href, cta }) => (
+					building.map(({ n, name, copy, href, cta, destination }) => (
 						<li class="flex flex-col border-2 border-paper p-6" data-testid="building-card">
 							<span class="font-display text-[64px] font-black leading-none text-mustard" aria-hidden="true">
 								{n}
@@ -126,7 +126,7 @@ const button =
 								rel="noopener noreferrer"
 								class="label text-[14px] text-mustard hover:text-paper"
 								data-track-type="external-link"
-								data-track-destination={cta}
+								data-track-destination={destination}
 								data-track-location="now-building"
 							>
 								{cta} →
@@ -141,12 +141,16 @@ const button =
 	<div class="mx-auto max-w-magazine px-6">
 		<!-- FROM THE WORKSHOP: todd.oftomorrow.net's newest two, read at build time -->
 		<section id="workshop" class="border-b-2 border-ink py-12 lg:py-16">
-			<div class="mb-8 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+			<div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
 				<h2 class="m-0 font-display text-[40px] font-black uppercase leading-none">From the workshop</h2>
 				<a href={WORKSHOP_URL} class="label text-[14px] text-teal hover:text-ink" data-testid="all-posts">
 					All posts →
 				</a>
 			</div>
+			<p class="mb-8 mt-0 max-w-[60ch] text-[20px] leading-[1.55] text-body-muted" data-testid="workshop-intro">
+				What's being built, written down as it happens – real dates, including the parts that don't work.
+				Todd's posts live at <a href={WORKSHOP_URL} class="text-teal hover:text-ink">todd.oftomorrow.net</a>.
+			</p>
 			<ul class="m-0 grid list-none grid-cols-1 gap-8 p-0 md:grid-cols-2">
 				{
 					posts.map((post) => (
@@ -206,7 +210,7 @@ const button =
 					class="block h-auto w-full border-2 border-ink bg-paper-dark"
 				/>
 				<figcaption class="label mt-2 text-[13px] text-teal">
-					Fig. 2 — The house of tomorrow, cut away: a machine in every room, one line between them.
+					Fig. 2 — Every room has its own small machine. None of them phones home.
 				</figcaption>
 			</figure>
 		</section>
@@ -215,7 +219,12 @@ const button =
 	<!-- WRITE TO US, on teal -->
 	<section id="write" class="bg-teal text-paper">
 		<div class="mx-auto flex max-w-magazine flex-col gap-6 px-6 py-12 sm:flex-row sm:items-center sm:justify-between lg:py-14">
-			<h2 class="m-0 font-display text-[40px] font-black uppercase leading-none">Write to us</h2>
+			<div>
+				<h2 class="m-0 font-display text-[40px] font-black uppercase leading-none">Write to us</h2>
+				<p class="mb-0 mt-3 text-[20px] leading-[1.55] text-paper" data-testid="write-line">
+					Building something, or want to? The door is open.
+				</p>
+			</div>
 			<a
 				href={`mailto:${CONTACT_EMAIL}`}
 				class={`${button} border-paper text-paper hover:bg-paper hover:text-teal`}

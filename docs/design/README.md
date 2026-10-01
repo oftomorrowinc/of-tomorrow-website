@@ -74,6 +74,8 @@ Container 1040px; post column 680px; home h1 44px/1.2 serif 400; post h1 46px/1.
 
 **The company.** The story paragraphs and mission/vision verbatim from the current site. Fig. 2 — "Every room has its own small machine. None of them phones home."
 
+**Departments.** Under mission/vision in THE COMPANY, one strip between 2px ink rules, label face (Big Shoulders 700, caps, 0.12em, 15px), centred: "Departments" in teal, then "Software · Publishing · Games · Art · Events · Ventures" in ink with the " · " in poppy. Wraps to two lines on a phone. The names live in `DEPARTMENTS` (`src/consts.ts`). Names only, no blurbs, no links until a department has a page; a department earns a section on the page when it has two real items.
+
 **Write to us.** "Building something, or want to? The door is open." Button: the contact email.
 
 **Footer.** "© 2026 Of Tomorrow, Inc." · byo-llm.com · byollm.cloud · todd.oftomorrow.net · Privacy

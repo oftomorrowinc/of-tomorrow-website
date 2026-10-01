@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Masthead from '../components/Masthead.astro';
 import Footer from '../components/Footer.astro';
-import { CONTACT_EMAIL } from '../consts';
+import { CONTACT_EMAIL, DEPARTMENTS } from '../consts';
 import { latestWorkshopPosts, WORKSHOP_URL } from '../lib/workshop';
 
 // The copy is the mockup's, word for word (docs/design/README.md, "The copy").
@@ -198,6 +198,18 @@ const button =
 						</p>
 					</div>
 				</div>
+				<p
+					class="label m-0 mt-8 border-y-2 border-ink py-3 text-center text-[15px] !tracking-[0.12em] text-ink"
+					data-testid="departments"
+				>
+					<span class="mr-3 text-teal">Departments</span>
+					{DEPARTMENTS.map((name, i) => (
+						<>
+							{i > 0 && <span class="text-poppy" aria-hidden="true">{' · '}</span>}
+							<span data-testid="department">{name}</span>
+						</>
+					))}
+				</p>
 			</div>
 			<figure class="m-0 lg:col-span-6 lg:self-center" data-testid="fig-2">
 				<img

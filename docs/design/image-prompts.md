@@ -10,13 +10,15 @@ For Gemini (or any image model). The mockup: https://claude.ai/artifact/K6XmfRWb
 4. **Limited palette, said out loud.** Cream, cadmium red, teal, mustard, navy for shadows. Never "vibrant".
 5. **No faces, no text.** Faces are where models give themselves away; text in art is always wrong. Hands and backs of heads are fine. Caps and captions get set in type on the page.
 6. **Machines with a job.** Dials, a glowing valve, a cutaway, a diagram arrow — Pop Sci showed how things worked. Avoid "futuristic" (model-speak for chrome and neon); say streamlined, finned, riveted, enamelled.
-7. **Negative prompt, every time:** text, lettering, logo, watermark, photorealistic, 3D render, neon, chrome, cyberpunk, lens flare, glossy, smooth digital gradient, faces.
+7. **No masthead, no publication name, no publisher.** One run invented a real magazine's nameplate and publisher line on the art (image 7 of the first run). Say it in the prompt and the negative prompt.
+8. **Seen from behind, not just "no faces".** Two of nine Gemini pieces drew a face anyway; the ones that said "from behind and to the side" did not.
+9. **Negative prompt, every time:** text, lettering, logo, watermark, photorealistic, 3D render, neon, chrome, cyberpunk, lens flare, glossy, smooth digital gradient, faces.
 
 ## Prompt 1 — the workbench and the city of tomorrow (hero, 4:3)
 
 > Magazine cover illustration, gouache and airbrush on illustration board, 1940s American popular-science style. A home workbench in a sunlit room: a compact enamelled grey machine the size of a toaster with its front panel open, one glowing amber valve and tidy coloured wiring inside; a man's hands in rolled shirtsleeves, seen from behind and to the side, turning a dial. Through the window behind the bench, a city of tomorrow at dusk: streamlined towers, an elevated monorail curving past, one airship. Limited palette — cream paper, cadmium red, teal, mustard, navy shadows. Single warm light from the left, hard shadows, slightly low angle. Printed look: fine halftone dot, colours a hair out of register, paper texture in the highlights. No text, no faces.
 
-Negative: text, lettering, logo, watermark, photorealistic, 3D render, neon, chrome, cyberpunk, lens flare, glossy, faces, modern laptop, smartphone.
+Negative: text, lettering, masthead, publication name, publisher, logo, watermark, photorealistic, 3D render, neon, chrome, cyberpunk, lens flare, glossy, faces, modern laptop, smartphone.
 
 ## Prompt 2 — the house of tomorrow, cutaway (company section, 3:4)
 

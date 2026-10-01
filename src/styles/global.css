@@ -1,138 +1,97 @@
 /*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
+  The blog's reading styles: Source Serif on paper, inside the magazine's
+  chrome (src/styles/magazine.css holds the tokens). Only the article column
+  is styled here; the masthead and footer are Tailwind.
  */
 
-:root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
-	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px
-		rgba(var(--gray), 33%);
-}
-@font-face {
-	font-family: "Atkinson";
-	src: url("/fonts/atkinson-regular.woff") format("woff");
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-@font-face {
-	font-family: "Atkinson";
-	src: url("/fonts/atkinson-bold.woff") format("woff");
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
-body {
-	font-family: "Atkinson", sans-serif;
-	margin: 0;
-	padding: 0;
-	text-align: left;
-	background: linear-gradient(var(--gray-gradient)) no-repeat;
-	background-size: 100% 600px;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
+.reading {
+	max-width: 680px;
+	margin: 0 auto;
+	padding: 48px 24px 64px;
 	font-size: 20px;
-	line-height: 1.7;
+	line-height: 1.62;
+	color: var(--ink);
 }
-main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: auto;
-	padding: 3em 1em;
+.reading h1,
+.reading h2,
+.reading h3,
+.reading h4 {
+	margin: 1.6em 0 0.5em;
+	line-height: 1.15;
+	font-weight: 600;
+	color: var(--ink);
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
-	line-height: 1.2;
+.reading h1 {
+	margin-top: 0;
+	font-size: 46px;
+	line-height: 1.12;
 }
-h1 {
-	font-size: 3.052em;
+.reading h2 {
+	font-size: 30px;
 }
-h2 {
-	font-size: 2.441em;
+.reading h3 {
+	font-size: 24px;
 }
-h3 {
-	font-size: 1.953em;
+.reading p,
+.reading ul,
+.reading ol {
+	margin: 0 0 1.1em;
 }
-h4 {
-	font-size: 1.563em;
+.reading a {
+	color: var(--teal);
+	text-underline-offset: 3px;
 }
-h5 {
-	font-size: 1.25em;
+.reading a:hover {
+	color: var(--ink);
 }
-strong,
-b {
-	font-weight: 700;
+.reading blockquote {
+	margin: 1.4em 0;
+	padding: 0 0 0 20px;
+	border-left: 4px solid var(--poppy);
+	font-style: italic;
 }
-a {
-	color: var(--accent);
+.reading code {
+	padding: 2px 5px;
+	background: var(--paper-dark);
+	font-size: 0.85em;
 }
-a:hover {
-	color: var(--accent);
-}
-p {
-	margin-bottom: 1em;
-}
-.prose p {
-	margin-bottom: 2em;
-}
-textarea {
-	width: 100%;
+.reading pre {
+	padding: 1.2em;
+	overflow-x: auto;
+	background: var(--ink);
+	color: var(--paper);
 	font-size: 16px;
 }
-input {
-	font-size: 16px;
+.reading pre > code {
+	padding: 0;
+	background: none;
+	color: inherit;
 }
-table {
-	width: 100%;
-}
-img {
+.reading img {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
 }
-code {
-	padding: 2px 5px;
-	background-color: rgb(var(--gray-light));
-	border-radius: 2px;
-}
-pre {
-	padding: 1.5em;
-	border-radius: 8px;
-}
-pre > code {
-	all: unset;
-}
-blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0px;
-	font-size: 1.333em;
-}
-hr {
+.reading hr {
 	border: none;
-	border-top: 1px solid rgb(var(--gray-light));
+	border-top: 2px solid var(--ink);
+	margin: 2em 0;
+}
+.reading .meta {
+	margin: 0 0 12px;
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 14px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--teal);
 }
 @media (max-width: 720px) {
-	body {
+	.reading {
 		font-size: 18px;
+		padding-top: 32px;
 	}
-	main {
-		padding: 1em;
+	.reading h1 {
+		font-size: 36px;
 	}
 }
 
@@ -144,12 +103,7 @@ hr {
 	height: 1px;
 	width: 1px;
 	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
-	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
 	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
 	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }

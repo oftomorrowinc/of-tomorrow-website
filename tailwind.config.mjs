@@ -1,9 +1,22 @@
 /** @type {import('tailwindcss').Config} */
+// The magazine's tokens (docs/design/README.md). Each colour is also a CSS
+// custom property in src/styles/magazine.css, so a later dark mode is one block.
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
       colors: {
+        'paper': '#F4ECD9',
+        'paper-light': '#FBF6EA',
+        'paper-dark': '#E9DFC6',
+        'ink': '#1C1A16',
+        'poppy': '#C5372C',
+        'teal': '#1F6E7A',
+        'mustard': '#D9A21B',
+        'body-muted': '#4A4335',
+        'caption': '#6B6253',
+        // Kept for the privacy and cookie pages and the consent banner, which
+        // this redesign leaves as they are.
         'tomorrow-blue': '#0066FF',
         'progress-orange': '#FF6B35',
         'bg-primary': '#FFFFFF',
@@ -14,15 +27,19 @@ export default {
         'success': '#28A745',
         'warning': '#FFC107',
         'error': '#DC3545',
-        'info': '#17A2B8',
-        'innovation-purple': '#6F42C1',
-        'creative-pink': '#E83E8C',
-        'growth-teal': '#20C997'
+        'info': '#17A2B8'
       },
       fontFamily: {
-        'brand': ['Space Grotesk', 'sans-serif'],
-        'body': ['Inter', 'system-ui', 'sans-serif'],
-        'code': ['JetBrains Mono', 'monospace']
+        'display': ['"Big Shoulders Display"', 'Impact', 'sans-serif'],
+        'serif': ['"Source Serif 4"', 'Georgia', 'serif'],
+        // The old names, pointed at the new faces so the pages still using
+        // them pick the magazine's type up.
+        'brand': ['"Big Shoulders Display"', 'Impact', 'sans-serif'],
+        'body': ['"Source Serif 4"', 'Georgia', 'serif'],
+        'code': ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
+      },
+      maxWidth: {
+        'magazine': '1120px'
       },
       spacing: {
         'xs': '4px',

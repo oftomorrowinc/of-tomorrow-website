@@ -1,0 +1,5 @@
+prompt: 3 (docs/design/image-prompts.md, "Prompt 3")
+tool: Gemini
+date: 2026-10-01
+from docs/design/images/Gemini_Generated_Image_dom6ddom6ddom6dd.jpeg
+web copy: 1600x873 WebP, quality 80, 245 KB

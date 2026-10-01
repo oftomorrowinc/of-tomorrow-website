@@ -1,0 +1,5 @@
+prompt: 4 (docs/design/image-prompts.md, "Prompt 4")
+tool: ChatGPT
+date: 2026-10-01
+from docs/design/images/ChatGPT Image Oct 1, 2026, 02_18_00 PM.png
+web copy: 1536x1024 WebP, quality 80, 293 KB

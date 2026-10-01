@@ -62,7 +62,7 @@ export const CookieSettingsModal: React.FC<CookieSettingsModalProps> = ({ isOpen
       case 'analytics':
         return <BarChart3 className="h-5 w-5 text-progress-orange" />;
       case 'marketing':
-        return <Target className="h-5 w-5 text-innovation-purple" />;
+        return <Target className="h-5 w-5 text-poppy" />;
       default:
         return <Info className="h-5 w-5 text-text-secondary" />;
     }

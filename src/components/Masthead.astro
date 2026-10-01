@@ -1,0 +1,49 @@
+---
+// The cover's top: the 6px ink rule, the issue line, the nameplate and the nav.
+// Shared by the home page and the blog so the two read as one publication.
+import { FOUNDED_YEAR } from '../consts';
+
+const nav = [
+	{ href: '/#now-building', label: 'Now building' },
+	{ href: '/#workshop', label: 'From the workshop' },
+	{ href: '/#company', label: 'The company' },
+	{ href: '/#write', label: 'Write to us' },
+];
+---
+
+<header class="border-t-[6px] border-ink">
+	<div class="mx-auto max-w-magazine px-6">
+		<div
+			class="label flex flex-col items-center gap-1 border-b-2 border-ink py-2 text-[13px] sm:flex-row sm:justify-between sm:gap-4"
+			data-testid="issue-line"
+		>
+			<span>No. 1 · Autumn 2026</span>
+			<span class="text-center text-poppy">Building the world of tomorrow, in public</span>
+			<span>Est. {FOUNDED_YEAR}</span>
+		</div>
+		<div
+			class="flex flex-col items-center gap-3 border-b-2 border-ink py-4 lg:flex-row lg:items-end lg:justify-between lg:gap-8"
+		>
+			<a
+				href="/"
+				class="font-display text-[48px] font-black uppercase leading-none tracking-tight text-ink no-underline sm:text-[72px]"
+				data-testid="nameplate"
+			>
+				Of Tomorrow <span class="text-poppy">Inc.</span>
+			</a>
+			<nav aria-label="Sections" class="lg:pb-2">
+				<ul class="label m-0 flex list-none flex-wrap justify-center gap-x-5 gap-y-1 p-0 text-[15px]">
+					{
+						nav.map(({ href, label }) => (
+							<li>
+								<a href={href} class="text-ink no-underline hover:text-poppy">
+									{label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+		</div>
+	</div>
+</header>

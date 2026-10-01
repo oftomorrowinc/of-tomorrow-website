@@ -1,0 +1,31 @@
+/* The magazine's tokens as custom properties (docs/design/README.md), shared
+   by the home page and the blog. Tailwind carries the same values as classes. */
+:root {
+	--paper: #f4ecd9;
+	--paper-light: #fbf6ea;
+	--paper-dark: #e9dfc6;
+	--ink: #1c1a16;
+	--poppy: #c5372c;
+	--teal: #1f6e7a;
+	--mustard: #d9a21b;
+	--body-muted: #4a4335;
+	--caption: #6b6253;
+	--font-display: 'Big Shoulders Display', Impact, sans-serif;
+	--font-serif: 'Source Serif 4', Georgia, serif;
+}
+
+.magazine {
+	margin: 0;
+	background: var(--paper);
+	color: var(--ink);
+	font-family: var(--font-serif);
+	font-optical-sizing: auto;
+	overflow-wrap: break-word;
+}
+
+.magazine .label {
+	font-family: var(--font-display);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+}

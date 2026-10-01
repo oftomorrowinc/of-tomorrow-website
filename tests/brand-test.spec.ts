@@ -2,17 +2,14 @@ import { test, expect } from '@playwright/test';
 
 test('brand configuration displays correctly', async ({ page }) => {
   await page.goto('/brand-test');
-  
-  // Check that the page loads
+
   await expect(page).toHaveTitle('Brand Test - Of Tomorrow, Inc.');
-  
-  // Check brand fonts are loaded
-  await expect(page.locator('h1')).toHaveCSS('font-family', /Space Grotesk/);
-  
-  // Check brand colors are applied
-  const primaryButton = page.locator('button:has-text("Primary Action")');
-  await expect(primaryButton).toHaveCSS('background-color', 'rgb(0, 102, 255)'); // #0066FF
-  
-  const secondaryButton = page.locator('button:has-text("Secondary Action")');
-  await expect(secondaryButton).toHaveCSS('background-color', 'rgb(255, 107, 53)'); // #FF6B35
+
+  // The nameplate face and the reading face
+  await expect(page.locator('h1')).toHaveCSS('font-family', /Big Shoulders Display/);
+  await expect(page.locator('body')).toHaveCSS('font-family', /Source Serif 4/);
+
+  // Poppy is the primary action; the ground is paper
+  await expect(page.locator('button:has-text("Primary Action")')).toHaveCSS('background-color', 'rgb(197, 55, 44)'); // #C5372C
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(244, 236, 217)'); // #F4ECD9
 });

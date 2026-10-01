@@ -1,74 +1,38 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const swatches = [
+  ['paper', 'bg-paper'],
+  ['paper-light', 'bg-paper-light'],
+  ['paper-dark', 'bg-paper-dark'],
+  ['ink', 'bg-ink'],
+  ['poppy', 'bg-poppy'],
+  ['teal', 'bg-teal'],
+  ['mustard', 'bg-mustard'],
+  ['body-muted', 'bg-body-muted'],
+  ['caption', 'bg-caption'],
+];
 ---
 
-<Layout title="Brand Test - Of Tomorrow, Inc.">
-  <div class="min-h-screen bg-bg-primary p-lg">
-    <header class="text-center mb-2xl">
-      <h1 class="font-brand text-4xl font-bold text-tomorrow-blue mb-md">Of Tomorrow, Inc.</h1>
-      <p class="font-body text-text-secondary text-lg">Brand Configuration Test</p>
-    </header>
-    
-    <main class="max-w-4xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-xl mb-2xl">
-        <!-- Brand Colors -->
-        <div class="bg-bg-secondary p-xl rounded-lg border border-border-gray">
-          <h2 class="font-brand text-2xl font-semibold text-text-primary mb-lg">Brand Colors</h2>
-          <div class="grid grid-cols-2 gap-md">
-            <div class="bg-tomorrow-blue h-16 rounded-md"></div>
-            <div class="bg-progress-orange h-16 rounded-md"></div>
-            <div class="bg-innovation-purple h-16 rounded-md"></div>
-            <div class="bg-growth-teal h-16 rounded-md"></div>
-            <div class="bg-creative-pink h-16 rounded-md"></div>
-            <div class="bg-warning h-16 rounded-md"></div>
-          </div>
-        </div>
+<Layout title="Brand Test - Of Tomorrow, Inc." bodyClass="magazine min-h-screen">
+  <main class="mx-auto max-w-magazine px-6 py-12">
+    <h1 class="m-0 font-display text-[72px] font-black uppercase leading-none">Of Tomorrow <span class="text-poppy">Inc.</span></h1>
+    <p class="label text-teal">Brand configuration test — docs/design/README.md</p>
 
-        <!-- Typography -->
-        <div class="bg-bg-secondary p-xl rounded-lg border border-border-gray">
-          <h2 class="font-brand text-2xl font-semibold text-text-primary mb-lg">Typography</h2>
-          <div class="space-y-md">
-            <div>
-              <p class="font-brand text-lg font-bold text-tomorrow-blue">Space Grotesk (Brand)</p>
-              <p class="font-body text-sm text-text-secondary">Headings & brand elements</p>
-            </div>
-            <div>
-              <p class="font-body text-lg text-text-primary">Inter (Body)</p>
-              <p class="font-body text-sm text-text-secondary">Body text & UI elements</p>
-            </div>
-            <div>
-              <p class="font-code text-sm text-text-primary bg-bg-primary p-sm rounded border">JetBrains Mono (Code)</p>
-              <p class="font-body text-sm text-text-secondary">Code snippets</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <h2 class="font-display text-[40px] font-black uppercase">Colours</h2>
+    <ul class="m-0 grid list-none grid-cols-3 gap-6 p-0">
+      {swatches.map(([name, cls]) => (
+        <li class="border-2 border-ink"><div class={`h-16 ${cls}`}></div><p class="label m-0 p-2 text-[13px]">{name}</p></li>
+      ))}
+    </ul>
 
-      <!-- Spacing & Shadows -->
-      <div class="bg-bg-secondary p-xl rounded-lg border border-border-gray mb-2xl">
-        <h2 class="font-brand text-2xl font-semibold text-text-primary mb-lg">Spacing & Shadows</h2>
-        <div class="flex flex-wrap gap-lg">
-          <div class="bg-bg-primary p-xs rounded shadow-sm">xs (4px)</div>
-          <div class="bg-bg-primary p-sm rounded shadow-sm">sm (8px)</div>
-          <div class="bg-bg-primary p-md rounded shadow-md">md (16px)</div>
-          <div class="bg-bg-primary p-lg rounded shadow-lg">lg (24px)</div>
-          <div class="bg-bg-primary p-xl rounded shadow-lg">xl (32px)</div>
-          <div class="bg-bg-primary p-2xl rounded shadow-lg">2xl (48px)</div>
-        </div>
-      </div>
+    <h2 class="font-display text-[40px] font-black uppercase">Type</h2>
+    <p class="font-display text-[28px] font-black uppercase">Big Shoulders Display — nameplates, headlines, labels</p>
+    <p class="text-[20px]">Source Serif 4 — the reading face, <em>with its italic</em>.</p>
 
-      <!-- Action Buttons -->
-      <div class="text-center space-x-md">
-        <button class="bg-tomorrow-blue text-white px-xl py-md rounded-md font-body font-semibold hover:opacity-90 transition-opacity">
-          Primary Action
-        </button>
-        <button class="bg-progress-orange text-white px-xl py-md rounded-md font-body font-semibold hover:opacity-90 transition-opacity">
-          Secondary Action
-        </button>
-        <button class="border border-tomorrow-blue text-tomorrow-blue px-xl py-md rounded-md font-body font-semibold hover:bg-tomorrow-blue hover:text-white transition-colors">
-          Tertiary Action
-        </button>
-      </div>
-    </main>
-  </div>
+    <div class="flex flex-wrap gap-4">
+      <button class="label h-12 border-2 border-poppy bg-poppy px-6 text-paper-light">Primary Action</button>
+      <button class="label h-12 border-2 border-ink bg-transparent px-6 text-ink">Secondary Action</button>
+    </div>
+  </main>
 </Layout>

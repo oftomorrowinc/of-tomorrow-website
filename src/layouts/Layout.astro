@@ -1,31 +1,37 @@
 ---
 import TrackingScripts from '../components/TrackingScripts.astro';
 import { ConsentManager } from '../components/ConsentManager';
+import Fonts from '../components/Fonts.astro';
+import '../styles/magazine.css';
 
 export interface Props {
   title: string;
+  description?: string;
+  bodyClass?: string;
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description = "Of Tomorrow, Inc. - Engineering tomorrow's possibilities for everyone, everywhere",
+  bodyClass = 'bg-bg-primary text-text-primary min-h-screen font-body',
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Of Tomorrow, Inc. - Engineering tomorrow's possibilities for everyone, everywhere" />
+    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <Fonts />
     <title>{title}</title>
     
     <!-- GDPR-Compliant Tracking Scripts -->
     <TrackingScripts />
   </head>
-  <body class="bg-bg-primary text-text-primary min-h-screen font-body">
+  <body class={bodyClass}>
     <slot />
     
     <!-- GDPR Consent Management -->

@@ -7,6 +7,8 @@ Two sites, one family: **the company wears the cover, the person writes the insi
 
 The values below are the spec; the canvases are the picture.
 
+**Relation to `docs/of-tomorrow-brand-guidelines.md` (v2.0, Aug 2025):** that document's brand story and voice stand — they are what this design finally draws. Its visual sections (Space Grotesk + Inter, Tomorrow Blue `#0066FF`, Progress Orange, the purple-gradient site that came from them) are superseded by the tables below once Todd rules on #497; the guidelines file gets a v3 then, not before.
+
 ## Shared
 
 - **Reading face:** Source Serif 4 (400, 600, italic; optical size). Body 20px/1.62 at a 680px measure on the blog; 20px/1.55 in the magazine's text blocks.

@@ -58,3 +58,22 @@ Container 1040px; post column 680px; home h1 44px/1.2 serif 400; post h1 46px/1.
 ## Illustration
 
 `image-prompts.md` — five prompts matched to the placeholders, and the rules that keep period art from looking like AI. Keep the prompt, seed and model beside any picture that ships, in `public/images/art/<name>.txt`.
+
+## The copy (from the mockup, verbatim — the build uses these words)
+
+**Issue line.** "No. 1 · Autumn 2026" · "Building the world of tomorrow, in public" · "Est. [YEAR]"
+
+**Cover story.** Eyebrow: "The cover story". Headline: "A great big beautiful tomorrow doesn't arrive in your feed." Deck: "We have to build it. Small, single-purpose tools, well connected, running on the compute you already own – open source where it counts, and shown to you while it's being made." Buttons: "See BYOLLM →" (byo-llm.com), "Early access to the cloud" (byollm.cloud/early-access). Fig. 1 — "A machine the size of a toaster, and the town it talks to."
+
+**Now building.** Tag: "Three things, all real".
+01 BYOLLM — "Bring Your Own LLM. Use your own AI on websites you authorize – your models, your subscriptions, a small program on your machine. Open source, MIT." → "Open source · 0.1.2 →"
+02 BYOLLM Cloud — "The same protocol, hosted: a dashboard for the sites you use, and early access while we open the doors a few people at a time." → "Early access →"
+03 Translations Of Tomorrow — "Chapter-by-chapter book translation that keeps the context and the culture – built for independent authors, run on their own AI." → "Visit the site →"
+
+**From the workshop.** "What's being built, written down as it happens – real dates, including the parts that don't work. Todd's posts live at todd.oftomorrow.net." Link: "All posts →". Cards from the feed: date · kind label in teal, title in Source Serif 600, description.
+
+**The company.** The story paragraphs and mission/vision verbatim from the current site. Fig. 2 — "Every room has its own small machine. None of them phones home."
+
+**Write to us.** "Building something, or want to? The door is open." Button: the contact email.
+
+**Footer.** "© 2026 Of Tomorrow, Inc." · byo-llm.com · byollm.cloud · todd.oftomorrow.net · Privacy

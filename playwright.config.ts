@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: 'http://localhost:4399',
     trace: 'on-first-retry',
   },
 
@@ -19,9 +19,12 @@ export default defineConfig({
     },
   ],
 
+  // The tests run against the build, not the dev server: `astro dev` injects
+  // its toolbar (extra h1s) into every page.
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:4321',
-    reuseExistingServer: !process.env.CI,
+    command: 'npm run build && npm run preview -- --port 4399',
+    url: 'http://localhost:4399',
+    reuseExistingServer: false,
+    timeout: 180_000,
   },
 });

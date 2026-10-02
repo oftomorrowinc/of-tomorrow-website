@@ -12,7 +12,7 @@ export interface WorkshopPost {
 	pubDate?: Date;
 }
 
-const FALLBACK: WorkshopPost[] = [
+export const FALLBACK: WorkshopPost[] = [
 	{
 		title: 'The rule I wrote and then broke',
 		link: `${WORKSHOP_URL}/blog/the-rule-i-wrote-and-then-broke/`,

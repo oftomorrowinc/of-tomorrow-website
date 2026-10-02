@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { FALLBACK, WORKSHOP_URL, parseFeed } from '../src/lib/workshop';
 
 test.describe('home: the magazine', () => {
   test('nameplate, issue line and nav', async ({ page }) => {
@@ -38,16 +39,24 @@ test.describe('home: the magazine', () => {
     await expect(cards.nth(2)).toContainText('Translations Of Tomorrow');
   });
 
-  test('FROM THE WORKSHOP: two cards with real titles from the feed', async ({ page, request }) => {
-    const feed = await (await request.get('https://todd.oftomorrow.net/rss.xml')).text();
-    const titles = [...feed.matchAll(/<item><title>([\s\S]*?)<\/title>/g)].map((m) => m[1]);
-    console.log(`feed titles: ${JSON.stringify(titles.slice(0, 2))}`);
+  test('FROM THE WORKSHOP: the two newest posts from the feed, or the static fallback', async ({ page, request }) => {
+    // Sorted by pubDate desc by the same parser the build uses. If the feed is
+    // unreachable here, the build (moments ago) most likely fell back too.
+    let expected = FALLBACK.slice(0, 2);
+    try {
+      const res = await request.get(`${WORKSHOP_URL}/rss.xml`, { timeout: 10_000 });
+      const posts = res.ok() ? parseFeed(await res.text()) : [];
+      if (posts.length > 0) expected = posts.slice(0, 2);
+    } catch (err) {
+      console.log(`feed unreachable (${(err as Error).message}); expecting the static fallback`);
+    }
+    console.log(`expected workshop cards: ${JSON.stringify(expected.map((p) => p.title))}`);
     await page.goto('/');
     const cards = page.getByTestId('workshop-card');
     await expect(cards).toHaveCount(2);
     for (let i = 0; i < 2; i++) {
-      await expect(cards.nth(i).locator('h3')).toHaveText(titles[i]);
-      await expect(cards.nth(i).locator('h3 a')).toHaveAttribute('href', /^https:\/\/todd\.oftomorrow\.net\//);
+      await expect(cards.nth(i).locator('h3')).toHaveText(expected[i].title);
+      await expect(cards.nth(i).locator('h3 a')).toHaveAttribute('href', expected[i].link);
     }
     await expect(page.getByTestId('all-posts')).toHaveAttribute('href', 'https://todd.oftomorrow.net');
   });

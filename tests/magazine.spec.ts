@@ -32,11 +32,12 @@ test.describe('home: the magazine', () => {
     expect(hrefs).toEqual([
       'https://byo-llm.com',
       'https://byollm.cloud/early-access',
-      'https://translations.oftomorrow.net',
+      'https://oftomorrow.press/#translations',
     ]);
     await expect(cards.nth(0)).toContainText('BYOLLM');
     await expect(cards.nth(1)).toContainText('BYOLLM Cloud');
     await expect(cards.nth(2)).toContainText('Translations Of Tomorrow');
+    await expect(cards.nth(2).locator('a')).toHaveAttribute('data-track-destination', 'oftomorrow.press');
   });
 
   test('FROM THE WORKSHOP: the two newest posts from the feed, or the static fallback', async ({ page, request }) => {

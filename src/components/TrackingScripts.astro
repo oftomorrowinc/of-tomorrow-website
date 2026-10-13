@@ -518,12 +518,23 @@ const metaPixelId = import.meta.env.PUBLIC_META_PIXEL_ID;
         }
         
         // Special tracking for translations site
-        if (domain.includes('translations.oftomorrow.net')) {
+        if (this.isTranslationsLink(url)) {
           this.trackEvent('visit_translation_site', {
             referrer_page: window.location.pathname,
             engagement_time_msec: 200
           });
         }
+      },
+      
+      // Translations Of Tomorrow lives at oftomorrow.press/#translations; the
+      // old host 301s there, so a click on either is the same visit.
+      // Mirrors isTranslationsLink in src/utils/tracking.ts.
+      isTranslationsLink: function(url) {
+        let u;
+        try { u = new URL(url); } catch { return false; }
+        const host = u.hostname.replace(/^www\./, '');
+        if (host === 'translations.oftomorrow.net') return true;
+        return host === 'oftomorrow.press' && u.hash === '#translations';
       },
       
       // Track scroll depth with Meta Pixel integration

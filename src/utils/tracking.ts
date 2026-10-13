@@ -64,6 +64,17 @@ export const GA4_EVENTS = {
   CONTACT_INTENT: 'contact_intent'
 } as const;
 
+// Translations Of Tomorrow lives at oftomorrow.press/#translations; the old
+// host 301s there, so a click on either is the same visit_translation_site.
+// Mirrored by tracker.isTranslationsLink in src/components/TrackingScripts.astro.
+export const isTranslationsLink = (url: string): boolean => {
+  let u: URL;
+  try { u = new URL(url); } catch { return false; }
+  const host = u.hostname.replace(/^www\./, '');
+  if (host === 'translations.oftomorrow.net') return true;
+  return host === 'oftomorrow.press' && u.hash === '#translations';
+};
+
 // Button tracking attributes helper
 export const addButtonTracking = (
   buttonText: string, 

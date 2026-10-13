@@ -159,12 +159,12 @@ The implementation is ready for enhanced conversions. To enable:
 4. Configure customer data collection
 
 ### Cross-Domain Tracking
-For tracking across multiple domains (e.g., translations.oftomorrow.net):
+For tracking across multiple domains (e.g., oftomorrow.press, home of Translations Of Tomorrow):
 
 ```javascript
 gtag('config', 'GA_MEASUREMENT_ID', {
   linker: {
-    domains: ['oftomorrow.net', 'translations.oftomorrow.net']
+    domains: ['oftomorrow.net', 'oftomorrow.press']
   }
 });
 ```

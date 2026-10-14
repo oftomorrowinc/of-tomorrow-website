@@ -1,5 +1,5 @@
 {
-  "_about": "A fixture for GET /api/log (signals job #944), served by log-feed.mjs on :4398 while the tests build. Seven entries over three New York days, three scopes; kevin's stream is off, so the feed answers 404 for him.",
+  "_about": "A fixture for GET /api/log (signals job #944), served by log-feed.mjs on :4398 while the tests build. Eight entries over three New York days, three scopes; kevin's stream is off, so the feed answers 404 for him.",
   "served": ["todd", "ccs", "ccb", "cw"],
   "scopes": ["ot", "ot.byollm", "ot.press", "ot.signals"],
   "entries": [
@@ -9,7 +9,8 @@
     {"seq": 104, "at": "2026-10-13T15:00:00.000Z", "kind": "message", "scope": "ot.press", "project": "Press", "people": ["todd"], "by": "todd", "title": null, "body": "Press emits ad lifecycle events to Signals now.", "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=799", "id": "799"},
     {"seq": 103, "at": "2026-10-12T21:00:00.000Z", "kind": "decision.ruled", "scope": "ot.signals", "project": "Signals", "people": ["todd"], "by": "todd", "title": "a person may hold several cards", "body": "Reversed the WIP limit on Kevin's argument.", "link": "https://signals.oftomorrow.net/board?scope=ot.signals&card=770", "id": "770"},
     {"seq": 102, "at": "2026-10-12T14:30:00.000Z", "kind": "job.done", "scope": "ot.signals", "project": "Signals", "people": ["ccs", "todd"], "by": "ccs, for todd", "title": "A Done card shows the time worked across its attempts", "body": "Two attempts read as two.", "link": "https://signals.oftomorrow.net/board?scope=ot.signals&card=935", "id": "935", "worked_ms": 8040000, "attempts": 2, "worked": "2h 14m · 2 attempts"},
-    {"seq": 101, "at": "2026-10-11T18:00:00.000Z", "kind": "job.done", "scope": "ot.byollm", "project": "BYOLLM", "people": ["ccb", "todd"], "by": "ccb, for todd", "title": "Translations Of Tomorrow points at oftomorrow.press", "body": "Every translations reference moved.", "link": "https://signals.oftomorrow.net/board?scope=ot.byollm&card=821", "id": "821", "worked_ms": 600000, "attempts": 1, "worked": "10m"}
+    {"seq": 101, "at": "2026-10-11T18:00:00.000Z", "kind": "job.done", "scope": "ot.byollm", "project": "BYOLLM", "people": ["ccb", "todd"], "by": "ccb, for todd", "title": "Translations Of Tomorrow points at oftomorrow.press", "body": "Every translations reference moved.", "link": "https://signals.oftomorrow.net/board?scope=ot.byollm&card=821", "id": "821", "worked_ms": 600000, "attempts": 1, "worked": "10m"},
+    {"seq": 100, "at": "2026-10-11T12:00:00.000Z", "kind": "job.done", "scope": "ot.signals", "project": "Signals", "people": ["ccs", "todd"], "by": "ccs, for todd", "title": "Watch the nightly backup", "body": "Last night's backup is there and restores.", "link": "https://signals.oftomorrow.net/board?scope=ot.signals&card=1150", "id": "1150", "worked_ms": 120000, "attempts": 1, "worked": "2m", "no_review": true}
   ],
   "live": []
 }

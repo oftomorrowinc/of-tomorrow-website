@@ -49,6 +49,8 @@ export interface LogEntry {
 	commit?: string | null;
 	repo?: string | null;
 	worked?: string | null;
+	/** job.done with no reviewer (signals #1140): done is all there is. */
+	no_review?: boolean;
 }
 
 export interface LiveLine {
@@ -281,7 +283,9 @@ function headHtml(e: LogEntry): string {
 			? ` <a href="${esc(e.link)}" class="log-card">#${esc(e.id)}</a>`
 			: ` #${esc(e.id)}`
 		: '';
-	let head = `${VERB[e.kind]}${e.kind === 'decision.logged' || e.kind === 'decision.ruled' ? ' on' : ''}${card}`;
+	// A reviewed job's done is the builder's done (#974); a no-review job's is the job's.
+	const verb = e.kind === 'job.done' && e.no_review ? 'Done' : VERB[e.kind];
+	let head = `${verb}${e.kind === 'decision.logged' || e.kind === 'decision.ruled' ? ' on' : ''}${card}`;
 	if (e.kind === 'job.landed') {
 		if (e.commit) head += ` as <code>${esc(e.commit)}</code>`;
 		if (e.repo) head += ` in ${esc(e.repo)}`;

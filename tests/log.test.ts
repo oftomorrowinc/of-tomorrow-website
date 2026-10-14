@@ -67,8 +67,11 @@ describe('/log: everything', () => {
 		expect(line('e106')).toContain("Decided on #953: the gate's function keeps its name");
 		expect(line('e104')).toContain('[todd · press] Said #799: Press emits ad lifecycle events to Signals now.');
 		expect(line('e103')).toContain('Ruled on #770: a person may hold several cards');
-		// job.done is the builder's done, not the card landing (decision #170): no line says "Done".
-		expect(all(doc, '.log-line').filter((l) => /\bDone #/.test(text(l)))).toHaveLength(0);
+		// job.done is the builder's done, not the card landing (decision #170): a reviewed job's
+		// done never says "Done". A no-review job's (signals #1140) has nothing to land: it does.
+		expect(all(doc, '.log-line').filter((l) => /\bDone #/.test(text(l))).map((l) => l.closest('[id]')!.id)).toEqual(['e100']);
+		expect(line('e100')).toContain('Done #1150: Watch the nightly backup (2m)');
+		expect(line('e100')).not.toContain('Built');
 		expect(line('e102')).toContain('(2h 14m · 2 attempts)');
 	});
 

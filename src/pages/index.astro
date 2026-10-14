@@ -4,6 +4,8 @@ import Masthead from '../components/Masthead.astro';
 import Footer from '../components/Footer.astro';
 import { CONTACT_EMAIL, DEPARTMENTS } from '../consts';
 import { latestWorkshopPosts, WORKSHOP_URL } from '../lib/workshop';
+import LogStrip from '../components/LogStrip.astro';
+import { linkContext, readFeed } from '../lib/log';
 
 // The copy is the mockup's, word for word (docs/design/README.md, "The copy").
 const building = [
@@ -34,6 +36,8 @@ const building = [
 ];
 
 const posts = await latestWorkshopPosts(2);
+const log = await readFeed({ limit: 5 });
+const logContext = await linkContext();
 const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 
 const button =
@@ -170,6 +174,9 @@ const button =
 				}
 			</ul>
 		</section>
+
+		<!-- THE BUILD LOG: the newest five across every public scope, and the live line -->
+		<LogStrip entries={log?.entries ?? []} ctx={logContext} />
 
 		<!-- THE COMPANY -->
 		<section id="company" class="grid grid-cols-1 gap-8 py-12 lg:grid-cols-12 lg:py-16">

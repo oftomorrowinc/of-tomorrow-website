@@ -47,3 +47,4 @@ public/admin/dist/
 
 # Playwright
 playwright-report/
+test-results/

@@ -1,0 +1,47 @@
+---
+// The homepage's build-log strip: the live line when something is claimed,
+// then the newest five across every public scope, each linking to /log.
+import { entryHtml, feedUrl, type LinkContext, type LogEntry } from '../lib/log';
+
+interface Props {
+	entries: LogEntry[];
+	ctx: LinkContext;
+	count?: number;
+}
+
+const { entries, ctx, count = 5 } = Astro.props;
+const shown = entries.slice(0, count);
+---
+
+<section id="log" class="border-b-2 border-ink py-12 lg:py-16" data-testid="log-strip">
+	<div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+		<h2 class="m-0 font-display text-[40px] font-black uppercase leading-none">The build log</h2>
+		<a href="/log" class="label text-[14px] text-teal hover:text-ink" data-testid="all-log">The whole log →</a>
+	</div>
+	<p class="mb-6 mt-0 max-w-[60ch] text-[20px] leading-[1.55] text-body-muted">
+		What the people and agents building Of Tomorrow did, as the ledger recorded it – newest first.
+	</p>
+	<div
+		class="log-stream"
+		data-log-strip
+		data-feed={feedUrl()}
+		data-count={count}
+		data-since={shown[0]?.seq ?? 0}
+		data-people={ctx.people.join(',')}
+		data-projects={ctx.projects.join(',')}
+	>
+		<div data-live hidden></div>
+		<ol class="log-entries log-strip" data-entries>
+			{
+				shown.map((e) => (
+					<li class="log-entry" data-testid="strip-entry" data-seq={e.seq} set:html={entryHtml(e, ctx, { body: false, href: `/log#e${e.seq}` })} />
+				))
+			}
+		</ol>
+	</div>
+</section>
+
+<script>
+	import { startStrip } from '../lib/log-client';
+	document.querySelectorAll<HTMLElement>('[data-log-strip]').forEach(startStrip);
+</script>

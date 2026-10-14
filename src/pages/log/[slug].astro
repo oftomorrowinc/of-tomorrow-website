@@ -1,0 +1,50 @@
+---
+// /log/<person> and /log/<project>. A person gets a page only when the feed
+// serves their stream; anyone else is this site's 404.
+import type { GetStaticPaths } from 'astro';
+import LogPage from '../../components/LogPage.astro';
+import { LOG_PROJECTS, linkContext, readFeed } from '../../lib/log';
+
+export const getStaticPaths = (async () => {
+	const ctx = await linkContext();
+	return [
+		...ctx.people.map((person) => ({
+			params: { slug: person },
+			props: {
+				ctx,
+				person,
+				heading: person.charAt(0).toUpperCase() + person.slice(1),
+				intro: `What ${person.charAt(0).toUpperCase() + person.slice(1)} did, and what the agents working for them did – newest first, across every project.`,
+			},
+		})),
+		...ctx.projects.map((slug) => ({
+			params: { slug },
+			props: {
+				ctx,
+				scope: LOG_PROJECTS[slug].scope,
+				heading: LOG_PROJECTS[slug].name,
+				intro: `Everything on the log for ${LOG_PROJECTS[slug].name} – newest first.`,
+			},
+		})),
+	];
+}) satisfies GetStaticPaths;
+
+const { ctx, person, scope, heading, intro } = Astro.props as {
+	ctx: Awaited<ReturnType<typeof linkContext>>;
+	person?: string;
+	scope?: string;
+	heading: string;
+	intro: string;
+};
+const page = await readFeed({ person, scope });
+---
+
+<LogPage
+	slug={Astro.params.slug}
+	heading={heading}
+	intro={intro}
+	entries={page?.entries ?? []}
+	ctx={ctx}
+	scope={scope}
+	person={person}
+/>

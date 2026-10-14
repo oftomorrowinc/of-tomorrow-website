@@ -1,0 +1,50 @@
+---
+// A build-log page's stream: newest first, grouped by day, one prose entry
+// each (src/lib/log.ts). Built from the feed; the browser adds the live line
+// and anything newer (src/lib/log-client.ts).
+import { entryHtml, feedUrl, groupByDay, type LinkContext, type LogEntry } from '../lib/log';
+
+interface Props {
+	entries: LogEntry[];
+	ctx: LinkContext;
+	scope?: string;
+	person?: string;
+}
+
+const { entries, ctx, scope, person } = Astro.props;
+const days = groupByDay(entries);
+const since = entries.reduce((m, e) => Math.max(m, e.seq), 0);
+---
+
+<div
+	class="log-stream"
+	data-log-stream
+	data-feed={feedUrl()}
+	data-scope={scope}
+	data-person={person}
+	data-since={since}
+	data-people={ctx.people.join(',')}
+	data-projects={ctx.projects.join(',')}
+>
+	<div data-live hidden></div>
+	<div data-days>
+		{
+			days.map((day) => (
+				<section class="log-day" data-day={day.day} data-testid="log-day">
+					<h2 class="log-day-label">{day.label}</h2>
+					<ol class="log-entries">
+						{day.entries.map((e) => (
+							<li id={`e${e.seq}`} class="log-entry" data-testid="log-entry" data-seq={e.seq} set:html={entryHtml(e, ctx)} />
+						))}
+					</ol>
+				</section>
+			))
+		}
+	</div>
+	{entries.length === 0 && <p class="log-empty" data-empty data-testid="log-empty">Nothing on the log here yet.</p>}
+</div>
+
+<script>
+	import { startStream } from '../lib/log-client';
+	document.querySelectorAll<HTMLElement>('[data-log-stream]').forEach(startStream);
+</script>

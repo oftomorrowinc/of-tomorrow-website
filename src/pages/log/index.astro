@@ -1,0 +1,15 @@
+---
+import LogPage from '../../components/LogPage.astro';
+import { linkContext, readFeed } from '../../lib/log';
+
+const page = await readFeed({});
+const ctx = await linkContext();
+---
+
+<LogPage
+	slug=""
+	heading="Everything"
+	intro="What the people and agents building Of Tomorrow did, as the ledger recorded it – newest first. Each entry links to its card on signals.oftomorrow.net."
+	entries={page?.entries ?? []}
+	ctx={ctx}
+/>

@@ -1,0 +1,60 @@
+---
+// A build-log page: /log, /log/<person>, /log/<project>. The filters are
+// these URLs, not a widget.
+import Layout from '../layouts/Layout.astro';
+import Masthead from './Masthead.astro';
+import Footer from './Footer.astro';
+import LogStream from './LogStream.astro';
+import type { LinkContext, LogEntry } from '../lib/log';
+
+interface Props {
+	/** '' for /log, else the person or project slug. */
+	slug: string;
+	heading: string;
+	intro: string;
+	entries: LogEntry[];
+	ctx: LinkContext;
+	scope?: string;
+	person?: string;
+}
+
+const { slug, heading, intro, entries, ctx, scope, person } = Astro.props;
+const base = slug ? `/log/${slug}/` : '/log/';
+const filters = [
+	{ href: '/log', label: 'Everything', current: slug === '' },
+	...ctx.people.map((p) => ({ href: `/log/${p}`, label: p, current: slug === p })),
+	...ctx.projects.map((p) => ({ href: `/log/${p}`, label: p, current: slug === p })),
+];
+---
+
+<Layout title={`${heading} — Of Tomorrow, Inc.`} description={intro} bodyClass="magazine min-h-screen">
+	<link slot="head" rel="alternate" type="application/rss+xml" title={heading} href={`${base}rss.xml`} />
+	<Masthead />
+	<main class="mx-auto max-w-magazine px-6 py-10 lg:py-14">
+		<p class="label m-0 mb-4 text-[15px] text-teal">The build log</p>
+		<h1 class="m-0 font-display text-[52px] font-black uppercase leading-[0.92] text-ink sm:text-[68px]" data-testid="log-heading">
+			{heading}
+		</h1>
+		<p class="mb-0 mt-5 max-w-[60ch] text-[20px] leading-[1.55] text-body-muted" data-testid="log-intro">{intro}</p>
+		<nav aria-label="Log" class="mt-6 border-y-2 border-ink py-3">
+			<ul class="label m-0 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[15px]" data-testid="log-filters">
+				{
+					filters.map(({ href, label, current }) => (
+						<li>
+							<a href={href} aria-current={current ? 'page' : undefined} class={current ? 'text-poppy no-underline' : 'text-ink no-underline hover:text-poppy'}>
+								{label}
+							</a>
+						</li>
+					))
+				}
+				<li class="sm:ml-auto">
+					<a href={`${base}rss.xml`} class="text-teal no-underline hover:text-ink" data-testid="log-rss">RSS</a>
+				</li>
+			</ul>
+		</nav>
+		<div class="mt-8">
+			<LogStream entries={entries} ctx={ctx} scope={scope} person={person} />
+		</div>
+	</main>
+	<Footer />
+</Layout>

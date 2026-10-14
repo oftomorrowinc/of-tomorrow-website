@@ -20,11 +20,19 @@ export default defineConfig({
   ],
 
   // The tests run against the build, not the dev server: `astro dev` injects
-  // its toolbar (extra h1s) into every page.
-  webServer: {
-    command: 'npm run build && npm run preview -- --port 4399',
-    url: 'http://localhost:4399',
-    reuseExistingServer: false,
-    timeout: 180_000,
-  },
+  // its toolbar (extra h1s) into every page. The build reads the build log
+  // from a fixture feed (tests/fixtures/log-feed.mjs), started first.
+  webServer: [
+    {
+      command: 'node tests/fixtures/log-feed.mjs',
+      url: 'http://localhost:4398/api/log',
+      reuseExistingServer: false,
+    },
+    {
+      command: 'LOG_FEED_URL=http://localhost:4398/api/log npm run build && npm run preview -- --port 4399',
+      url: 'http://localhost:4399',
+      reuseExistingServer: false,
+      timeout: 180_000,
+    },
+  ],
 });

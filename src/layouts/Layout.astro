@@ -27,6 +27,7 @@ const {
     <meta name="generator" content={Astro.generator} />
     <Fonts />
     <title>{title}</title>
+    <slot name="head" />
     
     <!-- GDPR-Compliant Tracking Scripts -->
     <TrackingScripts />

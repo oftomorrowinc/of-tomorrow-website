@@ -29,3 +29,104 @@
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
 }
+
+/* The build log (src/lib/log.ts): prose read top to bottom, not a card grid. */
+.log-day {
+	border-top: 2px solid var(--ink);
+	padding-top: 1.25rem;
+	margin-bottom: 2.5rem;
+}
+.log-day-label {
+	margin: 0 0 1.25rem;
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 28px;
+	line-height: 1;
+	text-transform: uppercase;
+}
+.log-entries {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.log-entry {
+	margin: 0 0 1.25rem;
+	max-width: 72ch;
+}
+.log-line,
+.log-body {
+	margin: 0;
+	font-size: 19px;
+	line-height: 1.55;
+}
+.log-body {
+	margin-top: 0.35rem;
+	color: var(--body-muted);
+	font-size: 17px;
+}
+.log-bracket {
+	font-family: var(--font-display);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--teal);
+}
+.log-entry a {
+	color: var(--ink);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+.log-bracket a {
+	color: var(--teal);
+}
+.log-entry a:hover,
+.log-live a:hover {
+	color: var(--poppy);
+}
+.log-time {
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 13px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--caption);
+	white-space: nowrap;
+}
+.log-worked {
+	color: var(--body-muted);
+}
+.log-entry code,
+.log-line code {
+	font-size: 0.85em;
+	background: var(--paper-dark);
+	padding: 0 0.2em;
+}
+.log-live {
+	margin: 0 0 1.25rem;
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 18px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--poppy);
+}
+.log-live a {
+	color: var(--poppy);
+}
+.log-live-dot {
+	display: inline-block;
+	width: 0.6em;
+	height: 0.6em;
+	margin-right: 0.5em;
+	border-radius: 50%;
+	background: var(--poppy);
+}
+.log-strip .log-entry {
+	border-top: 1px solid var(--paper-dark);
+	padding-top: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+.log-empty {
+	font-size: 19px;
+	color: var(--body-muted);
+}

@@ -96,10 +96,13 @@ test.describe('/log: everything', () => {
       'href',
       'https://signals.oftomorrow.net/board?scope=ot.byollm&card=953',
     );
-    await expect(e.locator('.log-line')).toContainText('Done #953: byollm.cloud opens: the signup gate comes off (8m)');
+    await expect(e.locator('.log-line')).toContainText('Built #953: byollm.cloud opens: the signup gate comes off (8m)');
     await expect(page.locator('#e105 .log-line')).toContainText('Landed #944 as 358ac1c in signals: The build log is served from the ledger');
     await expect(page.locator('#e106 .log-line')).toContainText("Decided on #953: the gate's function keeps its name");
     await expect(page.locator('#e104 .log-line')).toContainText('[todd · press] Said #799: Press emits ad lifecycle events to Signals now.');
+    await expect(page.locator('#e103 .log-line')).toContainText('Ruled on #770: a person may hold several cards');
+    // job.done is the builder's done, not the card landing (decision #170): no line says "Done".
+    await expect(page.locator('.log-line', { hasText: /\bDone #/ })).toHaveCount(0);
     await expect(page.locator('#e102 .log-line')).toContainText('(2h 14m · 2 attempts)');
   });
 
@@ -198,6 +201,8 @@ test.describe('home: the build log strip', () => {
       '[todd · press]',
       '[todd · signals]',
     ]);
+    await expect(entries.nth(0)).toContainText('Built #953');
+    await expect(entries.filter({ hasText: /\bDone #/ })).toHaveCount(0);
     await expect(entries.nth(0).locator('a.log-title')).toHaveAttribute('href', '/log#e107');
     await expect(entries.locator('.log-body')).toHaveCount(0);
     await expect(strip.getByTestId('all-log')).toHaveAttribute('href', '/log');

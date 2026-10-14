@@ -267,7 +267,7 @@ export function bracketHtml(e: LogEntry, ctx: LinkContext): string {
 }
 
 const VERB: Record<LogEntry['kind'], string> = {
-	'job.done': 'Done',
+	'job.done': 'Built',
 	'job.landed': 'Landed',
 	'decision.logged': 'Decided',
 	'decision.ruled': 'Ruled',

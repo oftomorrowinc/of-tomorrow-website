@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A fixture for todd.oftomorrow.net/rss.xml, answered by tests/setup.ts. Out of date order on purpose: the page shows the newest two. -->
+<rss version="2.0">
+  <channel>
+    <title>Todd Of Tomorrow</title>
+    <link>https://todd.oftomorrow.net</link>
+    <item>
+      <title>The oldest post</title>
+      <link>https://todd.oftomorrow.net/blog/the-oldest-post/</link>
+      <description>Not shown: two newer ones are.</description>
+      <pubDate>Mon, 05 Oct 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>The newest post &amp; its ampersand</title>
+      <link>https://todd.oftomorrow.net/blog/the-newest-post/</link>
+      <description>First on the page.</description>
+      <pubDate>Tue, 13 Oct 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>The second post</title>
+      <link>https://todd.oftomorrow.net/blog/the-second-post/</link>
+      <description>Second on the page.</description>
+      <pubDate>Sat, 10 Oct 2026 12:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

@@ -1,12 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// Only the things a browser alone can prove (tests/browser.spec.ts); the
+// markup is under Vitest (`npm test`). This runs at landing, in `npm run verify`.
 export default defineConfig({
   testDir: './tests',
+  testMatch: 'browser.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  // Not 'html': on a failure it serves the report and waits, and a gate that waits is a hung landing.
+  reporter: 'list',
   use: {
     baseURL: 'http://localhost:4399',
     trace: 'on-first-retry',

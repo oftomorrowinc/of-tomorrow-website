@@ -14,7 +14,10 @@ interface Props {
 	image?: ImageMetadata;
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// import.meta.env.SITE is the same config.site; it is what a page rendered
+// outside a build (Astro's Container API, in tests) has, as Astro.site is not.
+const site = Astro.site ?? import.meta.env.SITE;
+const canonicalURL = new URL(Astro.url.pathname, site);
 
 const { title, description, image = FallbackImage } = Astro.props;
 ---
@@ -28,7 +31,7 @@ const { title, description, image = FallbackImage } = Astro.props;
 	rel="alternate"
 	type="application/rss+xml"
 	title={SITE_TITLE}
-	href={new URL('rss.xml', Astro.site)}
+	href={new URL('rss.xml', site)}
 />
 <meta name="generator" content={Astro.generator} />
 

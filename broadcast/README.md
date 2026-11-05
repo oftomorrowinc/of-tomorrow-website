@@ -2,7 +2,7 @@
 
 Five pages, each one a 1920×1080 browser source in OBS, transparent where the camera shows, and `dock.html`, an OBS custom browser dock that changes all of them live. They are styled only from `src/styles/magazine.css`'s tokens, so the show looks like the site. Spec: `specs/broadcast_001.md`. Pictures: `specs/assets/broadcast-001/02-hifi-*.png` (card 1's lo-fi: `01-lofi-*.png`); a walk of one segment: `specs/assets/broadcast-001/walk.mp4`.
 
-Card 2 (this): the motion, `theme=ink`, the dock. Card 3 adds the stinger and the scene collection. Card 4 adds `broadcast.oftomorrow.net` and `src=`.
+Card 2: the motion, `theme=ink`, the dock. Card 3: the stinger and the scene collection. Card 4: the pages hosted at `https://broadcast.oftomorrow.net/`, and `src=`, which fills a list or a progress from the ledger.
 
 The fonts are files in `fonts/` (the magazine's Big Shoulders Display and Source Serif 4), so the pages render the same offline.
 
@@ -18,6 +18,44 @@ The fonts are files in `fonts/` (the magazine's Big Shoulders Display and Source
 6. Put it at 0,0 with no scaling (right-click → Transform → Reset Transform).
 
 To change what's on screen, edit the URL (Properties → URL) and OBS reloads it, or use the dock (below), which changes it without a reload.
+
+**Hosted instead of local.** Each page is also at `https://broadcast.oftomorrow.net/<page>.html?…`, e.g. `https://broadcast.oftomorrow.net/split.html?issue=12&…`, with the same params. Use the hosted URLs when a source takes `src=` from the ledger (below), or on a machine without the repo. Use the local `file://` URLs offline. Don't mix the two in one scene collection: the dock reaches only pages from its own origin (`localStorage` is per origin), so a hosted dock drives hosted pages and a local dock drives local pages.
+
+## Publishing (broadcast.oftomorrow.net)
+
+The site is `broadcast/dist/`, built by `broadcast/build.mjs` (`npm run broadcast:build`). It holds the pages, `params.js`, `broadcast.css` and `fonts/` unchanged, plus `src/styles/magazine.css` copied beside them. The pages' one `../src/styles/magazine.css` link becomes `magazine.css`, and nothing else changes. It runs on a Vercel project of its own, whose **Root Directory is `broadcast/`** and which is configured by `broadcast/vercel.json` (no framework, no install, `node build.mjs`, output `dist`). The site itself still deploys to GitHub Pages (`.github/workflows/deploy.yml`), and this repo has no root `vercel.json`, so the broadcast project can't take over the site. One-time setup, by hand:
+
+1. Vercel → Add New → Project → import `oftomorrowinc/of-tomorrow-website`. Set **Root Directory** to `broadcast` and leave "Include files outside the root directory" on, because the build reads `../src/styles/magazine.css`. Deploy.
+2. Project → Settings → Domains → add `broadcast.oftomorrow.net`.
+3. DNS for `oftomorrow.net`: add `CNAME broadcast → cname.vercel-dns.com` (or whatever record Vercel shows).
+
+After that, every push to `main` redeploys it. `tests/broadcast.published.spec.ts` builds `dist/`, serves it over http and compares its pages, pixel for pixel, with card 2's snapshots.
+
+## src= — a list or a progress from the ledger
+
+`split.html` and `full.html` (`mode=list` or `mode=progress`) take `src=<url>`, URL-encoded. They fetch it before they first draw. It must answer JSON in this shape:
+
+```json
+{ "title": "What landed this week", "kicker": "The Ledger", "items": [{ "text": "…", "n": 7293, "done": true }], "now": 3 }
+```
+
+- `items[].text` are the lines (list) or the steps (progress). `items[].n` replaces a line's number in its chip, for example a card number. The chips widen to fit the longest number, so every line's text still starts at the same x.
+- In progress mode, `items[].done` marks the done steps and `now` (1-based) is the current one. Without `now`, the first step that isn't done is current. Without any `done`, steps before `now` count as done, the same as `step=…&now=`.
+- The feed's `title` and `kicker` show unless the page's own URL gives `title=` / `kicker=`. `reveal` (from the URL or the dock) still counts lines, and absent means all. The dock's segment, accent, theme and issue still apply. The dock's title, list, steps and now **don't** replace the feed's content on a `src=` page.
+- `key=<read key>` on the page's URL goes to the feed as `Authorization: Bearer <key>`, never in the feed's URL.
+- If the feed fails (network, non-2xx, not JSON, not this shape), the page shows its URL's own `title=`/`l=`/`step=` content and sets `<html data-src="failed">` with a console warning. Nothing on air says so. While it loads, `data-src="loading"`; after that, `"loaded"`.
+
+**The ledger's two feeds** (Signals, `apps/web`, `GET /api/broadcast/…`). Both answer the shape above and send CORS headers for `https://broadcast.oftomorrow.net` only, which is why they work only from the **hosted** pages. A `file://` page's origin is `null`, so the browser refuses the response.
+
+| Feed | On air |
+|---|---|
+| `https://<signals>/api/broadcast/landed?scope=ot.press&days=7` | `split.html` / `full.html?mode=list`: this week's landed cards, each title shortened to 60 characters, with its card number as `n` |
+| `https://<signals>/api/broadcast/steps?scope=<rock or project>` | `full.html?mode=progress`: the run's steps with `done`, and `now` |
+
+For example (URL-encode the `src` value):
+`https://broadcast.oftomorrow.net/full.html?issue=12&segment=The%20Ledger&mode=progress&tile=1&key=<read key>&src=https%3A%2F%2F<signals>%2Fapi%2Fbroadcast%2Fsteps%3Fscope%3Dot.press`
+
+**The read key.** It belongs to a per-purpose principal (`broadcast`) that can only read the scopes it names. Todd mints it once and pastes it into the OBS URLs. It is **never** a seat key. The key is a secret only in that it reads the public-record scopes: what it can read is what the build log and the show already make public. Still, keep it out of screenshots and out of the repo. If it leaks, revoke and re-mint it, and nothing else changes. `tests/fixtures/broadcast-landed.json` and `broadcast-steps.json` are the shape the feeds must answer, and the page tests run against them.
 
 ## Add the dock
 
@@ -68,7 +106,7 @@ Top of each list = top of the OBS source stack.
 | Page | Draws | Params it reads |
 |---|---|---|
 | `camera.html` | Masthead strip (OF TOMORROW, issue line, segment badge), 2 px ink rule 24 px in, grain in the corners | `host issue date segment accent` |
-| `split.html` | Paper panel (left 45 %, halftone) with kicker, title (72 px), list (34 px) | `kicker title l= / list= reveal marker segment accent theme` |
+| `split.html` | Paper panel (left 45 %, halftone) with kicker, title (72 px), list (34 px) | `kicker title l= / list= reveal marker segment accent theme`; `src key` (card 4) |
 | `full.html` | Paper matte; `mode=title` (140 px + a rule in the accent), `mode=list` (the split's list, same place), `mode=progress` (the plan of the issue); `tile=1` cuts the camera tile | as split, plus `mode step= now tile` |
 | `framed.html` | Paper matte with a 1440×810 window and a caption beneath | `caption` (or `title`) `tile` |
 | `lower.html` | Caption plate on the bottom rule: an accent tab with `No. n`, headline (40 px), subline (26 px) | `title sub n` (or `lt lsub ln`) `accent out theme` |
@@ -96,5 +134,7 @@ All parsing is in `params.js`, a classic script (OBS won't load module scripts f
 
 - `npm run test:broadcast` — every page renders its params; the motion (a revealed line's 220 ms rise from 12 px, the plate's 500 ms slide in and out along the rule); the list keeping its edge and size from split to full in both themes; `theme=ink` inverting each page; the tile's border, shadow and hole; the dock driving split, full, camera and lower in one browser context (title, list, drag to reorder, reveal ±, now ±, In/Out, theme), the URL winning on load and the dock after; no computed colour outside magazine.css's tokens; and screenshots at the end of each motion compared pixel for pixel (`tests/broadcast.spec.ts-snapshots/`, macOS Chromium; `npm run test:broadcast -- -u` remakes them after a change that is meant to change the look). It opens the pages as `file://` with no build, and runs in `npm run verify`.
 - `npm test` includes `tests/brand.test.ts`, which follows every `var(--…)` in `broadcast/` to `magazine.css`'s `:root` and fails on a colour or a face written into `broadcast/` itself.
+- `npm run test:broadcast` also runs `tests/broadcast.src.spec.ts` and `tests/broadcast.published.spec.ts`. The first checks `src=` against the fixtures: list, card numbers, progress done/now, the Bearer key, the URL's title winning, failures falling back, and the dock with a feed. The second builds `dist/`, serves it on `127.0.0.1:4799` and checks the stills against card 2's snapshots, the site's file list, and a same-origin `src=`.
+- `npm run broadcast:shots:src` — remakes `specs/assets/broadcast-001/04-src-*.png` (split, full list and full progress rendering the fixtures through `src=`).
 - `npm run broadcast:shots` — remakes `specs/assets/broadcast-001/02-hifi-*.png` over mid-grey, so the transparent parts show, plus the dock.
 - `npm run broadcast:walk` — records `specs/assets/broadcast-001/walk.mp4`: `walk/stage.html` stacks the real pages like OBS's scenes over a stand-in camera (no footage) with the real dock beside them, and the script drives one segment from the dock — camera → lower-third → split with three reveals → full with the tile → framed → camera. Needs `ffmpeg`.

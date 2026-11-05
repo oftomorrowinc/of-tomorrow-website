@@ -16,6 +16,8 @@
     "verify": "vitest run && astro check && playwright test && playwright test -c playwright.broadcast.config.ts",
     "test:broadcast": "playwright test -c playwright.broadcast.config.ts",
     "broadcast:shots": "node broadcast/shoot.mjs",
+    "broadcast:shots:src": "node broadcast/shoot-src.mjs",
+    "broadcast:build": "node broadcast/build.mjs",
     "broadcast:walk": "node broadcast/walk/walk.mjs"
   },
   "dependencies": {

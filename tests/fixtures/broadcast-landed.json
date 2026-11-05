@@ -1,0 +1,9 @@
+{
+	"title": "What landed this week",
+	"kicker": "The Ledger",
+	"items": [
+		{ "text": "broadcast_001 2/4 hi-fi + motion + the dock", "n": 7293, "done": true },
+		{ "text": "A no-review job's done reads 'Done', not 'Built'", "n": 1198, "done": true },
+		{ "text": "The tests split — markup under Vitest + Astro's Container…", "n": 975, "done": true }
+	]
+}

@@ -68,11 +68,20 @@
 			sub: q.get('sub') || '',
 			n: q.get('n') || '',
 			lines: lines,
+			// Each line's marker when it is not its position (src= items' `n`).
+			ns: [],
 			// reveal: how many lines show; absent = all of them.
 			reveal: reveal === null ? lines.length : Math.max(0, Math.min(lines.length, intOr(reveal, lines.length))),
+			revealAsked: reveal,
 			marker: q.get('marker') === 'square' ? 'square' : 'number',
 			steps: steps,
 			now: Math.max(1, Math.min(steps.length || 1, intOr(q.get('now'), 1))),
+			// Steps the feed marked done (src= items' `done`); empty = by `now`.
+			done: [],
+			// Data (card 4): the list or the progress from a JSON URL, and the
+			// read key it is fetched with (sent as Authorization: Bearer).
+			src: q.get('src') || '',
+			key: q.get('key') || '',
 			mode: ['title', 'list', 'progress'].indexOf(q.get('mode')) >= 0 ? q.get('mode') : 'title',
 			tile: q.get('tile') === '1',
 			theme: q.get('theme') === 'ink' ? 'ink' : 'paper',
@@ -108,9 +117,18 @@
 	function list(p, prev) {
 		var from = prev && sameLines(prev, p) ? prev.reveal : p.reveal;
 		var ol = el('ol', 'bc-list bc-list--' + p.marker);
+		var marks = p.lines.map(function (_, i) { return p.ns[i] != null && p.ns[i] !== '' ? String(p.ns[i]) : String(i + 1); });
+		// A card number (src= `n`) is wider than the chip: the chip grows, the
+		// same width on every line (tabular figures), so the text stays aligned.
+		var widest = Math.max.apply(null, marks.map(function (m) { return m.length; }).concat(0));
+		var wide = p.marker === 'number' && widest > 2;
+		if (wide) ol.classList.add('bc-list--wide');
 		p.lines.forEach(function (text, i) {
 			var li = el('li', 'bc-line');
-			li.appendChild(el('span', 'bc-marker', p.marker === 'number' ? String(i + 1) : ''));
+			var mark = el('span', 'bc-marker', p.marker === 'number' ? marks[i] : '');
+			// Every chip as wide as the widest number (1ch = one tabular figure).
+			if (wide) mark.style.width = 'calc(' + widest + 'ch + 18px)';
+			li.appendChild(mark);
 			li.appendChild(el('span', 'bc-line-text', text));
 			if (i >= p.reveal) li.hidden = true;
 			else if (i >= from) li.classList.add('bc-line--in');
@@ -200,31 +218,137 @@
 		}
 	}
 
+	// ---- src= (card 4): the list or the progress from a JSON URL ------------
+
+	/** The feed's JSON, checked against the one shape (spec §3, card 4):
+	 *  { title, kicker?, items: [{ text, n?, done? }], now? }. null if not. */
+	function feedShape(v) {
+		if (!v || typeof v !== 'object' || !Array.isArray(v.items)) return null;
+		var items = [];
+		for (var i = 0; i < v.items.length; i++) {
+			var it = v.items[i];
+			if (!it || typeof it.text !== 'string') return null;
+			items.push({ text: it.text, n: it.n == null || it.n === '' ? null : String(it.n), done: it.done === true });
+		}
+		var now = v.now == null ? NaN : parseInt(v.now, 10);
+		return {
+			title: typeof v.title === 'string' ? v.title : '',
+			kicker: typeof v.kicker === 'string' ? v.kicker : '',
+			items: items,
+			now: isNaN(now) ? null : now,
+		};
+	}
+
+	/** Fetch `src`, with the read key (if any) as Authorization: Bearer — the
+	 *  ledger's API-key shape, and it keeps the key out of the feed's URL. */
+	function fetchSource(src, key) {
+		var headers = { Accept: 'application/json' };
+		if (key) headers.Authorization = 'Bearer ' + key;
+		var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+		var timer = ctl && setTimeout(function () { ctl.abort(); }, 8000);
+		return fetch(src, { headers: headers, cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+			.then(function (r) {
+				if (!r.ok) throw new Error('src= answered ' + r.status);
+				return r.json();
+			})
+			.then(function (v) {
+				var d = feedShape(v);
+				if (!d) throw new Error('src= is not { title, items: [{ text }] }');
+				return d;
+			})
+			.finally(function () { if (timer) clearTimeout(timer); });
+	}
+
+	/** p with the feed's content in place of the typed list and steps. The
+	 *  feed is the content: it beats the dock's title, lines, steps and now; the
+	 *  page's own URL title/kicker beat the feed's; reveal (URL or dock) still
+	 *  counts lines, all of them when absent. */
+	function withSource(p, d, own) {
+		var texts = d.items.map(function (t) { return t.text; });
+		p.lines = texts;
+		p.ns = d.items.map(function (t) { return t.n; });
+		p.steps = texts;
+		// done counts only when the feed marks some: else steps go by `now`.
+		var anyDone = d.items.some(function (t) { return t.done; });
+		p.done = anyDone ? d.items.map(function (t) { return t.done; }) : [];
+		if (own.indexOf('title') < 0 && d.title) p.title = d.title;
+		if (own.indexOf('kicker') < 0 && d.kicker) p.kicker = d.kicker;
+		p.reveal = p.revealAsked === null ? texts.length : Math.max(0, Math.min(texts.length, intOr(p.revealAsked, texts.length)));
+		// now: the feed's; else the first step not done; all done = none current.
+		var now = d.now;
+		if (now === null) {
+			now = anyDone ? p.done.indexOf(false) + 1 : 1;
+			if (now === 0) now = texts.length + 1;
+		}
+		p.now = Math.max(1, Math.min(texts.length + 1, now));
+		return p;
+	}
+
+	/** A step's state on full.html mode=progress: the feed's `done` if it gave
+	 *  one, else by its place before or after `now`. */
+	function stepState(p, i) {
+		if (p.done.length) return p.done[i] ? 'done' : i + 1 === p.now ? 'now' : 'next';
+		return i + 1 < p.now ? 'done' : i + 1 === p.now ? 'now' : 'next';
+	}
+
 	/** Render a page now, and again whenever the dock writes. On load the dock's
 	 *  last state fills in and the URL's own keys win over it; after load each
 	 *  dock write wins for the keys it owns. render(p, prev): prev is null on
-	 *  the first call, so nothing animates on load except what a page says. */
-	function mount(render) {
+	 *  the first call, so nothing animates on load except what a page says.
+	 *
+	 *  opts.src: the page takes `src=` (split, full). Its first draw waits for
+	 *  the feed (or its failure: then the URL's own content shows, and
+	 *  <html data-src="failed">); every draw after uses the feed's content. */
+	function mount(render, opts) {
 		var url = location.search.replace(/^\?/, '');
 		var prev = null;
-		function draw(query) {
-			var p = parse(query);
-			apply(p);
-			render(p, prev);
-			prev = p;
-			window.Broadcast.params = p;
-		}
+		var data = null;
 		// A lower.html URL's title/sub/n beat the dock's stored lt/lsub/ln too.
 		var mine = Array.from(new URLSearchParams(url).keys());
 		[['title', 'lt'], ['sub', 'lsub'], ['n', 'ln']].forEach(function (a) {
 			if (mine.indexOf(a[0]) >= 0 && mine.indexOf(a[1]) < 0) mine.push(a[1]);
 		});
-		draw(overlay(stored(), url, mine));
+		var ready = false;
+		var pending = null;
+		function draw(query) {
+			if (!ready) {
+				pending = query;
+				return;
+			}
+			var p = parse(query);
+			if (data) withSource(p, data, mine);
+			apply(p);
+			render(p, prev);
+			prev = p;
+			window.Broadcast.params = p;
+		}
 		window.addEventListener('storage', function (e) {
 			if (e.key !== KEY || e.newValue == null) return;
 			draw(overlay(url, e.newValue, DOCK_KEYS));
 		});
+		var first = overlay(stored(), url, mine);
+		// src and key are the page's own, from its URL, never the dock's.
+		var own = parse(url);
+		if (!(opts && opts.src && own.src)) {
+			ready = true;
+			draw(first);
+			return;
+		}
+		var root = document.documentElement;
+		root.dataset.src = 'loading';
+		fetchSource(own.src, own.key)
+			.then(function (d) {
+				data = d;
+				root.dataset.src = 'loaded';
+			}, function (err) {
+				console.warn('[broadcast] ' + (err && err.message ? err.message : err) + ' — showing the URL\'s own content');
+				root.dataset.src = 'failed';
+			})
+			.then(function () {
+				ready = true;
+				draw(pending || first);
+			});
 	}
 
-	window.Broadcast = { KEY: KEY, DOCK_KEYS: DOCK_KEYS, overlay: overlay, mount: mount, parse: parse, params: params, monthYear: monthYear, issueLine: issueLine, el: el, list: list, matte: matte, tile: tile, TILE: TILE, apply: apply };
+	window.Broadcast = { feedShape: feedShape, withSource: withSource, stepState: stepState, KEY: KEY, DOCK_KEYS: DOCK_KEYS, overlay: overlay, mount: mount, parse: parse, params: params, monthYear: monthYear, issueLine: issueLine, el: el, list: list, matte: matte, tile: tile, TILE: TILE, apply: apply };
 })();

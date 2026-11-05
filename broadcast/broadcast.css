@@ -225,6 +225,14 @@ body {
 	font-size: 30px;
 	line-height: 1;
 }
+.bc-list--wide .bc-marker {
+	/* src= items' `n` (a card number): the chip grows to the widest number in
+	   the list (params.js sets the width in ch), the same on every line, and
+	   tabular figures make 1ch one figure, so the text lines up. */
+	min-width: 46px;
+	box-sizing: border-box;
+	font-variant-numeric: tabular-nums;
+}
 .bc-list--square .bc-marker {
 	flex: none;
 	width: 14px;

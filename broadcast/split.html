@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="broadcast.css" />
 <script src="params.js"></script>
 </head>
-<!-- The 45/55 split (spec §2.2): a paper panel on the left 45 %; the camera, in OBS, on the right 55 %. -->
+<!-- The 45/55 split (spec §2.2): a paper panel on the left 45 %; the camera, in OBS, on the right 55 %; src= fills the list from JSON (card 4). -->
 <body>
 <section class="bc-panel">
 	<div class="bc-halftone"></div>
@@ -23,7 +23,7 @@
 			copy.replaceChildren(B.el('p', 'bc-kicker', p.kicker || p.segment));
 			if (p.title) copy.appendChild(B.el('h1', 'bc-title', p.title));
 			copy.appendChild(B.list(p, prev));
-		});
+		}, { src: true });
 	})(window.Broadcast);
 </script>
 </body>

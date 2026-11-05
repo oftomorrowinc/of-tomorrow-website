@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="broadcast.css" />
 <script src="params.js"></script>
 </head>
-<!-- Full-screen title / list / progress (spec §2.3); tile=1 cuts the camera tile. -->
+<!-- Full-screen title / list / progress (spec §2.3); tile=1 cuts the camera tile; src= fills the list or the progress from JSON (card 4). -->
 <body>
 <div id="stage"></div>
 <script>
@@ -53,7 +53,7 @@
 				prog.appendChild(B.el('div', 'bc-progress-rule'));
 				var n = p.steps.length;
 				p.steps.forEach(function (text, i) {
-					var state = i + 1 < p.now ? 'done' : i + 1 === p.now ? 'now' : 'next';
+					var state = B.stepState(p, i);
 					var s = B.el('div', 'bc-step bc-step--' + state + ' bc-step--' + (i % 2 ? 'below' : 'above'));
 					// The dock's now +: the step that just became current settles in.
 					if (state === 'now' && prev && prev.now !== p.now) s.classList.add('bc-step--in');
@@ -68,7 +68,7 @@
 				});
 				stage.appendChild(prog);
 			}
-		});
+		}, { src: true });
 	})(window.Broadcast);
 </script>
 </body>

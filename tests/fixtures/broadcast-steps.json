@@ -1,0 +1,11 @@
+{
+	"title": "broadcast_001",
+	"kicker": "The plan of the issue",
+	"items": [
+		{ "text": "Lo-fi", "n": 7292, "done": true },
+		{ "text": "Hi-fi + the dock", "n": 7293, "done": true },
+		{ "text": "Stinger + scenes", "n": 7294, "done": false },
+		{ "text": "Publish + data", "n": 7295, "done": false }
+	],
+	"now": 3
+}

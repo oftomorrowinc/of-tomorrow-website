@@ -1,33 +1,16 @@
 import { test, expect, type BrowserContext, type Page } from '@playwright/test';
-import { pathToFileURL } from 'node:url';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import { readdirSync, readFileSync } from 'node:fs';
 import sharp from 'sharp';
 import { cssVar } from './tokens';
+import { COMMON, LINES, LIST, STILLS, open, settle, url as pageUrl } from './broadcast-pages';
 
 // The weekly's OBS pages (specs/broadcast_001.md §2–§3), opened as file:// the
 // way OBS opens them: each renders its URL params, and nothing on any of them
 // is a colour outside magazine.css's tokens (read from the computed styles,
 // with the tokens read from magazine.css itself — tests/tokens.ts).
 
-const url = (file: string, query = '') => `${pathToFileURL(resolve('broadcast', file)).href}?${query}`;
-
-const COMMON = 'issue=12&date=2026-11-04&segment=Field%20Notes';
-const LINES = ['Get your editor to simplify your points', 'You tell them what to write', 'Keep the text or the image full screen'];
-const LIST = `kicker=Field%20Notes&title=Make%20it%20flow&${LINES.map((l) => `l=${encodeURIComponent(l)}`).join('&')}`;
-
-async function open(page: Page, file: string, query: string) {
-	await page.goto(url(file, query));
-	await settle(page);
-}
-
-/** Fonts in, and every motion on the page at its end. */
-async function settle(page: Page) {
-	await page.evaluate(() => document.fonts.ready);
-	// lower.html starts its slide two frames after load.
-	await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r)))));
-	await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'));
-}
+const url = (file: string, query = '') => pageUrl(file, query);
 
 const visibleLines = (page: Page) => page.locator('.bc-line:visible .bc-line-text');
 
@@ -439,17 +422,7 @@ test.describe('screenshots at the end of each motion', () => {
 		await shot(page, 'lower-out');
 	});
 
-	for (const [name, file, query] of [
-		['camera', 'camera.html', COMMON],
-		['full-list-tile', 'full.html', `${COMMON}&${LIST}&mode=list&tile=1`],
-		['full-title', 'full.html', `issue=12&date=2026-11-04&segment=The%20Ledger&mode=title&title=What%20landed%20this%20week`],
-		['full-progress', 'full.html', `${COMMON}&mode=progress&tile=1&kicker=The%20plan%20of%20the%20issue&step=Cut%20mistakes&step=Cut%20waffle&step=Add%20the%20lists&step=Publish&now=2`],
-		['framed', 'framed.html', `${COMMON}&caption=From%20the%20archive%20%C2%B7%202024&tile=1`],
-		['camera-ink', 'camera.html', `${COMMON}&theme=ink`],
-		['split-ink', 'split.html', `${COMMON}&${LIST}&theme=ink`],
-		['full-list-tile-ink', 'full.html', `${COMMON}&${LIST}&mode=list&tile=1&theme=ink`],
-		['lower-ink', 'lower.html', `${COMMON}&title=Todd%20Sampson&sub=Founder&n=7&theme=ink`],
-	] as const) {
+	for (const [name, file, query] of STILLS) {
 		test(name, async ({ page }) => {
 			await open(page, file, query);
 			await shot(page, name);

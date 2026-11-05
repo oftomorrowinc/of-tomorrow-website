@@ -1,5 +1,6 @@
 import { test, expect, type BrowserContext, type Page } from '@playwright/test';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { readdirSync, readFileSync } from 'node:fs';
 import sharp from 'sharp';
 import { cssVar } from './tokens';

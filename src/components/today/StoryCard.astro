@@ -1,0 +1,56 @@
+---
+// One story (specs/news_001.md §6): picture left at 120 px, the headline in
+// Big Shoulders, the body in Source Serif, author and project as a caption.
+// On the strip the card links to /today#<slug>; on /today it is the anchor.
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import MonogramTile from './MonogramTile.astro';
+import { authorLabel, PROJECT_LABEL, slugOf } from '../../lib/today';
+
+interface Props {
+	story: CollectionEntry<'today'>;
+	/** 'strip': a link to /today#slug; 'page': the story itself, with its refs. */
+	as: 'strip' | 'page';
+}
+
+const { story, as } = Astro.props;
+const { title, body, project, author, image, refs, link, picture } = story.data;
+const slug = slugOf(story.id);
+const caption = [authorLabel(author), PROJECT_LABEL[project]];
+const Tag = as === 'strip' ? 'a' : 'div';
+---
+
+<article
+	id={as === 'page' ? slug : undefined}
+	class="today-story"
+	data-testid="story"
+	data-slug={slug}
+	data-project={project}
+	data-author={author}
+>
+	<Tag
+		href={as === 'strip' ? `/today#${slug}` : undefined}
+		class={`flex gap-4 text-ink no-underline ${as === 'strip' ? 'group h-full' : ''}`}
+	>
+		{
+			image ? (
+				<Image src={image} width={240} height={240} alt={picture ?? ''} class="block h-[120px] w-[120px] shrink-0 border-2 border-ink" data-testid="picture" />
+			) : (
+				<MonogramTile project={project} />
+			)
+		}
+		<div class="min-w-0">
+			<h3 class="m-0 font-display text-[24px] font-black uppercase leading-[0.95] group-hover:text-poppy" data-testid="story-title">{title}</h3>
+			<p class="mb-0 mt-2 text-[16px] leading-[1.5] text-body-muted" data-testid="story-body">{body}</p>
+			<p class="label m-0 mt-2 text-[12px] text-teal" data-testid="story-caption">
+				{caption.join(' · ')}
+				{as === 'page' && refs?.length ? <span class="text-caption" data-testid="story-refs">{' · '}{refs.map((r) => `#${r}`).join(' ')}</span> : null}
+			</p>
+			{as === 'page' && link ? (
+				<p class="label m-0 mt-1 text-[12px]">
+					<a href={link} class="text-teal hover:text-ink">{link.replace(/^https:\/\//, '')} →</a>
+				</p>
+			) : null}
+		</div>
+	</Tag>
+</article>

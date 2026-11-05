@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import { CONTACT_EMAIL, DEPARTMENTS } from '../consts';
 import { latestWorkshopPosts, WORKSHOP_URL } from '../lib/workshop';
 import LogStrip from '../components/LogStrip.astro';
+import TodayStrip from '../components/today/TodayStrip.astro';
 import { linkContext, readFeed } from '../lib/log';
 
 // The copy is the mockup's, word for word (docs/design/README.md, "The copy").
@@ -106,6 +107,9 @@ const button =
 				</figcaption>
 			</figure>
 		</section>
+
+		<!-- TODAY AT OF TOMORROW: the newest stories (specs/news_001.md §6) -->
+		<TodayStrip />
 	</div>
 
 	<!-- NOW BUILDING, on ink -->

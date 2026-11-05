@@ -126,3 +126,67 @@ test('phone: no horizontal scroll at 390px on / or /log; the departments line is
 	const box = (await strip.boundingBox())!;
 	expect(box.x + box.width).toBeLessThanOrEqual(390);
 });
+
+// Today at Of Tomorrow (specs/news_001.md §6, card 1 lo-fi): how many cards a
+// reader sees, the arrows, and /today's ?project= / ?author= filters, which
+// run in the browser because the page is static.
+test.describe('today', () => {
+	const inView = (page: Page) =>
+		page.$$eval('[data-testid="strip-card"]', (cells) => {
+			const track = cells[0].parentElement!.getBoundingClientRect();
+			return cells.filter((c) => {
+				const r = c.getBoundingClientRect();
+				return r.left >= track.left - 1 && r.right <= track.right + 1;
+			}).length;
+		});
+
+	test('the strip shows three cards on a desktop', async ({ page }) => {
+		await page.setViewportSize({ width: 1280, height: 900 });
+		await page.goto('/');
+		expect(await inView(page)).toBe(3);
+		await expect(page.locator('[data-today-prev]')).toBeDisabled();
+	});
+
+	test('one on a phone, the arrows move one card at a time, nothing overflows', async ({ page }) => {
+		await page.setViewportSize({ width: 390, height: 844 });
+		await page.goto('/');
+		expect(await inView(page)).toBe(1);
+		const first = () => page.$$eval('[data-testid="strip-card"]', (cells) => {
+			const left = cells[0].parentElement!.getBoundingClientRect().left;
+			return cells.findIndex((c) => Math.abs(c.getBoundingClientRect().left - left) < 2);
+		});
+		expect(await first()).toBe(0);
+		await page.locator('[data-today-next]').click();
+		await expect.poll(first).toBe(1);
+		await page.locator('[data-today-prev]').click();
+		await expect.poll(first).toBe(0);
+		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+	});
+
+	test('a card opens its story on /today', async ({ page }) => {
+		await page.goto('/');
+		const slug = await page.locator('[data-testid="strip-card"] [data-slug]').first().getAttribute('data-slug');
+		await page.locator('[data-testid="strip-card"] a').first().click();
+		await expect(page).toHaveURL(new RegExp(`/today#${slug}$`));
+		await expect(page.locator(`#${slug}`)).toBeVisible();
+	});
+
+	test('/today?project= and ?author= narrow the page, and the empty days go', async ({ page }) => {
+		await page.goto('/today?project=press');
+		const visible = page.locator('[data-testid="story"]:visible');
+		await expect(visible).toHaveCount(1);
+		await expect(visible.first()).toHaveAttribute('data-project', 'press');
+		await expect(page.locator('[data-filter-value="press"]')).toHaveAttribute('aria-current', 'page');
+		await expect(page.locator('[data-filter-key=""]')).not.toHaveAttribute('aria-current', 'page');
+
+		await page.goto('/today?project=studio');
+		await expect(visible).toHaveCount(0);
+		await expect(page.locator('[data-testid="today-day"]:visible')).toHaveCount(0);
+
+		await page.goto('/today?author=cw');
+		await expect(visible).toHaveCount(await page.locator('[data-testid="story"][data-author="cw"]').count());
+
+		await page.goto('/today');
+		await expect(visible).toHaveCount(await page.locator('[data-testid="story"]').count());
+	});
+});

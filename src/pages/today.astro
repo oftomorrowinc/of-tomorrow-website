@@ -1,0 +1,86 @@
+---
+// /today (specs/news_001.md §1): every story, newest first, grouped by day.
+// ?project= and ?author= narrow it in the browser (the page is static; with no
+// script it shows everything). Frame copy pending Todd's okay: README.md.
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Masthead from '../components/Masthead.astro';
+import Footer from '../components/Footer.astro';
+import StoryCard from '../components/today/StoryCard.astro';
+import { authorLabel, byDay, longDay, NAMED, PROJECT_LABEL, PROJECTS } from '../lib/today';
+
+const days = byDay(await getCollection('today'));
+const filters = [
+	{ key: '', value: '', label: 'All stories' },
+	...PROJECTS.map((p) => ({ key: 'project', value: p, label: PROJECT_LABEL[p] })),
+	...NAMED.map((a) => ({ key: 'author', value: a, label: authorLabel(a) })),
+];
+---
+
+<Layout title="Today at Of Tomorrow · Of Tomorrow, Inc." bodyClass="magazine min-h-screen">
+	<Masthead />
+	<main class="mx-auto max-w-magazine px-6 py-10 lg:py-14" data-today-frame>
+		<h1 class="m-0 font-display text-[52px] font-black uppercase leading-[0.92] text-ink sm:text-[68px]" data-testid="today-heading">
+			Today at Of Tomorrow
+		</h1>
+		<nav aria-label="Stories" class="mt-6 border-y-2 border-ink py-3">
+			<ul class="label m-0 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[15px]" data-testid="today-filters">
+				{
+					filters.map(({ key, value, label }) => (
+						<li>
+							<a
+								href={key ? `/today?${key}=${value}` : '/today'}
+								data-filter-key={key}
+								data-filter-value={value}
+								aria-current={key ? undefined : 'page'}
+								class="text-ink no-underline hover:text-poppy aria-[current=page]:text-poppy"
+							>
+								{label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<div data-today-days>
+			{
+				days.map(({ day, date, stories }) => (
+					<section class="border-b border-ink py-8" data-testid="today-day" data-day={day}>
+						<h2 class="label m-0 mb-6 text-[18px] !tracking-[0.12em] text-ink">
+							<time datetime={day}>{longDay(date, true)}</time>
+						</h2>
+						<ol class="m-0 grid list-none grid-cols-1 gap-8 p-0 md:grid-cols-2">
+							{stories.map((story) => (
+								<li>
+									<StoryCard story={story} as="page" />
+								</li>
+							))}
+						</ol>
+					</section>
+				))
+			}
+		</div>
+	</main>
+	<Footer />
+</Layout>
+
+<script>
+	// ?project= and ?author=: hide the stories that don't match, then the days left empty.
+	const params = new URLSearchParams(location.search);
+	const want = { project: params.get('project'), author: params.get('author') };
+	if (want.project || want.author) {
+		document.querySelectorAll<HTMLElement>('[data-testid="story"]').forEach((story) => {
+			const ok = (!want.project || story.dataset.project === want.project) && (!want.author || story.dataset.author === want.author);
+			story.closest('li')!.hidden = !ok;
+		});
+		document.querySelectorAll<HTMLElement>('[data-testid="today-day"]').forEach((day) => {
+			day.hidden = !day.querySelector('li:not([hidden])');
+		});
+		document.querySelectorAll<HTMLAnchorElement>('[data-filter-key]').forEach((a) => {
+			const key = a.dataset.filterKey as 'project' | 'author' | '';
+			const current = key ? want[key] === a.dataset.filterValue : false;
+			if (current) a.setAttribute('aria-current', 'page');
+			else a.removeAttribute('aria-current');
+		});
+	}
+</script>

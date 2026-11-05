@@ -1,0 +1,110 @@
+// news_001 card 1's record (rule 27, lo-fi; rule 26, the walk): builds the
+// site with the dateline pinned to 2026-11-05 against the fixture build-log
+// feed, serves it, and writes specs/assets/news-001/01-lofi-*.png (the strip
+// and /today at 1280 and 390) and 01-lofi-walk.mp4 (the homepage with three
+// cards, a card opened on /today, then /today filtered by project).
+// `npm run today:shots`. Needs ffmpeg for the walk.
+import { chromium } from '@playwright/test';
+import { spawn, execFileSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+const OUT = 'specs/assets/news-001';
+const PORT = 4397;
+const BASE = `http://localhost:${PORT}`;
+mkdirSync(OUT, { recursive: true });
+
+const feed = spawn('node', ['tests/fixtures/log-feed.mjs'], { stdio: 'ignore' });
+const env = { ...process.env, TODAY_DATE: '2026-11-05', LOG_FEED_URL: 'http://localhost:4398/api/log' };
+const kill = () => {
+	feed.kill();
+	preview?.kill();
+};
+let preview;
+try {
+	await new Promise((r) => setTimeout(r, 500));
+	execFileSync('npm', ['run', 'build'], { env, stdio: 'inherit' });
+	preview = spawn('npx', ['astro', 'preview', '--port', String(PORT)], { env, stdio: 'ignore' });
+	for (let i = 0; ; i++) {
+		try {
+			if ((await fetch(BASE)).ok) break;
+		} catch {}
+		if (i > 100) throw new Error('preview did not start');
+		await new Promise((r) => setTimeout(r, 200));
+	}
+
+	const browser = await chromium.launch();
+	// The cookie banner dismissed (no consent given), so it does not cover the record.
+	const quiet = (ctx) => ctx.addInitScript(() => localStorage.setItem('of-tomorrow-banner-dismissed', 'true'));
+	const settle = async (page) => {
+		await page.evaluate(() => document.fonts.ready);
+		await page.waitForTimeout(150);
+	};
+
+	for (const width of [1280, 390]) {
+		const ctx = await browser.newContext({ viewport: { width, height: width > 600 ? 900 : 844 } });
+		await quiet(ctx);
+		const page = await ctx.newPage();
+		// The homepage around the strip: the cover's foot, the strip, the top of Now building.
+		await page.goto(`${BASE}/`);
+		await settle(page);
+		const box = await page.locator('#today').boundingBox();
+		const pad = 72;
+		await page.screenshot({
+			path: `${OUT}/01-lofi-home-${width}.png`,
+			fullPage: true,
+			clip: { x: 0, y: Math.max(0, box.y - pad), width, height: box.height + 2 * pad },
+		});
+		console.log(`${OUT}/01-lofi-home-${width}.png`);
+		for (const [name, q] of [['today', ''], ['today-project', '?project=byollm']]) {
+			await page.goto(`${BASE}/today${q}`);
+			await settle(page);
+			await page.screenshot({ path: `${OUT}/01-lofi-${name}-${width}.png`, fullPage: true });
+			console.log(`${OUT}/01-lofi-${name}-${width}.png`);
+		}
+		await ctx.close();
+	}
+
+	// The walk.
+	const size = { width: 1280, height: 800 };
+	const dir = mkdtempSync(join(tmpdir(), 'today-walk-'));
+	const context = await browser.newContext({ viewport: size, recordVideo: { dir, size } });
+	await quiet(context);
+	const page = await context.newPage();
+	const hold = (ms) => page.waitForTimeout(ms);
+	await page.goto(`${BASE}/`);
+	await settle(page);
+	await hold(1200);
+	// Down to the strip: three cards, picture left, hairlines between.
+	await page.evaluate(() => window.scrollTo({ top: document.getElementById('today').offsetTop - 220, behavior: 'smooth' }));
+	await hold(2600);
+	const cards = page.locator('[data-testid="strip-card"] a');
+	for (let i = 0; i < 3; i++) {
+		await cards.nth(i).hover();
+		await hold(900);
+	}
+	// A card opens its story on /today.
+	await cards.nth(0).click();
+	await settle(page);
+	await hold(2200);
+	// /today filtered by project, then back to everything.
+	await page.locator('[data-filter-value="press"]').click();
+	await settle(page);
+	await hold(2200);
+	await page.locator('[data-filter-value="byollm"]').click();
+	await settle(page);
+	await hold(2200);
+	await page.locator('[data-filter-key=""]').click();
+	await settle(page);
+	await hold(1600);
+	await context.close();
+	await browser.close();
+	const webm = readdirSync(dir).find((f) => f.endsWith('.webm'));
+	const mp4 = `${OUT}/01-lofi-walk.mp4`;
+	execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', join(dir, webm), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '26', '-preset', 'slow', '-movflags', '+faststart', mp4]);
+	rmSync(dir, { recursive: true, force: true });
+	console.log(mp4);
+} finally {
+	kill();
+}

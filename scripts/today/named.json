@@ -1,0 +1,5 @@
+{
+	"_": "specs/news_001.md §5.3: people are named in a story only with their okay. `named` have said yes; `asked` are people we work with who have not yet (Todd asks), so a story may not sign with or mention them. Add a name to `named` only with the person's yes on a thread.",
+	"named": ["todd", "cw", "owl"],
+	"asked": ["kevin", "lis"]
+}

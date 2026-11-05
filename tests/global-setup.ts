@@ -6,7 +6,14 @@ import { execFileSync } from 'node:child_process';
 import { copyFileSync, mkdirSync } from 'node:fs';
 
 export default function setup() {
-	execFileSync('node_modules/.bin/astro', ['sync'], { stdio: 'ignore' });
+	try {
+		execFileSync('node_modules/.bin/astro', ['sync'], { stdio: 'pipe' });
+	} catch (err) {
+		// A story that breaks a fence (src/lib/today.ts, in the schema) fails here: say which, and why.
+		const out = `${(err as { stdout?: Buffer }).stdout ?? ''}${(err as { stderr?: Buffer }).stderr ?? ''}`;
+		const why = out.split('\n').filter((l) => /InvalidContentEntryDataError|^\s+\*\*\*\*:|does not match/.test(l));
+		throw new Error(`astro sync failed:\n${(why.length ? why : out.split('\n').slice(-20)).join('\n')}`);
+	}
 	mkdirSync('.astro', { recursive: true });
 	copyFileSync('node_modules/.astro/data-store.json', '.astro/data-store.json');
 }

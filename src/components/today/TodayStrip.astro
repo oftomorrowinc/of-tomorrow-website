@@ -1,0 +1,118 @@
+---
+// The homepage strip (specs/news_001.md §6), lo-fi: the dateline, then the
+// newest stories as cards on paper with a hairline between them, three across
+// on a desktop and one on a phone, and arrows for the reader. No motion yet
+// (card 4 adds the eight-second advance). Static: the cards are in the build.
+import { getCollection } from 'astro:content';
+import StoryCard from './StoryCard.astro';
+import { longDay, newestFirst, today } from '../../lib/today';
+
+interface Props {
+	/** How many of the newest the strip carries; the rest are on /today. */
+	count?: number;
+}
+
+const { count = 15 } = Astro.props;
+const stories = newestFirst(await getCollection('today')).slice(0, count);
+// Frame copy (§5.5): pending Todd's okay, see README.md.
+const dateline = `Today at Of Tomorrow · ${longDay(today())}`;
+---
+
+{
+	stories.length > 0 && (
+		<section id="today" class="border-b-2 border-ink py-8" data-testid="today-strip" data-today-frame>
+			<div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-ink pb-3">
+				<h2 class="label m-0 text-[18px] !tracking-[0.12em] text-ink" data-testid="today-dateline">
+					{dateline}
+				</h2>
+				<div class="flex items-center gap-4">
+					<button type="button" class="today-arrow" data-today-prev aria-label="Previous">←</button>
+					<button type="button" class="today-arrow" data-today-next aria-label="Next">→</button>
+					<a href="/today" class="label text-[14px] text-teal hover:text-ink" data-testid="all-stories">All stories →</a>
+				</div>
+			</div>
+			<ol class="today-track m-0 list-none p-0" data-today-track>
+				{stories.map((story) => (
+					<li class="today-cell" data-testid="strip-card">
+						<StoryCard story={story} as="strip" />
+					</li>
+				))}
+			</ol>
+		</section>
+	)
+}
+
+<style>
+	.today-track {
+		display: grid;
+		grid-auto-flow: column;
+		grid-auto-columns: 100%;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+	}
+	.today-track::-webkit-scrollbar {
+		display: none;
+	}
+	@media (min-width: 768px) {
+		.today-track {
+			grid-auto-columns: 50%;
+		}
+	}
+	@media (min-width: 1024px) {
+		.today-track {
+			grid-auto-columns: calc(100% / 3);
+		}
+	}
+	.today-cell {
+		scroll-snap-align: start;
+		padding: 20px 20px 4px;
+		border-left: 1px solid var(--ink);
+	}
+	.today-cell:first-child {
+		padding-left: 0;
+		border-left: 0;
+	}
+	.today-arrow {
+		width: 36px;
+		height: 36px;
+		border: 2px solid var(--ink);
+		background: transparent;
+		color: var(--ink);
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 18px;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.today-arrow:hover {
+		background: var(--ink);
+		color: var(--paper);
+	}
+	.today-arrow:disabled {
+		opacity: 0.35;
+		cursor: default;
+		background: transparent;
+		color: var(--ink);
+	}
+</style>
+
+<script>
+	// The arrows: one card along, no animation (lo-fi; motion is card 4).
+	document.querySelectorAll<HTMLElement>('#today').forEach((strip) => {
+		const track = strip.querySelector<HTMLElement>('[data-today-track]');
+		const prev = strip.querySelector<HTMLButtonElement>('[data-today-prev]');
+		const next = strip.querySelector<HTMLButtonElement>('[data-today-next]');
+		if (!track || !prev || !next) return;
+		const step = () => track.querySelector<HTMLElement>('.today-cell')?.offsetWidth ?? track.clientWidth;
+		const sync = () => {
+			prev.disabled = track.scrollLeft <= 1;
+			next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 1;
+		};
+		prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'instant' }));
+		next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'instant' }));
+		track.addEventListener('scroll', sync, { passive: true });
+		window.addEventListener('resize', sync);
+		sync();
+	});
+</script>

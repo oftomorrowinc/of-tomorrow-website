@@ -445,3 +445,116 @@ test('the accent as text clears 3:1 on its ground in every theme × accent (the 
 			expect((hi + 0.05) / (lo + 0.05), `${theme} ${accent}`).toBeGreaterThanOrEqual(3);
 		}
 });
+
+// ---- card 3: the stinger page, framed.html's media and b&w, the dock's keys ----
+
+test.describe('card 3', () => {
+	// A grid over the whole frame, corners included.
+	const GRID: [number, number][] = [];
+	for (const x of [0, 240, 480, 720, 960, 1200, 1440, 1680, 1919]) for (const y of [0, 270, 540, 810, 1079]) GRID.push([x, y]);
+
+	test('stinger.html: a pure function of t — clear at 0 and 700 ms, solid paper over the whole frame around the 350 ms cut, the mark centred at the cut', async ({ page }) => {
+		await page.goto(url('stinger.html', 'play=0'));
+		await page.evaluate(() => (window as any).stinger.ready);
+		const at = (t: number) => page.evaluate((t) => (window as any).stinger(t), t);
+		for (const t of [0, 700]) {
+			await at(t);
+			expect(new Set(await alphaAt(page, GRID)), `t=${t}`).toEqual(new Set([0]));
+		}
+		// the cut, and a frame and more either side of it (OBS's cut can land a frame off)
+		for (const t of [320, 335, 350, 365, 380]) {
+			await at(t);
+			expect(new Set(await alphaAt(page, GRID)), `t=${t}`).toEqual(new Set([255]));
+		}
+		// mid-wipe, both: the fold has the left of the frame, the scene the right
+		await at(150);
+		expect(new Set(await alphaAt(page, GRID))).toEqual(new Set([0, 255]));
+		await at(350);
+		const logo = (await page.locator('#logo').boundingBox())!;
+		expect(Math.abs(logo.x + logo.width / 2 - 960)).toBeLessThan(1);
+		// the same t, the same pixels, whatever came before
+		await at(500);
+		const a = await page.screenshot({ omitBackground: true });
+		await at(120);
+		await at(500);
+		expect((await page.screenshot({ omitBackground: true })).equals(a)).toBe(true);
+	});
+
+	test('framed.html: media= shows in the window under its edge; bw=1 greys it (grayscale + contrast) and nothing else', async ({ page }) => {
+		const logo = pathToFileURL(resolve('public/images/logo1.png')).href;
+		const centre = async () => {
+			const png = await page.screenshot({ clip: { x: 960, y: 521, width: 1, height: 1 } });
+			const { data } = await sharp(png).raw().toBuffer({ resolveWithObject: true });
+			return [data[0], data[1], data[2]];
+		};
+		await open(page, 'framed.html', `${COMMON}&media=${encodeURIComponent(logo)}`);
+		await page.evaluate(() => (document.getElementById('media') as HTMLImageElement).decode());
+		const media = page.locator('#media');
+		expect(await media.boundingBox()).toEqual({ x: 240, y: 116, width: 1440, height: 810 });
+		await expect(media).toHaveCSS('filter', 'none');
+		const [r, g, b] = await centre();
+		expect(Math.max(r, g, b) - Math.min(r, g, b)).toBeGreaterThan(60); // the logo's orange
+
+		await open(page, 'framed.html', `${COMMON}&media=${encodeURIComponent(logo)}&bw=1`);
+		await page.evaluate(() => (document.getElementById('media') as HTMLImageElement).decode());
+		await expect(media).toHaveCSS('filter', 'grayscale(1) contrast(1.15)');
+		const grey = await centre();
+		expect(Math.max(...grey) - Math.min(...grey)).toBeLessThanOrEqual(1);
+		// the edge is drawn over the media; the matte and caption are not filtered
+		const order = await page.evaluate(() => [...document.getElementById('stage')!.children].map((e) => e.id || e.getAttribute('class')));
+		expect(order.indexOf('media')).toBeLessThan(order.indexOf('window'));
+		await expect(page.locator('.bc-matte')).toHaveCSS('filter', 'none');
+	});
+
+	test('framed.html: the media element survives a dock re-render, so a clip never restarts because the title changed', async ({ page }) => {
+		const logo = pathToFileURL(resolve('public/images/logo1.png')).href;
+		await open(page, 'framed.html', `${COMMON}&media=${encodeURIComponent(logo)}&bw=1`);
+		await page.evaluate(() => ((document.getElementById('media') as any).__kept = true));
+		await page.evaluate((key) => {
+			localStorage.setItem(key, 'title=From%20the%20dock');
+			window.dispatchEvent(new StorageEvent('storage', { key, newValue: 'title=From%20the%20dock' }));
+		}, 'oftomorrow.broadcast.params');
+		await expect(page.locator('.bc-caption')).toHaveText('From the dock');
+		expect(await page.evaluate(() => (document.getElementById('media') as any).__kept)).toBe(true);
+		await expect(page.locator('#media')).toHaveCSS('filter', 'grayscale(1) contrast(1.15)');
+	});
+
+	test("the dock's keys: + / − reveal, . / , the step, I / O the lower-third — and none of them while typing in a field", async ({ context }) => {
+		const { page: split, dock } = await withDock(context, 'split.html', COMMON);
+		const lower = await context.newPage();
+		await open(lower, 'lower.html', `${COMMON}&title=Todd%20Sampson&n=7`);
+		const full = await context.newPage();
+		await open(full, 'full.html', `${COMMON}&mode=progress&step=One&step=Two&step=Three`);
+		await dockLines(dock, LINES);
+		for (const step of ['One', 'Two', 'Three']) {
+			await dock.click('#add-step');
+			await dock.keyboard.type(step);
+		}
+		await dock.evaluate(() => (document.activeElement as HTMLElement).blur());
+		const shown = () => visibleLines(split).count();
+		const before = await shown();
+		await dock.keyboard.press('+');
+		await expect.poll(shown).toBe(before + 1);
+		await dock.keyboard.press('=');
+		await expect.poll(shown).toBe(before + 2);
+		await dock.keyboard.press('-');
+		await expect.poll(shown).toBe(before + 1);
+		const now = () => full.evaluate(() => (window as any).Broadcast.params.now);
+		const n0 = await now();
+		await dock.keyboard.press('.');
+		await expect.poll(now).toBe(n0 + 1);
+		await dock.keyboard.press(',');
+		await expect.poll(now).toBe(n0);
+		await dock.keyboard.press('o');
+		await expect.poll(() => lower.evaluate(() => (window as any).Broadcast.params.out)).toBe(true);
+		await dock.keyboard.press('i');
+		await expect.poll(() => lower.evaluate(() => (window as any).Broadcast.params.out)).toBe(false);
+		// typed into the title, the keys are text
+		await dock.click('#title');
+		await dock.keyboard.type('a-b+c.o');
+		await expect(dock.locator('#title')).toHaveValue('a-b+c.o');
+		expect(await shown()).toBe(before + 1);
+		expect(await now()).toBe(n0);
+		await expect.poll(() => lower.evaluate(() => (window as any).Broadcast.params.out)).toBe(false);
+	});
+});

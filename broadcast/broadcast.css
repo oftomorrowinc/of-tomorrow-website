@@ -415,6 +415,17 @@ body {
 	animation: bc-rise 220ms var(--ease-settle) both;
 }
 
+/* framed.html: media= in the window, under its edge; bw=1 is the archive look —
+   grayscale and a slight lift in contrast (spec §2.4), nothing else. */
+.bc-media {
+	position: absolute;
+	object-fit: cover;
+	border-radius: 12px;
+}
+.bc-media--bw {
+	filter: grayscale(1) contrast(1.15);
+}
+
 /* framed.html: the 1440×810 window's edge, radius 12, and its caption. */
 .bc-window {
 	position: absolute;

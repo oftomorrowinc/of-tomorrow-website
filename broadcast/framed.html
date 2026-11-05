@@ -12,13 +12,31 @@
 </head>
 <!-- The framed window (spec §2.4): a paper matte, a 1440×810 window where OBS
      places a media, browser or capture source, a caption beneath. tile=1 adds
-     the camera tile and moves the window left to clear it. bw=1 (the b&w
-     treatment) is card 3's; in lo-fi the media source carries OBS's own filter. -->
+     the camera tile and moves the window left to clear it.
+     media=<url> plays a video (or shows an image) in the window itself, and
+     bw=1 is the b&w treatment: grayscale + a little contrast on that media.
+     A page cannot filter an OBS source composited beneath it (OBS renders each
+     browser source to its own texture), so for a clip in an OBS media source the
+     scene collection's "B&W" colour-correction filter does it instead (README). -->
 <body>
 <div id="stage"></div>
 <script>
 	(function (B) {
 		var stage = document.getElementById('stage');
+		var media = null;
+		function mediaFor(src) {
+			var image = /\.(png|jpe?g|gif|webp|avif|svg)(\?|#|$)/i.test(src);
+			var m = B.el(image ? 'img' : 'video');
+			m.id = 'media';
+			m.dataset.src = src;
+			if (!image) {
+				m.autoplay = true;
+				m.loop = true;
+				m.playsInline = true;
+			}
+			m.src = src;
+			return m;
+		}
 		B.mount(function (p) {
 			stage.replaceChildren();
 			var win = { x: p.tile ? 96 : 240, y: 116, w: 1440, h: 810, r: 12 };
@@ -31,6 +49,17 @@
 			w.style.top = win.y + 'px';
 			w.style.width = win.w + 'px';
 			w.style.height = win.h + 'px';
+			if (p.media) {
+				// Kept across re-renders (every dock change re-renders), so a clip
+				// never restarts because the title changed.
+				if (!media || media.dataset.src !== p.media) media = mediaFor(p.media);
+				media.className = 'bc-media' + (p.bw ? ' bc-media--bw' : '');
+				media.style.left = win.x + 'px';
+				media.style.top = win.y + 'px';
+				media.style.width = win.w + 'px';
+				media.style.height = win.h + 'px';
+				stage.appendChild(media);
+			}
 			stage.appendChild(w);
 			if (p.tile) stage.appendChild(B.tile());
 			var cap = B.el('p', 'bc-caption', p.caption || p.title);

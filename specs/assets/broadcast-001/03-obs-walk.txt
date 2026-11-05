@@ -1,0 +1,17 @@
+OBS 33.0.1, a clean config; npm run broadcast:obs-walk
+  0.0 s  recording · the clean OBS: collection "Untitled", one empty scene
+  3.2 s  collection "Of Tomorrow Weekly": Camera · Camera zoom · Split · Full · Full + tile · Framed
+  3.2 s  default transition: Of Tomorrow stinger (obs_stinger_transition, cut at 350 ms)
+  3.3 s  Camera: camera at 0,0 bounds 1920×1080
+  3.3 s  Camera zoom: camera at -384,-129 bounds 2496×1404
+  3.3 s  Split: camera at -272,-59 bounds 2496×1404
+  3.3 s  Full + tile: camera at 1548,588 bounds 300×420 crop 1010/92/370/232
+  7.9 s  ⌃⌥1 → Camera (stinger)
+ 10.8 s  ⌃⌥2 → Camera zoom (override: Cut 300 ms)
+ 13.6 s  ⌃⌥3 → Split (stinger)
+ 16.4 s  ⌃⌥4 → Full (override: Fade 300 ms)
+ 19.1 s  ⌃⌥5 → Full + tile (override: Fade 300 ms)
+ 21.8 s  ⌃⌥6 → Framed (stinger)
+ 24.5 s  ⌃⌥1 → Camera (stinger)
+ 24.5 s  stopped
+ 29.8 s  framed.html media= in OBS: window centre R−B spread 252 without bw, 0 with bw=1

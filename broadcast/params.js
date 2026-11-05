@@ -87,6 +87,8 @@
 			theme: q.get('theme') === 'ink' ? 'ink' : 'paper',
 			caption: q.get('caption') || '',
 			bw: q.get('bw') === '1',
+			// framed.html: a video or image to play in the window itself (bw=1 filters it).
+			media: q.get('media') || '',
 			out: q.get('out') === '1',
 			// The lower-third's own fields, so the dock can hold a segment title
 			// and a name plate at once; a lower.html URL may use title/sub/n.

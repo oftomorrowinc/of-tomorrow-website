@@ -18,7 +18,10 @@
     "broadcast:shots": "node broadcast/shoot.mjs",
     "broadcast:shots:src": "node broadcast/shoot-src.mjs",
     "broadcast:build": "node broadcast/build.mjs",
-    "broadcast:walk": "node broadcast/walk/walk.mjs"
+    "broadcast:walk": "node broadcast/walk/walk.mjs",
+    "broadcast:stinger": "node broadcast/stinger.mjs",
+    "broadcast:obs": "node broadcast/obs/collection.mjs",
+    "broadcast:obs-walk": "node broadcast/obs/walk.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

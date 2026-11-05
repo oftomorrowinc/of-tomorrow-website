@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>stinger — Of Tomorrow broadcast</title>
+<!-- The magazine's two faces, as files (fonts/fonts.css), and its tokens. -->
+<link rel="stylesheet" href="fonts/fonts.css" />
+<link rel="stylesheet" href="../src/styles/magazine.css" />
+<link rel="stylesheet" href="broadcast.css" />
+<style>
+	/* The sheet: a paper fold travelling left→right across the frame. Its right
+	   edge (the fold) leads in over the outgoing scene; its left edge (the
+	   halftone) trails off and uncovers the incoming one. It is wider than the
+	   frame, so for the middle ~80 ms it covers all of it: the cut (350 ms)
+	   happens under paper. */
+	.st-sheet {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 3120px;
+		height: 1080px;
+		will-change: transform;
+	}
+	/* The body of the sheet: paper, everything right of the halftone band. */
+	.st-paper {
+		position: absolute;
+		left: 240px;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		background: var(--paper);
+	}
+	/* The fold: the leading edge turned under — a paper-dark band with the
+	   ink rule the pages use (2px) on its outer edge. */
+	.st-fold {
+		position: absolute;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		width: 44px;
+		box-sizing: border-box;
+		background: var(--paper-dark);
+		border-right: 2px solid var(--ink);
+	}
+	/* The halftone wipe: ten 24px columns of paper dots, smallest at the
+	   trailing edge, growing until they close up into the solid sheet. */
+	.st-dots {
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 24px;
+		background-size: 24px 24px;
+		background-position: 0 0;
+	}
+	/* The OT mark (logo1.png — §4: used only here) and the masthead beneath. */
+	.st-mark {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 600px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 28px;
+	}
+	.st-mark img {
+		width: 366px;
+		height: 258px;
+	}
+	.st-word {
+		font-family: var(--font-display);
+		font-weight: 800;
+		font-size: 56px;
+		letter-spacing: 0.12em;
+		/* the letterspacing trails the last letter; pull it back to centre */
+		margin-right: -0.12em;
+		color: var(--ink);
+		line-height: 1;
+	}
+</style>
+</head>
+<!-- The stinger (spec §2.6, §5 card 3). Rendered, not live: `npm run
+     broadcast:stinger` steps window.stinger(t) through 0…700 ms at 60 fps,
+     screenshots each frame over transparency and encodes broadcast/obs/stinger.webm
+     (VP9 with alpha). The page is a pure function of t — no clock, no animation
+     timeline, no randomness — so the same file renders the same bytes.
+     Opened by hand, it plays itself once (?play=0 holds the frame given by ?t=). -->
+<body>
+<div class="st-sheet" id="sheet">
+	<div class="st-paper"></div>
+	<div class="st-fold"></div>
+	<div class="st-mark" id="mark">
+		<img id="logo" src="../public/images/logo1.png" alt="" />
+		<div class="st-word">OF TOMORROW</div>
+	</div>
+</div>
+<script>
+	(function () {
+		'use strict';
+		var W = 1920; // frame width
+		var SHEET = 3120; // sheet width: paper body + the 240px halftone band
+		var BAND = 240;
+		var COLS = 10;
+		var DURATION = 700; // ms, the whole wipe
+		var CUT = 350; // ms, the cut point OBS's stinger is set to
+
+		var sheet = document.getElementById('sheet');
+		var mark = document.getElementById('mark');
+
+		// The halftone columns. Dot radius grows from 2px at the trailing edge to
+		// a size whose dots touch (and the gaps close) at the paper's edge.
+		for (var i = 0; i < COLS; i++) {
+			var col = document.createElement('div');
+			col.className = 'st-dots';
+			col.style.left = i * (BAND / COLS) + 'px';
+			var r = 2 + (15 - 2) * (i / (COLS - 1)); // 15px > 12·√2: closed
+			col.style.backgroundImage =
+				'radial-gradient(circle at 12px 12px, var(--paper) ' + r + 'px, transparent ' + (r + 0.75) + 'px)';
+			// alternate rows of columns sit half a cell down, like a print screen
+			if (i % 2) col.style.backgroundPosition = '0 12px';
+			sheet.appendChild(col);
+		}
+
+		// Sine in-out: travel starts and ends soft, and is quickest at the cut.
+		function ease(u) {
+			return 0.5 - 0.5 * Math.cos(Math.PI * u);
+		}
+		// The sheet's leading edge at t: x = -BAND at t = 0 (nothing on screen)
+		// and x = W + SHEET at t = DURATION (all of it gone off the right). The
+		// -BAND start centres the fully-covered stretch (solid paper over the
+		// whole frame) on the travel's midpoint, which the easing puts at CUT.
+		function lead(t) {
+			var u = Math.max(0, Math.min(1, t / DURATION));
+			return -BAND + ease(u) * (W + SHEET + BAND);
+		}
+		// The mark sits on the sheet where the frame's centre is at the cut.
+		var markX = W / 2 - (lead(CUT) - SHEET) - 300;
+		mark.style.left = markX + 'px';
+
+		/** Draw the frame at t ms. */
+		window.stinger = function (t) {
+			sheet.style.transform = 'translateX(' + (lead(t) - SHEET) + 'px)';
+		};
+		window.stinger.DURATION = DURATION;
+		window.stinger.CUT = CUT;
+		/** Whether solid paper covers the whole frame at t ms. */
+		window.stinger.covered = function (t) {
+			var x = lead(t);
+			return x >= W && x - SHEET + BAND <= 0;
+		};
+		window.stinger.ready = Promise.all([
+			document.fonts.ready,
+			document.getElementById('logo').decode(),
+		]);
+
+		var q = new URLSearchParams(location.search);
+		window.stinger(Number(q.get('t')) || 0);
+		if (q.get('play') !== '0' && !navigator.webdriver) {
+			window.stinger.ready.then(function () {
+				var t0 = null;
+				requestAnimationFrame(function step(now) {
+					if (t0 === null) t0 = now;
+					window.stinger(now - t0);
+					if (now - t0 < DURATION) requestAnimationFrame(step);
+				});
+			});
+		}
+	})();
+</script>
+</body>
+</html>

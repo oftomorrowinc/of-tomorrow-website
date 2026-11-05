@@ -282,9 +282,9 @@
 		<button type="button" id="add-line">+ Line</button>
 		<div class="d-step">
 			<span>Reveal</span>
-			<button type="button" id="reveal-minus" aria-label="Reveal one fewer">−</button>
+			<button type="button" id="reveal-minus" aria-label="Reveal one fewer" title="Reveal one fewer (−)">−</button>
 			<output id="reveal-out">0 / 0</output>
-			<button type="button" id="reveal-plus" aria-label="Reveal one more">+</button>
+			<button type="button" id="reveal-plus" aria-label="Reveal one more" title="Reveal one more (+)">+</button>
 		</div>
 	</fieldset>
 
@@ -294,9 +294,9 @@
 		<button type="button" id="add-step">+ Step</button>
 		<div class="d-step">
 			<span>Now</span>
-			<button type="button" id="now-minus" aria-label="Previous step">−</button>
+			<button type="button" id="now-minus" aria-label="Previous step" title="Previous step (,)">−</button>
 			<output id="now-out">1 / 0</output>
-			<button type="button" id="now-plus" aria-label="Next step">+</button>
+			<button type="button" id="now-plus" aria-label="Next step" title="Next step (.)">+</button>
 		</div>
 	</fieldset>
 
@@ -315,8 +315,8 @@
 			</div>
 		</div>
 		<div class="d-step">
-			<button type="button" id="lower-in">In</button>
-			<button type="button" id="lower-out">Out</button>
+			<button type="button" id="lower-in" title="Lower-third in (I)">In</button>
+			<button type="button" id="lower-out" title="Lower-third out (O)">Out</button>
 		</div>
 	</fieldset>
 
@@ -555,6 +555,21 @@
 		on('lower-out', function () { state.out = true; });
 		on('theme-paper', function () { state.theme = 'paper'; });
 		on('theme-ink', function () { state.theme = 'ink'; });
+
+		// The dock's keys (README "Hotkeys"), while the dock has focus and the
+		// caret is not in a field: + / − reveal, . / , the step, I / O the
+		// lower-third. Each presses its button, so a key and a click are one path.
+		// Scene 1–6 are OBS's own hotkeys, in the scene collection.
+		var KEYS = { '+': 'reveal-plus', '=': 'reveal-plus', '-': 'reveal-minus', '.': 'now-plus', ',': 'now-minus', i: 'lower-in', o: 'lower-out' };
+		document.addEventListener('keydown', function (e) {
+			if (e.ctrlKey || e.metaKey || e.altKey) return;
+			var t = e.target;
+			if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+			var id = KEYS[e.key.toLowerCase()];
+			if (!id) return;
+			e.preventDefault();
+			$(id).click();
+		});
 
 		// Another dock (a second OBS profile, a second window) keeps this one in step.
 		window.addEventListener('storage', function (e) {

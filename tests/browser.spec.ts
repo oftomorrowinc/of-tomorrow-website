@@ -291,6 +291,13 @@ test.describe('today', () => {
 		await page.waitForTimeout(400);
 		expect(await first(page)).toBe(0);
 		expect(await inView(page)).toBe(3);
+		await expect(page.locator('[data-testid="strip-card"]:visible')).toHaveCount(3);
+		// On a phone, one card, and the "more" link right under it.
+		await page.setViewportSize({ width: 390, height: 844 });
+		await expect(page.locator('[data-testid="strip-card"]:visible')).toHaveCount(1);
+		const card = (await page.locator('[data-testid="strip-card"]').first().boundingBox())!;
+		const more = (await page.locator('[data-today-more]').boundingBox())!;
+		expect(more.y - (card.y + card.height)).toBeLessThan(40);
 	});
 
 	test('with motion, the "more" link is not shown (the arrows and "all stories" are)', async ({ page }) => {

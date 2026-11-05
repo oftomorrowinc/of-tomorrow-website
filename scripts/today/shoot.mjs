@@ -108,13 +108,13 @@ try {
 	const cards = page.locator('[data-testid="strip-card"] a');
 	if (CARD4) {
 		// The motion: two advances on their own, eight seconds apart.
-		await page.mouse.move(640, 790);
+		await page.mouse.move(1275, 5);
 		await hold(17_000);
 		// Under the pointer it holds still past the eight seconds…
 		await cards.nth(3).hover();
 		await hold(10_000);
 		// …and away from it, moves on.
-		await page.mouse.move(640, 790);
+		await page.mouse.move(1275, 5);
 		await hold(9_000);
 		// The arrows, one card each way.
 		await page.locator('[data-today-next]').click();

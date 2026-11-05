@@ -117,6 +117,20 @@ const dateline = `Today at Of Tomorrow · ${longDay(today())}`;
 		.today-more {
 			display: block;
 		}
+		/* Only the cards that fit are drawn, so a hidden card's height leaves no gap. */
+		.today-cell:nth-child(n + 2) {
+			display: none;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) and (min-width: 768px) {
+		.today-cell:nth-child(2) {
+			display: block;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) and (min-width: 1024px) {
+		.today-cell:nth-child(3) {
+			display: block;
+		}
 	}
 	.today-arrow:disabled {
 		opacity: 0.35;

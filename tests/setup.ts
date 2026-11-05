@@ -8,6 +8,11 @@ import { FEED_URL, answer } from './fixtures/log-feed.mjs';
 
 process.env.LOG_FEED_URL = FEED_URL;
 
+// A story's image (src/content/today/images/*.webp) imports as a module whose
+// getters record it in astro:assets' build-time set, which Astro keeps on the
+// main process's globalThis; a Vitest worker has none, so the tests give it one.
+(globalThis as { astroAsset?: { referencedImages?: Set<string> } }).astroAsset ??= { referencedImages: new Set() };
+
 export const WORKSHOP_RSS = readFileSync(new URL('./fixtures/workshop-feed.xml', import.meta.url), 'utf8');
 
 vi.stubGlobal('fetch', async (input: string | URL | Request) => {

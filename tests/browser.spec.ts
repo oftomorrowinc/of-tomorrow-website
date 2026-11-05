@@ -163,6 +163,21 @@ test.describe('today', () => {
 		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 	});
 
+	test('the pictures load: every card on the strip and /today has a picture or the tile, and each picture decodes at 120 px', async ({ page }) => {
+		for (const path of ['/', '/today']) {
+			await page.goto(path);
+			const pictures = page.locator('[data-testid="story"] [data-testid="picture"]');
+			const tiles = page.locator('[data-testid="story"] [data-testid="monogram"]');
+			expect((await pictures.count()) + (await tiles.count())).toBe(await page.locator('[data-testid="story"]').count());
+			expect(await pictures.count()).toBeGreaterThan(0);
+			for (const img of await pictures.all()) {
+				await img.scrollIntoViewIfNeeded();
+				await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth)).toBeGreaterThanOrEqual(240);
+				expect(await img.evaluate((i) => Math.round(i.getBoundingClientRect().width))).toBe(120);
+			}
+		}
+	});
+
 	test('a card opens its story on /today', async ({ page }) => {
 		await page.goto('/');
 		const slug = await page.locator('[data-testid="strip-card"] [data-slug]').first().getAttribute('data-slug');

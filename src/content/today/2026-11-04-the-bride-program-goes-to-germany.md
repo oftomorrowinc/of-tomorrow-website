@@ -7,4 +7,5 @@ project: press
 author: cw
 refs: [6967]
 picture: a stack of three paperback books with a small luggage tag, one tag reading DE
+image: ./images/the-bride-program-goes-to-germany.webp
 ---

@@ -4,6 +4,10 @@
 // and /today at 1280 and 390) and 01-lofi-walk.mp4 (the homepage with three
 // cards, a card opened on /today, then /today filtered by project).
 // `npm run today:shots`. Needs ffmpeg for the walk.
+//
+// Card 3's record (the strip with real pictures): `npm run today:shots -- --card=3`
+// writes the same shots as 03-*.png and 03-walk.mp4, and the walk also steps
+// the strip's arrows through every card's picture.
 import { chromium } from '@playwright/test';
 import { spawn, execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
@@ -11,6 +15,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const OUT = 'specs/assets/news-001';
+const CARD3 = process.argv.includes('--card=3');
+const PREFIX = CARD3 ? '03' : '01-lofi';
 const PORT = 4397;
 const BASE = `http://localhost:${PORT}`;
 mkdirSync(OUT, { recursive: true });
@@ -52,16 +58,16 @@ try {
 		const box = await page.locator('#today').boundingBox();
 		const pad = 72;
 		await page.screenshot({
-			path: `${OUT}/01-lofi-home-${width}.png`,
+			path: `${OUT}/${PREFIX}-home-${width}.png`,
 			fullPage: true,
 			clip: { x: 0, y: Math.max(0, box.y - pad), width, height: box.height + 2 * pad },
 		});
-		console.log(`${OUT}/01-lofi-home-${width}.png`);
+		console.log(`${OUT}/${PREFIX}-home-${width}.png`);
 		for (const [name, q] of [['today', ''], ['today-project', '?project=byollm']]) {
 			await page.goto(`${BASE}/today${q}`);
 			await settle(page);
-			await page.screenshot({ path: `${OUT}/01-lofi-${name}-${width}.png`, fullPage: true });
-			console.log(`${OUT}/01-lofi-${name}-${width}.png`);
+			await page.screenshot({ path: `${OUT}/${PREFIX}-${name}-${width}.png`, fullPage: true });
+			console.log(`${OUT}/${PREFIX}-${name}-${width}.png`);
 		}
 		await ctx.close();
 	}
@@ -84,6 +90,20 @@ try {
 		await cards.nth(i).hover();
 		await hold(900);
 	}
+	if (CARD3) {
+		// Every card's picture: the arrows, one card at a time, to the end and back to the start.
+		const n = await cards.count();
+		for (let i = 0; i < n - 3; i++) {
+			await page.locator('[data-today-next]').click();
+			await hold(1100);
+		}
+		await hold(800);
+		for (let i = 0; i < n - 3; i++) {
+			await page.locator('[data-today-prev]').click();
+			await hold(350);
+		}
+		await hold(900);
+	}
 	// A card opens its story on /today.
 	await cards.nth(0).click();
 	await settle(page);
@@ -101,7 +121,7 @@ try {
 	await context.close();
 	await browser.close();
 	const webm = readdirSync(dir).find((f) => f.endsWith('.webm'));
-	const mp4 = `${OUT}/01-lofi-walk.mp4`;
+	const mp4 = `${OUT}/${PREFIX}-walk.mp4`;
 	execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', join(dir, webm), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '26', '-preset', 'slow', '-movflags', '+faststart', mp4]);
 	rmSync(dir, { recursive: true, force: true });
 	console.log(mp4);

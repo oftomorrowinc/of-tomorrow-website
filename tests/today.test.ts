@@ -139,8 +139,8 @@ describe('today: the frame (§5.5, §6)', () => {
 			expect(c.querySelector('a')!.getAttribute('href')).toBe(`/today#${slug}`);
 			expect(c.querySelector('[data-testid="story-title"]')!.className).toContain('font-display');
 			expect(text(c.querySelector('[data-testid="story-caption"]'))).toMatch(/^(Todd|CW|Owl) · (BYOLLM|Press|Signals|The site|Studio)$/);
-			// No pictures yet (card 3): every card shows the monogram tile.
-			expect(c.querySelector('[data-testid="monogram"], [data-testid="picture"]')).toBeTruthy();
+			// Every card has a picture or, with none, the monogram tile (card 3): never a hole.
+			expect(c.querySelectorAll('[data-testid="monogram"], [data-testid="picture"]').length).toBe(1);
 			// Refs are for us: never on the strip, never a link.
 			expect(c.querySelector('[data-testid="story-refs"]')).toBeNull();
 		}
@@ -191,7 +191,7 @@ describe('today: the monogram tile (§4)', () => {
 	test('a story without a picture draws the tile in its project’s accent, on paper', async () => {
 		const doc = await render(Today);
 		const tiles = all(doc, '[data-testid="monogram"]');
-		expect(tiles.length).toBe(files.length);
+		expect(tiles.length).toBe(files.filter((f) => !parse(f).data.image).length);
 		for (const t of tiles) {
 			const project = t.getAttribute('data-project') as keyof typeof ACCENT;
 			expect(t.closest('[data-testid="story"]')!.getAttribute('data-project')).toBe(project);

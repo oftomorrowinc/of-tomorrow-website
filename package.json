@@ -22,7 +22,8 @@
     "broadcast:stinger": "node broadcast/stinger.mjs",
     "broadcast:obs": "node broadcast/obs/collection.mjs",
     "broadcast:obs-walk": "node broadcast/obs/walk.mjs",
-    "today:shots": "node scripts/today/shoot.mjs"
+    "today:shots": "node scripts/today/shoot.mjs",
+    "today:contact": "node scripts/today/contact.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

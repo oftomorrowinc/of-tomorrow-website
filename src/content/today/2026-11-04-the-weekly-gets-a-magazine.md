@@ -7,4 +7,5 @@ project: site
 author: cw
 refs: [7292]
 picture: a paper masthead strip with a bold wordmark, lying on a desk beside a small camera
+image: ./images/the-weekly-gets-a-magazine.webp
 ---

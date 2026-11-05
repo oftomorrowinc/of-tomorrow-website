@@ -7,4 +7,5 @@ project: byollm
 author: cw
 refs: [6933]
 picture: a desk lamp shining on a small device that is handing a page to a larger machine
+image: ./images/tools-and-images-for-byollm.webp
 ---

@@ -4,37 +4,46 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=1920, height=1080" />
 <title>lower — Of Tomorrow broadcast</title>
-<!-- The magazine's two faces (src/components/Fonts.astro) and its tokens. -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+<!-- The magazine's two faces, as files (fonts/fonts.css), and its tokens. -->
+<link rel="stylesheet" href="fonts/fonts.css" />
 <link rel="stylesheet" href="../src/styles/magazine.css" />
 <link rel="stylesheet" href="broadcast.css" />
 <script src="params.js"></script>
 </head>
 <!-- The lower-third (spec §2.5): a caption plate on the frame's bottom rule.
-     Lo-fi: static; the 0.5 s slide-in and out=1's slide-away are card 2. -->
+     It slides in along the rule from the left in 0.5 s when it loads (or the
+     dock says In) and back out the same way on out=1 (or Out). The track clips
+     it at the rule's inner edge, so it comes out from behind the frame. -->
 <body>
-<aside class="bc-lower" id="plate">
-	<div class="bc-lower-tab" id="tab"></div>
-	<div class="bc-lower-copy">
-		<p class="bc-lower-title" id="title"></p>
-		<p class="bc-lower-sub" id="sub"></p>
-	</div>
-</aside>
+<div class="bc-lower-track">
+	<aside class="bc-lower" id="plate">
+		<div class="bc-lower-tab" id="tab"></div>
+		<div class="bc-lower-copy">
+			<p class="bc-lower-title" id="title"></p>
+			<p class="bc-lower-sub" id="sub"></p>
+		</div>
+	</aside>
+</div>
 <script>
 	(function (B) {
-		var p = B.params;
-		// Mustard by default; accent= overrides (§2.5).
-		B.apply(p, p.accentGiven ? p.accent : 'mustard');
+		var plate = document.getElementById('plate');
 		var tab = document.getElementById('tab');
-		if (p.n) tab.textContent = 'No. ' + p.n;
-		else tab.hidden = true;
-		document.getElementById('title').textContent = p.title;
 		var sub = document.getElementById('sub');
-		if (p.sub) sub.textContent = p.sub;
-		else sub.hidden = true;
-		document.getElementById('plate').hidden = p.out;
+		B.mount(function (p, prev) {
+			// The scene's one accent (spec §4) — the segment's, or accent=.
+			if (p.lowerN) tab.textContent = 'No. ' + p.lowerN;
+			tab.hidden = !p.lowerN;
+			document.getElementById('title').textContent = p.lowerTitle;
+			sub.textContent = p.lowerSub;
+			sub.hidden = !p.lowerSub;
+			if (prev) plate.classList.toggle('is-in', !p.out);
+			else if (!p.out) {
+				// Paint it out first, then slide it in: the load is an "In".
+				requestAnimationFrame(function () {
+					requestAnimationFrame(function () { plate.classList.add('is-in'); });
+				});
+			}
+		});
 	})(window.Broadcast);
 </script>
 </body>

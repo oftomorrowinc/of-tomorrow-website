@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en" data-accent="teal" data-theme="paper">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width" />
+<title>dock — Of Tomorrow broadcast</title>
+<!-- The OBS custom browser dock (spec §3, §5 card 2): Docks → Custom Browser
+     Docks → this file's file:// URL. It writes the URL contract's param set,
+     as a query string, into localStorage under one key; every open page
+     (camera, split, full, framed, lower) hears the `storage` event and
+     re-renders. Nothing goes over a network. -->
+<link rel="stylesheet" href="fonts/fonts.css" />
+<link rel="stylesheet" href="../src/styles/magazine.css" />
+<link rel="stylesheet" href="broadcast.css" />
+<script src="params.js"></script>
+<style>
+	/* The dock is a narrow panel in OBS, not a 1920×1080 layer. */
+	html,
+	body {
+		width: auto;
+		height: auto;
+		min-height: 100%;
+		overflow: auto;
+		background: var(--paper);
+		color: var(--ink);
+	}
+	body {
+		margin: 0;
+		padding: 12px 14px 24px;
+		font-size: 14px;
+		line-height: 1.35;
+	}
+	.d-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 8px;
+		padding-bottom: 8px;
+		border-bottom: 2px solid var(--ink);
+	}
+	.d-nameplate {
+		margin: 0;
+		font-family: var(--font-display);
+		font-weight: 900;
+		font-size: 20px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+	.d-status {
+		color: var(--caption);
+		font-size: 12px;
+	}
+	fieldset {
+		margin: 12px 0 0;
+		padding: 0 0 12px;
+		border: 0;
+		border-bottom: 1px solid var(--paper-dark);
+	}
+	legend {
+		padding: 0;
+		margin-bottom: 6px;
+		color: var(--accent-text);
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 15px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+	label {
+		display: block;
+		margin: 6px 0 2px;
+		color: var(--body-muted);
+		font-size: 12px;
+	}
+	.d-row {
+		display: flex;
+		gap: 8px;
+		align-items: flex-end;
+	}
+	.d-row > * {
+		flex: 1;
+		min-width: 0;
+	}
+	input,
+	select,
+	textarea,
+	button {
+		box-sizing: border-box;
+		font: inherit;
+		color: var(--ink);
+	}
+	input,
+	select,
+	textarea {
+		width: 100%;
+		padding: 5px 7px;
+		border: 1px solid var(--caption);
+		border-radius: 2px;
+		background: var(--paper-light);
+	}
+	input:focus,
+	select:focus,
+	textarea:focus,
+	button:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 1px;
+	}
+	/* §4: a title that does not fit is a title to shorten — flagged here, never on air. */
+	input.d-toolong {
+		border-color: var(--poppy);
+		box-shadow: inset 0 -3px 0 var(--poppy);
+	}
+	.d-warn {
+		margin: 3px 0 0;
+		color: var(--poppy);
+		font-size: 12px;
+	}
+	button {
+		padding: 5px 10px;
+		border: 2px solid var(--ink);
+		border-radius: 2px;
+		background: var(--paper-light);
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 14px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		cursor: pointer;
+	}
+	button:hover {
+		background: var(--paper-dark);
+	}
+	button[aria-pressed='true'] {
+		background: var(--ink);
+		color: var(--paper);
+	}
+	.d-swatch {
+		flex: none;
+		width: 28px;
+		height: 30px;
+		border: 2px solid var(--ink);
+		background: var(--accent);
+	}
+
+	/* The list editors: one line per row, a handle to drag, × to drop. */
+	.d-lines {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.d-line {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin: 0 0 4px;
+	}
+	.d-line.d-dragging {
+		opacity: 0.4;
+	}
+	.d-line.d-over {
+		box-shadow: 0 -2px 0 var(--accent);
+	}
+	.d-n {
+		flex: none;
+		width: 22px;
+		height: 22px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--font-display);
+		font-weight: 900;
+		font-size: 14px;
+		color: var(--caption);
+		border: 1px solid var(--caption);
+	}
+	/* Revealed lines (and the current step and those before it) are on air. */
+	.d-line.d-on .d-n {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--on-accent);
+	}
+	.d-handle {
+		flex: none;
+		cursor: grab;
+		color: var(--caption);
+		font-size: 16px;
+		user-select: none;
+		padding: 0 2px;
+	}
+	.d-x {
+		flex: none;
+		padding: 2px 7px;
+		border-width: 1px;
+	}
+	.d-step {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin-top: 6px;
+	}
+	.d-step output {
+		min-width: 64px;
+		text-align: center;
+		font-family: var(--font-display);
+		font-weight: 900;
+		font-size: 18px;
+	}
+	.d-url {
+		height: 74px;
+		font-size: 11px;
+		font-family: ui-monospace, Menlo, monospace;
+		resize: vertical;
+	}
+	.d-measure {
+		position: absolute;
+		left: -10000px;
+		top: 0;
+		visibility: hidden;
+	}
+</style>
+</head>
+<body>
+<header class="d-head">
+	<p class="d-nameplate">Of Tomorrow · Dock</p>
+	<span class="d-status" id="status" role="status">—</span>
+</header>
+
+<form id="dock" autocomplete="off" onsubmit="return false">
+	<fieldset>
+		<legend>Segment</legend>
+		<div class="d-row">
+			<div>
+				<label for="segment">Segment</label>
+				<input id="segment" name="segment" list="segments" />
+				<datalist id="segments">
+					<option value="Field Notes"></option>
+					<option value="The Ledger"></option>
+					<option value="Ask Me Anything"></option>
+				</datalist>
+			</div>
+			<div>
+				<label for="accent">Accent</label>
+				<select id="accent" name="accent">
+					<option value="">The segment's</option>
+					<option value="poppy">Poppy</option>
+					<option value="teal">Teal</option>
+					<option value="mustard">Mustard</option>
+				</select>
+			</div>
+			<span class="d-swatch" title="The scene's one accent"></span>
+		</div>
+		<div class="d-row">
+			<div>
+				<label for="issue">Issue No.</label>
+				<input id="issue" name="issue" inputmode="numeric" />
+			</div>
+			<div>
+				<label for="date">Date</label>
+				<input id="date" name="date" type="date" />
+			</div>
+		</div>
+		<div class="d-row">
+			<div>
+				<label>Theme</label>
+				<div class="d-row">
+					<button type="button" id="theme-paper" data-theme-set="paper">Paper</button>
+					<button type="button" id="theme-ink" data-theme-set="ink">Ink</button>
+				</div>
+			</div>
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>Title and list</legend>
+		<label for="kicker">Kicker <span class="d-status">(blank: the segment)</span></label>
+		<input id="kicker" name="kicker" />
+		<label for="title">Title</label>
+		<input id="title" name="title" />
+		<p class="d-warn" id="title-warn" hidden></p>
+		<label>List <span class="d-status">(drag ⠿ to reorder)</span></label>
+		<ol class="d-lines" id="lines"></ol>
+		<button type="button" id="add-line">+ Line</button>
+		<div class="d-step">
+			<span>Reveal</span>
+			<button type="button" id="reveal-minus" aria-label="Reveal one fewer">−</button>
+			<output id="reveal-out">0 / 0</output>
+			<button type="button" id="reveal-plus" aria-label="Reveal one more">+</button>
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>Progress</legend>
+		<ol class="d-lines" id="steps"></ol>
+		<button type="button" id="add-step">+ Step</button>
+		<div class="d-step">
+			<span>Now</span>
+			<button type="button" id="now-minus" aria-label="Previous step">−</button>
+			<output id="now-out">1 / 0</output>
+			<button type="button" id="now-plus" aria-label="Next step">+</button>
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>Lower-third</legend>
+		<label for="lt">Headline</label>
+		<input id="lt" name="lt" />
+		<div class="d-row">
+			<div>
+				<label for="lsub">Subline</label>
+				<input id="lsub" name="lsub" />
+			</div>
+			<div style="flex: 0 0 64px">
+				<label for="ln">No.</label>
+				<input id="ln" name="ln" inputmode="numeric" />
+			</div>
+		</div>
+		<div class="d-step">
+			<button type="button" id="lower-in">In</button>
+			<button type="button" id="lower-out">Out</button>
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>The same, as a URL</legend>
+		<label for="url">Paste after a page's <code>?</code> to put this on it without the dock.</label>
+		<textarea id="url" class="d-url" readonly></textarea>
+	</fieldset>
+</form>
+
+<!-- The title, set as split.html and full.html set it, to see whether it fits. -->
+<div class="d-measure" aria-hidden="true">
+	<h1 class="bc-title" id="m-split" style="width: 680px"></h1>
+	<h1 class="bc-headline-text" id="m-full" style="display: inline-block; white-space: nowrap"></h1>
+</div>
+
+<script>
+	(function (B) {
+		'use strict';
+		var $ = function (id) { return document.getElementById(id); };
+		var TEXT = ['segment', 'accent', 'issue', 'date', 'kicker', 'title', 'lt', 'lsub', 'ln'];
+
+		/** The dock's state from a query string (the stored one, or the dock's own URL). */
+		function fromQuery(query) {
+			var q = new URLSearchParams(query);
+			var lines = q.getAll('l');
+			if (!lines.length && q.get('list')) lines = B.parse('list=' + q.get('list')).lines;
+			var s = {
+				lines: lines,
+				steps: q.getAll('step'),
+				reveal: parseInt(q.get('reveal'), 10),
+				now: parseInt(q.get('now'), 10) || 1,
+				out: q.has('out') ? q.get('out') === '1' : true,
+				theme: q.get('theme') === 'ink' ? 'ink' : 'paper',
+			};
+			if (isNaN(s.reveal)) s.reveal = 0;
+			TEXT.forEach(function (k) { s[k] = q.get(k) || ''; });
+			if (!q.has('segment')) s.segment = 'Field Notes';
+			return s;
+		}
+
+		/** The state as the contract's query string: the same params a URL takes. */
+		function toQuery(s) {
+			var q = new URLSearchParams();
+			TEXT.forEach(function (k) { q.set(k, s[k]); });
+			s.lines.forEach(function (l) { q.append('l', l); });
+			q.set('reveal', String(s.reveal));
+			s.steps.forEach(function (l) { q.append('step', l); });
+			q.set('now', String(s.now));
+			q.set('out', s.out ? '1' : '0');
+			q.set('theme', s.theme);
+			return q.toString();
+		}
+
+		function clamp(s) {
+			s.reveal = Math.max(0, Math.min(s.lines.length, s.reveal));
+			s.now = Math.max(1, Math.min(Math.max(1, s.steps.length), s.now));
+		}
+
+		var stored = '';
+		try { stored = localStorage.getItem(B.KEY) || ''; } catch (e) {}
+		// The URL wins on load, here as on the pages: a dock URL with a query seeds it.
+		var state = fromQuery(B.overlay(stored, location.search.replace(/^\?/, '')));
+		clamp(state);
+
+		/** Write the state for every page, and show it. */
+		function send() {
+			clamp(state);
+			var query = toQuery(state);
+			try {
+				localStorage.setItem(B.KEY, query);
+			} catch (e) {
+				$('status').textContent = 'Cannot write storage: ' + e.message;
+				return;
+			}
+			$('status').textContent = 'Sent ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+			show(query);
+		}
+
+		function show(query) {
+			var p = B.parse(query);
+			B.apply(p);
+			$('reveal-out').value = state.reveal + ' / ' + state.lines.length;
+			$('now-out').value = (state.steps.length ? state.now : 0) + ' / ' + state.steps.length;
+			$('lower-in').setAttribute('aria-pressed', String(!state.out));
+			$('lower-out').setAttribute('aria-pressed', String(state.out));
+			$('theme-paper').setAttribute('aria-pressed', String(state.theme === 'paper'));
+			$('theme-ink').setAttribute('aria-pressed', String(state.theme === 'ink'));
+			$('url').value = query;
+			markOn('lines', function (i) { return i < state.reveal; });
+			markOn('steps', function (i) { return i < state.now; });
+			fit();
+		}
+
+		/** §4: flag a title that will not fit — over two lines on the split, or
+		 *  over one line as a full-screen title. The dock only; never on air. */
+		function fit() {
+			var t = state.title;
+			$('m-split').textContent = t;
+			$('m-full').textContent = t;
+			var lh = parseFloat(getComputedStyle($('m-split')).lineHeight);
+			var warn = [];
+			if (t && $('m-split').getBoundingClientRect().height > lh * 2 + 1) warn.push('over two lines on the split');
+			if (t && $('m-full').getBoundingClientRect().width > 1600) warn.push('over one line as a full-screen title');
+			$('title').classList.toggle('d-toolong', warn.length > 0);
+			$('title-warn').hidden = !warn.length;
+			$('title-warn').textContent = warn.length ? 'Too long: ' + warn.join(', and ') + '.' : '';
+		}
+
+		// ---- the plain fields ----
+		TEXT.forEach(function (k) {
+			var input = $(k);
+			input.value = state[k];
+			input.addEventListener('input', function () {
+				state[k] = input.value;
+				send();
+			});
+		});
+
+		// ---- the list editors: one row per line, drag to reorder ----
+		function editor(id, key, placeholder) {
+			var ol = $(id);
+			var dragFrom = null;
+
+			function draw(focusIndex) {
+				ol.replaceChildren();
+				state[key].forEach(function (text, i) {
+					var li = document.createElement('li');
+					li.className = 'd-line';
+					li.dataset.index = String(i);
+					var handle = document.createElement('span');
+					handle.className = 'd-handle';
+					handle.textContent = '⠿';
+					handle.title = 'Drag to reorder (or Alt+↑/↓ in the line)';
+					li.draggable = true;
+					var n = document.createElement('span');
+					n.className = 'd-n';
+					n.textContent = String(i + 1);
+					var input = document.createElement('input');
+					input.value = text;
+					input.placeholder = placeholder;
+					input.setAttribute('aria-label', placeholder + ' ' + (i + 1));
+					input.addEventListener('input', function () {
+						state[key][i] = input.value;
+						send();
+					});
+					input.addEventListener('keydown', function (e) {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							state[key].splice(i + 1, 0, '');
+							draw(i + 1);
+							send();
+						} else if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+							e.preventDefault();
+							var to = e.key === 'ArrowUp' ? i - 1 : i + 1;
+							if (to >= 0 && to < state[key].length) move(i, to, to);
+						}
+					});
+					var x = document.createElement('button');
+					x.type = 'button';
+					x.className = 'd-x';
+					x.textContent = '×';
+					x.setAttribute('aria-label', 'Remove ' + placeholder.toLowerCase() + ' ' + (i + 1));
+					x.addEventListener('click', function () {
+						state[key].splice(i, 1);
+						if (key === 'lines' && i < state.reveal) state.reveal--;
+						draw();
+						send();
+					});
+					li.addEventListener('dragstart', function (e) {
+						if (e.target !== li) return;
+						dragFrom = i;
+						li.classList.add('d-dragging');
+						e.dataTransfer.effectAllowed = 'move';
+						e.dataTransfer.setData('text/plain', String(i));
+					});
+					li.addEventListener('dragend', function () {
+						dragFrom = null;
+						li.classList.remove('d-dragging');
+					});
+					li.addEventListener('dragover', function (e) {
+						if (dragFrom === null) return;
+						e.preventDefault();
+						li.classList.add('d-over');
+					});
+					li.addEventListener('dragleave', function () { li.classList.remove('d-over'); });
+					li.addEventListener('drop', function (e) {
+						e.preventDefault();
+						li.classList.remove('d-over');
+						if (dragFrom !== null && dragFrom !== i) move(dragFrom, i);
+					});
+					li.append(handle, n, input, x);
+					ol.appendChild(li);
+				});
+				if (focusIndex != null && ol.children[focusIndex]) ol.children[focusIndex].querySelector('input').focus();
+			}
+
+			function move(from, to, focusIndex) {
+				var item = state[key].splice(from, 1)[0];
+				state[key].splice(to, 0, item);
+				draw(focusIndex);
+				send();
+			}
+
+			draw();
+			return {
+				draw: draw,
+				add: function () {
+					state[key].push('');
+					draw(state[key].length - 1);
+					send();
+				},
+			};
+		}
+
+		function markOn(id, on) {
+			Array.prototype.forEach.call($(id).children, function (li, i) { li.classList.toggle('d-on', on(i)); });
+		}
+
+		var lines = editor('lines', 'lines', 'Line');
+		var steps = editor('steps', 'steps', 'Step');
+		$('add-line').addEventListener('click', lines.add);
+		$('add-step').addEventListener('click', steps.add);
+
+		function on(id, fn) {
+			$(id).addEventListener('click', function () {
+				fn();
+				send();
+			});
+		}
+		on('reveal-plus', function () { state.reveal++; });
+		on('reveal-minus', function () { state.reveal--; });
+		on('now-plus', function () { state.now++; });
+		on('now-minus', function () { state.now--; });
+		on('lower-in', function () { state.out = false; });
+		on('lower-out', function () { state.out = true; });
+		on('theme-paper', function () { state.theme = 'paper'; });
+		on('theme-ink', function () { state.theme = 'ink'; });
+
+		// Another dock (a second OBS profile, a second window) keeps this one in step.
+		window.addEventListener('storage', function (e) {
+			if (e.key !== B.KEY || e.newValue == null) return;
+			state = fromQuery(e.newValue);
+			clamp(state);
+			TEXT.forEach(function (k) { if (document.activeElement !== $(k)) $(k).value = state[k]; });
+			lines.draw();
+			steps.draw();
+			show(e.newValue);
+		});
+
+		document.fonts.ready.then(fit);
+		show(toQuery(state));
+		$('status').textContent = stored ? 'Loaded the last state' : 'Nothing sent yet';
+	})(window.Broadcast);
+</script>
+</body>
+</html>

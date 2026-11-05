@@ -82,4 +82,64 @@ describe('brand', () => {
 		];
 		for (const [name, fg, bg] of pairs) expect(ratio(fg, bg), name).toBeGreaterThanOrEqual(4.5);
 	});
+
+	test('broadcast/ (the OBS pages): every token it uses resolves to magazine.css, and it has no colour or face of its own', () => {
+		// specs/broadcast_001.md §1: "a token changed in magazine.css turns a
+		// broadcast page's test red the same day" — so the pages may only alias
+		// magazine.css's :root, never restate a value.
+		const root = magazineRule(':root');
+		const files = readdirSync('broadcast')
+			.filter((f) => /\.(css|html|js)$/.test(f))
+			.map((f) => join('broadcast', f));
+		files.push(...readdirSync('broadcast/fonts').filter((f) => f.endsWith('.css')).map((f) => join('broadcast/fonts', f)));
+		expect(files.length).toBeGreaterThanOrEqual(8);
+		const src = Object.fromEntries(files.map((f) => [f, readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '')]));
+
+		// broadcast/'s own custom properties (--ground, --accent, …), every declaration of each.
+		const local: Record<string, string[]> = {};
+		for (const text of Object.values(src))
+			for (const m of text.matchAll(/(--[\w-]+)\s*:\s*([^;}]+)/g)) (local[m[1].slice(2)] ??= []).push(m[2].trim());
+
+		const resolves = (name: string, seen: string[] = []): string | null => {
+			if (`--${name}` in root) return null;
+			if (!(name in local)) return `--${name} is in neither magazine.css's :root nor broadcast/`;
+			if (seen.includes(name)) return `--${name} is circular`;
+			for (const value of local[name]) {
+				const refs = [...value.matchAll(/var\(--([\w-]+)\)/g)].map((m) => m[1]);
+				// A local value with no reference may be motion (an easing), never a colour or a face.
+				if (!refs.length && /#|rgb|hsl|serif|sans|display/i.test(value)) return `--${name}: ${value} restates a value`;
+				for (const r of refs) {
+					const bad = resolves(r, [...seen, name]);
+					if (bad) return bad;
+				}
+			}
+			return null;
+		};
+
+		const used = new Set<string>();
+		for (const [f, text] of Object.entries(src)) {
+			for (const m of text.matchAll(/var\(--([\w-]+)\)/g)) used.add(m[1]);
+			// No colour literal anywhere in the pages, their CSS or their scripts.
+			expect(text.match(/#[0-9a-f]{3,8}\b(?![\w-])|\b(?:rgba?|hsla?)\(/gi), f).toBeNull();
+			// Faces only through magazine.css's --font-display / --font-serif.
+			for (const m of text.matchAll(/font-family\s*:\s*([^;}\n]+)/g)) {
+				if (f.endsWith('fonts.css')) continue;
+				expect(m[1].trim(), `${f}: font-family`).toMatch(/^(var\(--font-(display|serif)\)|ui-monospace, Menlo, monospace)$/);
+			}
+		}
+		expect(used.size).toBeGreaterThan(10);
+		for (const name of used) expect(resolves(name), name).toBeNull();
+		// And the tokens they reach are the brand's: the colours and faces checked above.
+		for (const t of ['paper', 'paper-dark', 'ink', 'poppy', 'teal', 'mustard', 'caption', 'font-display', 'font-serif']) expect(used, t).toContain(t);
+
+		// fonts.css declares the two faces magazine.css names, and no others.
+		const faces = [...src['broadcast/fonts/fonts.css'].matchAll(/font-family:\s*'([^']+)'/g)].map((m) => m[1]);
+		expect(new Set(faces)).toEqual(new Set([cssVar('font-display'), cssVar('font-serif')].map((v) => v.match(/^'([^']+)'/)![1])));
+
+		// Every page takes magazine.css itself, before its own CSS.
+		for (const f of files.filter((f) => f.endsWith('.html'))) {
+			const links = [...src[f].matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1]);
+			expect(links, f).toEqual(['fonts/fonts.css', '../src/styles/magazine.css', 'broadcast.css']);
+		}
+	});
 });

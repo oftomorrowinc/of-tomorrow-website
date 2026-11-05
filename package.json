@@ -15,7 +15,8 @@
     "test:browser": "playwright test",
     "verify": "vitest run && astro check && playwright test && playwright test -c playwright.broadcast.config.ts",
     "test:broadcast": "playwright test -c playwright.broadcast.config.ts",
-    "broadcast:shots": "node broadcast/shoot.mjs"
+    "broadcast:shots": "node broadcast/shoot.mjs",
+    "broadcast:walk": "node broadcast/walk/walk.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

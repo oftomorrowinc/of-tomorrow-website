@@ -4,10 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=1920, height=1080" />
 <title>framed — Of Tomorrow broadcast</title>
-<!-- The magazine's two faces (src/components/Fonts.astro) and its tokens. -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+<!-- The magazine's two faces, as files (fonts/fonts.css), and its tokens. -->
+<link rel="stylesheet" href="fonts/fonts.css" />
 <link rel="stylesheet" href="../src/styles/magazine.css" />
 <link rel="stylesheet" href="broadcast.css" />
 <script src="params.js"></script>
@@ -20,26 +18,27 @@
 <div id="stage"></div>
 <script>
 	(function (B) {
-		var p = B.params;
-		B.apply(p);
 		var stage = document.getElementById('stage');
-		var win = { x: p.tile ? 96 : 240, y: 116, w: 1440, h: 810, r: 12 };
-		var holes = [win];
-		if (p.tile) holes.push(B.TILE);
-		stage.appendChild(B.matte(holes));
-		var w = B.el('div', 'bc-window');
-		w.id = 'window';
-		w.style.left = win.x + 'px';
-		w.style.top = win.y + 'px';
-		w.style.width = win.w + 'px';
-		w.style.height = win.h + 'px';
-		stage.appendChild(w);
-		if (p.tile) stage.appendChild(B.tile());
-		var cap = B.el('p', 'bc-caption', p.caption || p.title);
-		cap.style.left = win.x + 'px';
-		cap.style.width = win.w + 'px';
-		cap.style.top = win.y + win.h + 22 + 'px';
-		stage.appendChild(cap);
+		B.mount(function (p) {
+			stage.replaceChildren();
+			var win = { x: p.tile ? 96 : 240, y: 116, w: 1440, h: 810, r: 12 };
+			var holes = [win];
+			if (p.tile) holes.push(B.TILE);
+			stage.appendChild(B.matte(holes));
+			var w = B.el('div', 'bc-window');
+			w.id = 'window';
+			w.style.left = win.x + 'px';
+			w.style.top = win.y + 'px';
+			w.style.width = win.w + 'px';
+			w.style.height = win.h + 'px';
+			stage.appendChild(w);
+			if (p.tile) stage.appendChild(B.tile());
+			var cap = B.el('p', 'bc-caption', p.caption || p.title);
+			cap.style.left = win.x + 'px';
+			cap.style.width = win.w + 'px';
+			cap.style.top = win.y + win.h + 22 + 'px';
+			stage.appendChild(cap);
+		});
 	})(window.Broadcast);
 </script>
 </body>

@@ -2,7 +2,11 @@
    page under broadcast/. A classic script, not a module: OBS (CEF) and Chrome
    refuse module scripts from file:// URLs, and these pages run as local files.
 
-   Exposes window.Broadcast = { params, render helpers }. No colours here — the
+   The dock (dock.html) writes the same param set, as a query string, into
+   localStorage under one key (KEY); every page listens for the `storage` event
+   and re-renders. One contract: the URL wins on load, the dock after (mount()).
+
+   Exposes window.Broadcast = { params, mount, render helpers }. No colours here — the
    pages colour themselves from magazine.css's custom properties; this file
    only picks WHICH token (the accent) by name. */
 (function () {
@@ -75,6 +79,11 @@
 			caption: q.get('caption') || '',
 			bw: q.get('bw') === '1',
 			out: q.get('out') === '1',
+			// The lower-third's own fields, so the dock can hold a segment title
+			// and a name plate at once; a lower.html URL may use title/sub/n.
+			lowerTitle: q.has('lt') ? q.get('lt') : q.get('title') || '',
+			lowerSub: q.has('lsub') ? q.get('lsub') : q.get('sub') || '',
+			lowerN: q.has('ln') ? q.get('ln') : q.get('n') || '',
 		};
 	}
 
@@ -93,14 +102,18 @@
 	}
 
 	/** The list split.html and full.html share (§2.3): same markup, same class,
-	 *  so the same CSS puts it in the same place in both. */
-	function list(p) {
+	 *  so the same CSS puts it in the same place in both. Lines newly revealed
+	 *  since `prev` (the dock's reveal +) rise 12px and fade in, 220ms (§4);
+	 *  lines already showing do not move. */
+	function list(p, prev) {
+		var from = prev && sameLines(prev, p) ? prev.reveal : p.reveal;
 		var ol = el('ol', 'bc-list bc-list--' + p.marker);
 		p.lines.forEach(function (text, i) {
 			var li = el('li', 'bc-line');
 			li.appendChild(el('span', 'bc-marker', p.marker === 'number' ? String(i + 1) : ''));
 			li.appendChild(el('span', 'bc-line-text', text));
 			if (i >= p.reveal) li.hidden = true;
+			else if (i >= from) li.classList.add('bc-line--in');
 			ol.appendChild(li);
 		});
 		return ol;
@@ -144,11 +157,74 @@
 	}
 
 	/** Set the accent and theme on <html>, so CSS resolves --accent to one token. */
-	function apply(p, accentOverride) {
+	function apply(p) {
 		var root = document.documentElement;
-		root.dataset.accent = accentOverride || p.accent;
+		root.dataset.accent = p.accent;
 		root.dataset.theme = p.theme;
 	}
 
-	window.Broadcast = { parse: parse, params: params, monthYear: monthYear, issueLine: issueLine, el: el, list: list, matte: matte, tile: tile, TILE: TILE, apply: apply };
+	function sameLines(a, b) {
+		return a.lines.length === b.lines.length && a.lines.every(function (l, i) { return l === b.lines[i]; });
+	}
+
+	// ---- the dock's channel ------------------------------------------------
+
+	/** The one localStorage key the dock writes and every page reads. */
+	var KEY = 'oftomorrow.broadcast.params';
+	/** The params the dock owns. Once the dock writes, these come from it; the
+	 *  rest (mode, tile, caption, bw, marker, host) stay per page, from its URL —
+	 *  three full.html scenes can be title, list and progress at once. */
+	var DOCK_KEYS = ['segment', 'accent', 'issue', 'date', 'kicker', 'title', 'l', 'list', 'reveal', 'step', 'now', 'lt', 'lsub', 'ln', 'out', 'theme'];
+	// l and list= are one value (the lines); a page given either drops the other.
+	var GROUPS = { l: ['l', 'list'], list: ['l', 'list'] };
+
+	/** `top`'s values over `base`'s, for `keys` (default: the keys top has). */
+	function overlay(base, top, keys) {
+		var b = new URLSearchParams(base);
+		var t = new URLSearchParams(top);
+		var ks = keys || Array.from(new Set(Array.from(t.keys())));
+		ks.forEach(function (k) {
+			(GROUPS[k] || [k]).forEach(function (g) { b.delete(g); });
+		});
+		var out = new URLSearchParams();
+		b.forEach(function (v, k) { out.append(k, v); });
+		t.forEach(function (v, k) { if (ks.indexOf(k) >= 0) out.append(k, v); });
+		return out.toString();
+	}
+
+	function stored() {
+		try {
+			return localStorage.getItem(KEY) || '';
+		} catch (e) {
+			return '';
+		}
+	}
+
+	/** Render a page now, and again whenever the dock writes. On load the dock's
+	 *  last state fills in and the URL's own keys win over it; after load each
+	 *  dock write wins for the keys it owns. render(p, prev): prev is null on
+	 *  the first call, so nothing animates on load except what a page says. */
+	function mount(render) {
+		var url = location.search.replace(/^\?/, '');
+		var prev = null;
+		function draw(query) {
+			var p = parse(query);
+			apply(p);
+			render(p, prev);
+			prev = p;
+			window.Broadcast.params = p;
+		}
+		// A lower.html URL's title/sub/n beat the dock's stored lt/lsub/ln too.
+		var mine = Array.from(new URLSearchParams(url).keys());
+		[['title', 'lt'], ['sub', 'lsub'], ['n', 'ln']].forEach(function (a) {
+			if (mine.indexOf(a[0]) >= 0 && mine.indexOf(a[1]) < 0) mine.push(a[1]);
+		});
+		draw(overlay(stored(), url, mine));
+		window.addEventListener('storage', function (e) {
+			if (e.key !== KEY || e.newValue == null) return;
+			draw(overlay(url, e.newValue, DOCK_KEYS));
+		});
+	}
+
+	window.Broadcast = { KEY: KEY, DOCK_KEYS: DOCK_KEYS, overlay: overlay, mount: mount, parse: parse, params: params, monthYear: monthYear, issueLine: issueLine, el: el, list: list, matte: matte, tile: tile, TILE: TILE, apply: apply };
 })();

@@ -1,7 +1,12 @@
 /* The weekly's OBS pages (specs/broadcast_001.md §2, §4). Every colour and face
    here is a custom property from src/styles/magazine.css, imported by each page
    before this file; nothing else (tests/broadcast.spec.ts reads the computed
-   styles and fails on a colour outside the token set). Lo-fi: no motion. */
+   styles and fails on a colour outside the token set; tests/brand.test.ts
+   follows every var() here back to magazine.css's :root).
+
+   Motion (§4): rises and fades of 200–300 ms, no blur, no bounce. A list line
+   the dock reveals rises 12px and fades in over 220ms; the lower-third slides
+   along the bottom rule in 500ms; nothing else moves. */
 
 /* The page is a 1920×1080 layer over the camera: transparent unless drawn on. */
 html,
@@ -26,11 +31,20 @@ body {
 	--ground: var(--paper);
 	--fore: var(--ink);
 	--past: var(--caption);
+	--lift: var(--paper-dark);
 }
+/* ink: paper and ink swap everywhere the pages draw — the panel, the matte,
+   the masthead strip, the frame rule, the plate. The accent does not change. */
 [data-theme='ink'] {
 	--ground: var(--ink);
 	--fore: var(--paper);
 	--past: var(--paper-dark);
+	--lift: var(--body-muted);
+}
+
+/* The one easing every move uses: quick out, long settle, no overshoot. */
+:root {
+	--ease-settle: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 /* One accent per scene. --accent fills; --accent-text is the accent as text on
@@ -51,6 +65,17 @@ body {
 	--accent-text: var(--fore);
 	--on-accent: var(--ink);
 }
+/* On ink the sums flip: teal and poppy as text are under 3:1 on ink (a kicker
+   is large type, so 3:1 is its floor), and mustard on ink is the brand's own
+   pair (tests/brand.test.ts). So on ink, mustard is the text accent and the
+   others keep to fills, their text in paper. */
+[data-theme='ink'][data-accent='poppy'],
+[data-theme='ink'][data-accent='teal'] {
+	--accent-text: var(--fore);
+}
+[data-theme='ink'][data-accent='mustard'] {
+	--accent-text: var(--mustard);
+}
 
 .bc-display {
 	font-family: var(--font-display);
@@ -63,7 +88,7 @@ body {
 .bc-rule {
 	position: absolute;
 	inset: 24px;
-	border: 2px solid var(--ink);
+	border: 2px solid var(--fore);
 	pointer-events: none;
 }
 
@@ -73,9 +98,10 @@ body {
 	left: 48px;
 	top: 44px;
 	padding: 12px 18px 12px;
-	background: var(--paper);
-	color: var(--ink);
-	border: 2px solid var(--ink);
+	background: var(--ground);
+	color: var(--fore);
+	border: 2px solid var(--fore);
+	box-shadow: 6px 6px 0 var(--lift);
 }
 .bc-masthead-row {
 	display: flex;
@@ -166,6 +192,21 @@ body {
 .bc-line[hidden] {
 	display: none;
 }
+/* Revealed by the dock: rise 12px and fade in, 220ms. No blur (ref-06 is the
+   one thing we do not copy). */
+.bc-line--in {
+	animation: bc-rise 220ms var(--ease-settle) both;
+}
+@keyframes bc-rise {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
 /* Numbered: the number in an accent chip (the reference's ref-13, and the
    way mustard may carry a number). Bulleted: an ink square. */
 .bc-list--number .bc-marker {
@@ -227,14 +268,16 @@ body {
 	top: 0;
 	fill: var(--ground);
 }
-/* The camera tile: 300×420, radius 24, 2px ink border, a paper-dark shadow.
-   The hole is cut in the matte; this draws its edge. */
+/* The camera tile: 300×420, radius 24, 2px ink border, a paper-dark shadow
+   (the magazine's offset print shadow — hard, not a blur) on the matte. The
+   hole is cut in the matte; this draws its edge. A box-shadow never paints
+   inside its box, so the camera in the hole is not tinted. */
 .bc-tile {
 	position: absolute;
 	box-sizing: border-box;
 	border: 2px solid var(--fore);
 	border-radius: 24px;
-	box-shadow: 10px 10px 0 var(--paper-dark);
+	box-shadow: 12px 12px 0 var(--lift);
 }
 
 /* mode=title: one line, 140px, centred, a rule in the accent beneath. */
@@ -359,6 +402,10 @@ body {
 .bc-step--now .bc-step-text {
 	font-weight: 600;
 }
+/* The dock's now +: the new current step's label rises in like a list line. */
+.bc-step--in .bc-step-label {
+	animation: bc-rise 220ms var(--ease-settle) both;
+}
 
 /* framed.html: the 1440×810 window's edge, radius 12, and its caption. */
 .bc-window {
@@ -378,19 +425,36 @@ body {
 
 /* ---- lower.html: the caption plate on the bottom rule ---------------- */
 
+/* The track: the strip just above the frame's bottom rule, from the rule's
+   inner left edge (camera.html: 24px + 2px). The plate slides along it and is
+   clipped there, so it comes out from behind the frame. */
+.bc-lower-track {
+	position: absolute;
+	left: 26px;
+	right: 26px;
+	bottom: 26px; /* sits on the frame's bottom rule */
+	height: 200px;
+	overflow: hidden;
+}
 .bc-lower {
 	position: absolute;
-	left: 48px;
-	bottom: 26px; /* sits on the frame's bottom rule (camera.html, 24px + 2px) */
+	left: 22px; /* 48px from the frame edge, under the masthead's left edge */
+	bottom: 0;
 	display: flex;
 	align-items: stretch;
-	border: 2px solid var(--ink);
+	border: 2px solid var(--fore);
 	border-bottom: 0;
-	background: var(--paper);
-	color: var(--ink);
+	background: var(--ground);
+	color: var(--fore);
+	/* Out: behind the frame's left edge, and hidden once it gets there. */
+	transform: translateX(calc(-100% - 24px));
+	visibility: hidden;
+	transition: transform 500ms var(--ease-settle), visibility 0s 500ms;
 }
-.bc-lower[hidden] {
-	display: none;
+.bc-lower.is-in {
+	transform: none;
+	visibility: visible;
+	transition: transform 500ms var(--ease-settle), visibility 0s;
 }
 .bc-lower-tab {
 	display: flex;
@@ -420,4 +484,7 @@ body {
 	margin: 6px 0 0;
 	font-size: 26px;
 	line-height: 1.2;
+}
+.bc-lower-tab[hidden] {
+	display: none;
 }

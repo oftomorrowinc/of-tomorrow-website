@@ -1,8 +1,12 @@
 ---
-// The homepage strip (specs/news_001.md §6), lo-fi: the dateline, then the
-// newest stories as cards on paper with a hairline between them, three across
-// on a desktop and one on a phone, and arrows for the reader. No motion yet
-// (card 4 adds the eight-second advance). Static: the cards are in the build.
+// The homepage strip (specs/news_001.md §6): the dateline, then the newest
+// stories as cards on paper with a hairline between them, three across on a
+// desktop and one on a phone. It moves on its own, one card every eight
+// seconds (ADVANCE_MS), and wraps to the newest at the end; it pauses while a
+// pointer is over it or focus is in it, and stops for good on any touch.
+// Arrows for the reader. prefers-reduced-motion: no advance and no scrolling,
+// the cards that fit sit still and a "more" link takes the reader to /today.
+// Static: the cards are in the build, nothing is fetched.
 import { getCollection } from 'astro:content';
 import StoryCard from './StoryCard.astro';
 import { longDay, newestFirst, today } from '../../lib/today';
@@ -20,7 +24,7 @@ const dateline = `Today at Of Tomorrow · ${longDay(today())}`;
 
 {
 	stories.length > 0 && (
-		<section id="today" class="border-b-2 border-ink py-8" data-testid="today-strip" data-today-frame>
+		<section id="today" class="border-b-2 border-ink py-8" data-testid="today-strip" data-today-frame data-today-state="playing" aria-roledescription="carousel">
 			<div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-ink pb-3">
 				<h2 class="label m-0 text-[18px] !tracking-[0.12em] text-ink" data-testid="today-dateline">
 					{dateline}
@@ -31,13 +35,16 @@ const dateline = `Today at Of Tomorrow · ${longDay(today())}`;
 					<a href="/today" class="label text-[14px] text-teal hover:text-ink" data-testid="all-stories">All stories →</a>
 				</div>
 			</div>
-			<ol class="today-track m-0 list-none p-0" data-today-track>
+			<ol class="today-track m-0 list-none p-0" data-today-track aria-live="off">
 				{stories.map((story) => (
 					<li class="today-cell" data-testid="strip-card">
 						<StoryCard story={story} as="strip" />
 					</li>
 				))}
 			</ol>
+			<p class="today-more label m-0 mt-4 text-[14px]" data-today-more>
+				<a href="/today" class="text-teal hover:text-ink">More stories →</a>
+			</p>
 		</section>
 	)
 }
@@ -50,6 +57,7 @@ const dateline = `Today at Of Tomorrow · ${longDay(today())}`;
 		overflow-x: auto;
 		scroll-snap-type: x mandatory;
 		scrollbar-width: none;
+		scroll-behavior: smooth;
 	}
 	.today-track::-webkit-scrollbar {
 		display: none;
@@ -89,6 +97,27 @@ const dateline = `Today at Of Tomorrow · ${longDay(today())}`;
 		background: var(--ink);
 		color: var(--paper);
 	}
+	.today-arrow:focus-visible,
+	.today-cell :global(a:focus-visible) {
+		outline: 2px solid var(--poppy);
+		outline-offset: 3px;
+	}
+	.today-more {
+		display: none;
+	}
+	/* Reduced motion: the cards that fit, still; no arrows; "more" instead. */
+	@media (prefers-reduced-motion: reduce) {
+		.today-track {
+			overflow-x: hidden;
+			scroll-behavior: auto;
+		}
+		.today-arrow {
+			display: none;
+		}
+		.today-more {
+			display: block;
+		}
+	}
 	.today-arrow:disabled {
 		opacity: 0.35;
 		cursor: default;
@@ -98,21 +127,74 @@ const dateline = `Today at Of Tomorrow · ${longDay(today())}`;
 </style>
 
 <script>
-	// The arrows: one card along, no animation (lo-fi; motion is card 4).
+	// §6: one card every eight seconds, wrapping to the newest; paused while a
+	// pointer is over the strip or focus is in it, stopped for good by a touch.
+	// The arrows move one card and restart the clock. Reduced motion: nothing moves.
+	const ADVANCE_MS = 8000;
+	const still = window.matchMedia('(prefers-reduced-motion: reduce)');
 	document.querySelectorAll<HTMLElement>('#today').forEach((strip) => {
 		const track = strip.querySelector<HTMLElement>('[data-today-track]');
 		const prev = strip.querySelector<HTMLButtonElement>('[data-today-prev]');
 		const next = strip.querySelector<HTMLButtonElement>('[data-today-next]');
 		if (!track || !prev || !next) return;
 		const step = () => track.querySelector<HTMLElement>('.today-cell')?.offsetWidth ?? track.clientWidth;
+		const atEnd = () => track.scrollLeft + track.clientWidth >= track.scrollWidth - 1;
 		const sync = () => {
 			prev.disabled = track.scrollLeft <= 1;
-			next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 1;
+			next.disabled = atEnd();
 		};
-		prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'instant' }));
-		next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'instant' }));
+		const go = (dx: number) => track.scrollBy({ left: dx, behavior: still.matches ? 'instant' : 'smooth' });
+
+		let hovered = false;
+		let focused = false;
+		let touched = false;
+		let timer: number | undefined;
+		const state = () => (still.matches ? 'static' : touched ? 'stopped' : hovered || focused || document.hidden ? 'paused' : 'playing');
+		const arm = () => {
+			window.clearTimeout(timer);
+			timer = undefined;
+			const s = state();
+			strip.dataset.todayState = s;
+			if (s === 'playing') timer = window.setTimeout(advance, ADVANCE_MS);
+		};
+		const advance = () => {
+			if (atEnd()) track.scrollTo({ left: 0, behavior: 'smooth' });
+			else go(step());
+			arm();
+		};
+
+		prev.addEventListener('click', () => {
+			go(-step());
+			arm();
+		});
+		next.addEventListener('click', () => {
+			go(step());
+			arm();
+		});
+		strip.addEventListener('pointerenter', (e) => {
+			if (e.pointerType === 'mouse') (hovered = true), arm();
+		});
+		strip.addEventListener('pointerleave', (e) => {
+			if (e.pointerType === 'mouse') (hovered = false), arm();
+		});
+		const touch = () => {
+			touched = true;
+			arm();
+		};
+		strip.addEventListener('touchstart', touch, { passive: true });
+		strip.addEventListener('pointerdown', (e) => e.pointerType !== 'mouse' && touch());
+		strip.addEventListener('focusin', () => ((focused = true), arm()));
+		strip.addEventListener('focusout', (e) => {
+			if (!strip.contains(e.relatedTarget as Node | null)) (focused = false), arm();
+		});
+		document.addEventListener('visibilitychange', arm);
+		still.addEventListener('change', () => {
+			if (still.matches) track.scrollTo({ left: 0, behavior: 'instant' });
+			arm();
+		});
 		track.addEventListener('scroll', sync, { passive: true });
 		window.addEventListener('resize', sync);
 		sync();
+		arm();
 	});
 </script>

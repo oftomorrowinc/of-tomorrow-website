@@ -1,13 +1,14 @@
 // The pictures' contact sheet (specs/news_001.md §4, card 3's record): every
 // picture in src/content/today/images/, newest story first, four across at
 // 240 px with its story's date and slug under it, on the magazine's paper.
-// `npm run today:contact` → specs/assets/news-001/03-pictures.png
+// `npm run today:contact` → specs/assets/news-001/03-pictures.png;
+// `npm run today:contact -- --out=<png>` writes it elsewhere (card 4: 04-pictures.png, the backfill).
 import { readdirSync, readFileSync } from 'node:fs';
 import sharp from 'sharp';
 import { tokens } from './picture.mjs';
 
 const DIR = 'src/content/today';
-const OUT = 'specs/assets/news-001/03-pictures.png';
+const OUT = process.argv.find((a) => a.startsWith('--out='))?.slice(6) ?? 'specs/assets/news-001/03-pictures.png';
 const TILE = 240, GAP = 24, CAP = 40, COLS = 4;
 const t = tokens();
 

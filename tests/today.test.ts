@@ -5,7 +5,8 @@ import { parseFrontmatter } from '@astrojs/markdown-remark';
 import { collections } from '../src/content.config';
 import Home from '../src/pages/index.astro';
 import Today from '../src/pages/today.astro';
-import { ACCENT, ASKED, fence, NAMED, PROJECTS, slugOf, type StoryText } from '../src/lib/today';
+import { ACCENT, ASKED, fence, liftBody, NAMED, PROJECTS, slugOf, type StoryText } from '../src/lib/today';
+import { GET as todayFeed } from '../src/pages/today.xml';
 import { all, render, text } from './render';
 import { cssVar } from './tokens';
 
@@ -18,8 +19,9 @@ const DIR = 'src/content/today';
 const files = readdirSync(DIR).filter((f) => f.endsWith('.md'));
 // The parser Astro's own Markdown loader uses, so the test reads what the build reads.
 const parse = (f: string) => {
-	const { frontmatter, content } = parseFrontmatter(readFileSync(`${DIR}/${f}`, 'utf8'));
-	return { data: frontmatter as Record<string, unknown> & StoryText & { date: Date }, rest: content };
+	const raw = readFileSync(`${DIR}/${f}`, 'utf8');
+	const { frontmatter } = parseFrontmatter(raw);
+	return { data: liftBody(frontmatter, raw) as Record<string, unknown> & StoryText & { date: Date } };
 };
 
 // A story that passes every fence; each mutation below breaks exactly one.
@@ -37,13 +39,14 @@ describe('today: the stories in the repo', () => {
 		for (const f of files) expect(fence(parse(f).data), f).toEqual([]);
 	});
 
-	test('every file is <yyyy-mm-dd>-<slug>.md, dated as named, everything in the frontmatter', () => {
+	test('every file is <yyyy-mm-dd>-<slug>.md, dated as named, with one body', () => {
 		for (const f of files) {
 			expect(f).toMatch(/^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/);
-			const { data, rest } = parse(f);
+			const { data } = parse(f);
 			expect(data.date.toISOString().slice(0, 10), f).toBe(f.slice(0, 10));
 			expect(PROJECTS, f).toContain(data.project);
-			expect(rest.trim(), `${f}: the body is a field, nothing below the frontmatter`).toBe('');
+			expect(data.body, `${f}: a body, as body: or as prose`).toBeTruthy();
+			expect(data.bodyProse, `${f}: body: and prose both`).toBeUndefined();
 		}
 	});
 
@@ -56,6 +59,56 @@ describe('today: the stories in the repo', () => {
 		expect(bad.error!.issues.map((i: { message: string }) => i.message).join('\n')).toMatch(/env-shaped/);
 		expect(schema.safeParse({ ...story, project: 'hub' }).success).toBe(false);
 		expect(schema.safeParse({ ...story, title: 'x'.repeat(61) }).success).toBe(false);
+	});
+
+	// The daily task (signals' daily-stories.ts, card 2) writes the body as the
+	// file's prose and refs as strings; card 1 wrote both in the frontmatter.
+	// The loader lifts the prose into body, so one schema and one fence read both.
+	test("the daily task's shape: body as prose, refs as strings, through the same schema and fences", () => {
+		const schema = (collections.today.schema as unknown as (ctx: { image: () => z.ZodTypeAny }) => z.ZodTypeAny)({ image: () => z.any() });
+		const file = (front: string, prose: string) => `---\n${front}\n---\n\n${prose}\n`;
+		const front = 'date: 2026-11-04\ntitle: "The weekly gets a magazine"\nproject: site\nauthor: cw\nrefs: ["7292"]\npicture: "a paper masthead"';
+		const raw = file(front, good.body);
+		const lifted = liftBody(parseFrontmatter(raw).frontmatter, raw);
+		expect(lifted.body).toBe(good.body);
+		const ok = schema.safeParse(lifted);
+		expect(ok.success).toBe(true);
+		expect(ok.data.refs).toEqual([7292]);
+		// The prose goes through the fences like a field would.
+		const fenced = file(front, 'Set API_KEY=abc first. Then it runs.');
+		const bad = schema.safeParse(liftBody(parseFrontmatter(fenced).frontmatter, fenced));
+		expect(bad.success).toBe(false);
+		expect(bad.error!.issues.map((i: { message: string }) => i.message).join('\n')).toMatch(/env-shaped/);
+		// One body, one place: a body: field and prose both is refused.
+		const both = file(`${front}\nbody: "${good.body}"`, 'And more prose. Here.');
+		const twice = schema.safeParse(liftBody(parseFrontmatter(both).frontmatter, both));
+		expect(twice.success).toBe(false);
+		expect(twice.error!.issues.map((i: { message: string }) => i.message).join('\n')).toMatch(/both a body: field and prose/);
+		// No prose: the frontmatter as it was.
+		const plain = { title: 'x', body: 'y' };
+		expect(liftBody(plain, '---\ntitle: x\nbody: y\n---\n')).toBe(plain);
+	});
+});
+
+describe('today: /today.xml (§6)', () => {
+	test('every story, newest first, each linking to /today#slug with its body as the description', async () => {
+		const res = await todayFeed({ site: new URL('https://oftomorrow.net') } as never);
+		const xml = await res.text();
+		expect(xml).toMatch(/^<\?xml/);
+		expect(xml).toContain('<title>Today at Of Tomorrow</title>');
+		const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((m) => m[1]);
+		expect(items.length).toBe(files.length);
+		const dates = items.map((i) => Date.parse(i.match(/<pubDate>(.*?)<\/pubDate>/)![1]));
+		expect([...dates].sort((a, b) => b - a)).toEqual(dates);
+		for (const f of files) {
+			const { data } = parse(f);
+			const link = `https://oftomorrow.net/today#${slugOf(f)}`;
+			const item = items.find((i) => i.includes(`<link>${link}</link>`));
+			expect(item, f).toBeTruthy();
+			expect(item, f).toContain(`<dc:creator>`);
+			const unescape = (t: string) => t.replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+			expect(unescape(item!.match(/<description>([\s\S]*?)<\/description>/)![1]), f).toBe(data.body);
+		}
 	});
 });
 

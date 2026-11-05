@@ -32,6 +32,12 @@ export const PROJECT_LABEL: Record<Project, string> = {
 /** How a signature reads: cw is CW, the rest are capitalised. */
 export const authorLabel = (a: string): string => (a.length <= 2 ? a.toUpperCase() : a[0].toUpperCase() + a.slice(1));
 
+/** /today.xml's channel (§6). Frame copy (§5.5): pending Todd's okay, README.md. */
+export const TODAY_FEED = {
+	title: 'Today at Of Tomorrow',
+	description: 'What we are working on, one short story at a time.',
+};
+
 /** §2 limits. */
 export const LIMITS = { title: 60, body: 320, sentences: [2, 3] as const };
 
@@ -42,6 +48,8 @@ export const ASKED: readonly string[] = named.asked;
 export interface StoryText {
 	title: string;
 	body: string;
+	/** Prose below the frontmatter when `body:` is also set (liftBody): refused. */
+	bodyProse?: string;
 	author: string;
 	link?: string;
 	picture?: string;
@@ -73,6 +81,8 @@ export function fence(s: StoryText): string[] {
 		...(s.picture ? [['picture', s.picture] as [string, string]] : []),
 	];
 
+	if (s.bodyProse) out.push('the body is both a body: field and prose below the frontmatter; keep one');
+
 	// §2: the limits.
 	if (s.title.length > LIMITS.title) out.push(`title is ${s.title.length} characters, over ${LIMITS.title}`);
 	if (s.body.length > LIMITS.body) out.push(`body is ${s.body.length} characters, over ${LIMITS.body}`);
@@ -101,6 +111,19 @@ export function fence(s: StoryText): string[] {
 	for (const [field, text] of prose) if (/—|&mdash;/.test(text)) out.push(`${field} has an em dash`);
 
 	return out;
+}
+
+/**
+ * A story's body is its `body:` field or the file's prose below the
+ * frontmatter (the daily task writes prose). Returns the frontmatter with
+ * `body` filled from the prose when the field is absent. When both are there
+ * the prose is kept as `bodyProse`, and the fence refuses it: one body, one place.
+ */
+export function liftBody<T extends Record<string, unknown>>(data: T, raw: string): T {
+	const prose = raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '').replace(/\s+/g, ' ').trim();
+	if (!prose) return data;
+	if (data.body === undefined) return { ...data, body: prose } as T;
+	return { ...data, bodyProse: prose } as T;
 }
 
 /** The slug a story is reached by: /today#<slug>, its file name without the date. */

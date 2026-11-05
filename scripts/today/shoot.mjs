@@ -8,6 +8,11 @@
 // Card 3's record (the strip with real pictures): `npm run today:shots -- --card=3`
 // writes the same shots as 03-*.png and 03-walk.mp4, and the walk also steps
 // the strip's arrows through every card's picture.
+//
+// Card 4's record (hi-fi, the motion): `npm run today:shots -- --card=4` writes
+// 02-hifi-*.png (the same shots, plus the strip under reduced motion,
+// 02-hifi-home-still-*.png) and 02-hifi-walk.mp4, in which the strip advances
+// on its own twice, holds still under the pointer, then moves on again.
 import { chromium } from '@playwright/test';
 import { spawn, execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
@@ -16,7 +21,8 @@ import { join } from 'node:path';
 
 const OUT = 'specs/assets/news-001';
 const CARD3 = process.argv.includes('--card=3');
-const PREFIX = CARD3 ? '03' : '01-lofi';
+const CARD4 = process.argv.includes('--card=4');
+const PREFIX = CARD4 ? '02-hifi' : CARD3 ? '03' : '01-lofi';
 const PORT = 4397;
 const BASE = `http://localhost:${PORT}`;
 mkdirSync(OUT, { recursive: true });
@@ -63,6 +69,20 @@ try {
 			clip: { x: 0, y: Math.max(0, box.y - pad), width, height: box.height + 2 * pad },
 		});
 		console.log(`${OUT}/${PREFIX}-home-${width}.png`);
+		if (CARD4) {
+			// Reduced motion: the cards still, no arrows, the "more" link.
+			await page.emulateMedia({ reducedMotion: 'reduce' });
+			await page.reload();
+			await settle(page);
+			const still = await page.locator('#today').boundingBox();
+			await page.screenshot({
+				path: `${OUT}/${PREFIX}-home-still-${width}.png`,
+				fullPage: true,
+				clip: { x: 0, y: Math.max(0, still.y - pad), width, height: still.height + 2 * pad },
+			});
+			console.log(`${OUT}/${PREFIX}-home-still-${width}.png`);
+			await page.emulateMedia({ reducedMotion: 'no-preference' });
+		}
 		for (const [name, q] of [['today', ''], ['today-project', '?project=byollm']]) {
 			await page.goto(`${BASE}/today${q}`);
 			await settle(page);
@@ -86,6 +106,22 @@ try {
 	await page.evaluate(() => window.scrollTo({ top: document.getElementById('today').offsetTop - 220, behavior: 'smooth' }));
 	await hold(2600);
 	const cards = page.locator('[data-testid="strip-card"] a');
+	if (CARD4) {
+		// The motion: two advances on their own, eight seconds apart.
+		await page.mouse.move(640, 790);
+		await hold(17_000);
+		// Under the pointer it holds still past the eight seconds…
+		await cards.nth(3).hover();
+		await hold(10_000);
+		// …and away from it, moves on.
+		await page.mouse.move(640, 790);
+		await hold(9_000);
+		// The arrows, one card each way.
+		await page.locator('[data-today-next]').click();
+		await hold(1400);
+		await page.locator('[data-today-prev]').click();
+		await hold(1400);
+	}
 	for (let i = 0; i < 3; i++) {
 		await cards.nth(i).hover();
 		await hold(900);

@@ -186,10 +186,137 @@ test.describe('today', () => {
 		await expect(page.locator(`#${slug}`)).toBeVisible();
 	});
 
+	// Card 4, the motion (§6): one card every eight seconds, on the page's own
+	// clock (Playwright's, so the test does not wait the eight seconds).
+	const first = (page: Page) =>
+		page.$$eval('[data-testid="strip-card"]', (cells) => {
+			const left = cells[0].parentElement!.getBoundingClientRect().left;
+			return cells.findIndex((c) => Math.abs(c.getBoundingClientRect().left - left) < 2);
+		});
+	const state = (page: Page) => page.locator('#today').getAttribute('data-today-state');
+
+	// The clock is frozen, then the strip is re-armed by a hover in and out at a
+	// known instant, so "eight seconds" is measured to the millisecond.
+	const T0 = new Date('2026-11-05T12:00:00Z').getTime();
+	const frozen = async (page: Page) => {
+		await page.clock.install({ time: T0 });
+		await page.setViewportSize({ width: 1280, height: 900 });
+		await page.goto('/');
+		await page.clock.pauseAt(T0 + 5_000);
+		await page.locator('[data-testid="strip-card"]').first().hover();
+		await page.mouse.move(640, 5);
+	};
+	const settled = async (page: Page, n: number) => {
+		await expect.poll(() => first(page)).toBe(n);
+	};
+
+	test('the strip advances one card every eight seconds, and wraps to the newest at the end', async ({ page }) => {
+		await frozen(page);
+		expect(await state(page)).toBe('playing');
+		await page.clock.runFor(7_999);
+		await page.waitForTimeout(400);
+		expect(await first(page)).toBe(0);
+		await page.clock.runFor(1);
+		await settled(page, 1);
+		await page.clock.runFor(7_999);
+		await page.waitForTimeout(400);
+		expect(await first(page)).toBe(1);
+		await page.clock.runFor(1);
+		await settled(page, 2);
+		// At the end it goes back to the newest.
+		await page.locator('[data-today-track]').evaluate((t) => t.scrollTo({ left: t.scrollWidth, behavior: 'instant' }));
+		await expect(page.locator('[data-today-next]')).toBeDisabled();
+		await page.clock.runFor(8_000);
+		await settled(page, 0);
+	});
+
+	test('hover and focus pause it; leaving resumes; an arrow restarts the eight seconds', async ({ page }) => {
+		await frozen(page);
+		await page.locator('[data-testid="strip-card"]').first().hover();
+		expect(await state(page)).toBe('paused');
+		await page.clock.runFor(30_000);
+		await page.waitForTimeout(400);
+		expect(await first(page)).toBe(0);
+		await page.mouse.move(640, 5);
+		expect(await state(page)).toBe('playing');
+		await page.clock.runFor(8_000);
+		await settled(page, 1);
+
+		await page.locator('[data-today-prev]').focus();
+		expect(await state(page)).toBe('paused');
+		await page.clock.runFor(30_000);
+		await page.waitForTimeout(400);
+		expect(await first(page)).toBe(1);
+		await page.locator('[data-today-prev]').blur();
+		expect(await state(page)).toBe('playing');
+
+		await page.clock.runFor(6_000);
+		await page.locator('[data-today-next]').dispatchEvent('click');
+		await settled(page, 2);
+		await page.clock.runFor(7_999);
+		await page.waitForTimeout(400);
+		expect(await first(page)).toBe(2);
+		await page.clock.runFor(1);
+		await settled(page, 3);
+	});
+
+	test('a touch stops it for good', async ({ browser }) => {
+		const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+		const page = await ctx.newPage();
+		await page.clock.install({ time: T0 });
+		await page.goto('/');
+		await page.clock.pauseAt(T0 + 5_000);
+		expect(await state(page)).toBe('playing');
+		await page.locator('[data-testid="story-title"]').first().dispatchEvent('touchstart');
+		expect(await state(page)).toBe('stopped');
+		await page.clock.runFor(60_000);
+		await page.waitForTimeout(400);
+		expect(await first(page)).toBe(0);
+		await ctx.close();
+	});
+
+	test('reduced motion: the cards sit still, no arrows, and a "more" link to /today', async ({ page }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+		await page.clock.install({ time: T0 });
+		await page.setViewportSize({ width: 1280, height: 900 });
+		await page.goto('/');
+		await page.clock.pauseAt(T0 + 5_000);
+		expect(await state(page)).toBe('static');
+		await expect(page.locator('[data-today-next]')).toBeHidden();
+		await expect(page.locator('[data-today-prev]')).toBeHidden();
+		await expect(page.locator('[data-today-more] a')).toBeVisible();
+		await expect(page.locator('[data-today-more] a')).toHaveAttribute('href', '/today');
+		await expect(page.locator('[data-today-track]')).toHaveCSS('overflow-x', 'hidden');
+		await page.clock.runFor(60_000);
+		await page.waitForTimeout(400);
+		expect(await first(page)).toBe(0);
+		expect(await inView(page)).toBe(3);
+	});
+
+	test('with motion, the "more" link is not shown (the arrows and "all stories" are)', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.locator('[data-today-more]')).toBeHidden();
+		await expect(page.locator('[data-today-next]')).toBeVisible();
+	});
+
+	test('/today.xml is RSS, linked from the head of the homepage and /today', async ({ page, request }) => {
+		const res = await request.get('/today.xml');
+		expect(res.ok()).toBe(true);
+		const xml = await res.text();
+		expect(xml).toContain('<rss');
+		expect((xml.match(/<item>/g) ?? []).length).toBeGreaterThan(0);
+		for (const path of ['/', '/today']) {
+			await page.goto(path);
+			await expect(page.locator('link[rel="alternate"][href="/today.xml"]')).toHaveCount(1);
+		}
+	});
+
 	test('/today?project= and ?author= narrow the page, and the empty days go', async ({ page }) => {
 		await page.goto('/today?project=press');
 		const visible = page.locator('[data-testid="story"]:visible');
-		await expect(visible).toHaveCount(1);
+		const press = await page.locator('[data-testid="story"][data-project="press"]').count();
+		expect(press).toBeGreaterThan(0);
+		await expect(visible).toHaveCount(press);
 		await expect(visible.first()).toHaveAttribute('data-project', 'press');
 		await expect(page.locator('[data-filter-value="press"]')).toHaveAttribute('aria-current', 'page');
 		await expect(page.locator('[data-filter-key=""]')).not.toHaveAttribute('aria-current', 'page');

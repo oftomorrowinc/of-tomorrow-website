@@ -1,0 +1,423 @@
+/* The weekly's OBS pages (specs/broadcast_001.md §2, §4). Every colour and face
+   here is a custom property from src/styles/magazine.css, imported by each page
+   before this file; nothing else (tests/broadcast.spec.ts reads the computed
+   styles and fails on a colour outside the token set). Lo-fi: no motion. */
+
+/* The page is a 1920×1080 layer over the camera: transparent unless drawn on. */
+html,
+body {
+	margin: 0;
+	width: 1920px;
+	height: 1080px;
+	overflow: hidden;
+	background: transparent;
+	color: var(--ink);
+}
+body {
+	position: relative;
+	font-family: var(--font-serif);
+	font-optical-sizing: auto;
+	color: var(--fore);
+}
+
+/* paper (default) or ink, the inverse for a dark segment (§3 theme). */
+:root,
+[data-theme='paper'] {
+	--ground: var(--paper);
+	--fore: var(--ink);
+	--past: var(--caption);
+}
+[data-theme='ink'] {
+	--ground: var(--ink);
+	--fore: var(--paper);
+	--past: var(--paper-dark);
+}
+
+/* One accent per scene. --accent fills; --accent-text is the accent as text on
+   the ground — except mustard, which the design system keeps to fills ("never
+   text on paper", docs/design/README.md), so its text falls back to ink. */
+[data-accent='poppy'] {
+	--accent: var(--poppy);
+	--accent-text: var(--poppy);
+	--on-accent: var(--paper-light);
+}
+[data-accent='teal'] {
+	--accent: var(--teal);
+	--accent-text: var(--teal);
+	--on-accent: var(--paper-light);
+}
+[data-accent='mustard'] {
+	--accent: var(--mustard);
+	--accent-text: var(--fore);
+	--on-accent: var(--ink);
+}
+
+.bc-display {
+	font-family: var(--font-display);
+	text-transform: uppercase;
+}
+
+/* ---- camera.html: the frame ------------------------------------------- */
+
+/* The 2px ink rule 24px inside the frame edge. */
+.bc-rule {
+	position: absolute;
+	inset: 24px;
+	border: 2px solid var(--ink);
+	pointer-events: none;
+}
+
+/* The masthead strip, top-left: OF TOMORROW 28px, 0.12em, the issue line beneath. */
+.bc-masthead {
+	position: absolute;
+	left: 48px;
+	top: 44px;
+	padding: 12px 18px 12px;
+	background: var(--paper);
+	color: var(--ink);
+	border: 2px solid var(--ink);
+}
+.bc-masthead-row {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+.bc-nameplate {
+	margin: 0;
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 28px;
+	line-height: 1;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+.bc-issue {
+	margin: 6px 0 0;
+	font-size: 18px;
+	line-height: 1.3;
+}
+/* The segment badge, in the segment's accent. */
+.bc-badge {
+	padding: 5px 10px 4px;
+	background: var(--accent);
+	color: var(--on-accent);
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 16px;
+	line-height: 1;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+/* Faint paper grain in the four corners, inside the rule. */
+.bc-grain {
+	position: absolute;
+	width: 180px;
+	height: 180px;
+	opacity: 0.1;
+	background-image: radial-gradient(var(--paper) 1px, transparent 1.5px);
+	background-size: 5px 5px;
+}
+.bc-grain--tl { left: 26px; top: 26px; -webkit-mask-image: radial-gradient(circle at 0 0, var(--ink), transparent 70%); mask-image: radial-gradient(circle at 0 0, var(--ink), transparent 70%); }
+.bc-grain--tr { right: 26px; top: 26px; -webkit-mask-image: radial-gradient(circle at 100% 0, var(--ink), transparent 70%); mask-image: radial-gradient(circle at 100% 0, var(--ink), transparent 70%); }
+.bc-grain--bl { left: 26px; bottom: 26px; -webkit-mask-image: radial-gradient(circle at 0 100%, var(--ink), transparent 70%); mask-image: radial-gradient(circle at 0 100%, var(--ink), transparent 70%); }
+.bc-grain--br { right: 26px; bottom: 26px; -webkit-mask-image: radial-gradient(circle at 100% 100%, var(--ink), transparent 70%); mask-image: radial-gradient(circle at 100% 100%, var(--ink), transparent 70%); }
+
+/* ---- the shared copy block: kicker, title, list (split.html, full.html) --
+   The same position and sizes in both pages, so in OBS the split→full
+   crossfade leaves the list where it was (§2.3). */
+.bc-copy {
+	position: absolute;
+	left: 120px;
+	top: 250px;
+	width: 680px;
+}
+.bc-kicker {
+	margin: 0;
+	color: var(--accent-text);
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 26px;
+	line-height: 1;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+.bc-title {
+	margin: 14px 0 44px;
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 72px;
+	line-height: 0.95;
+	text-transform: uppercase;
+}
+.bc-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.bc-line {
+	display: flex;
+	align-items: baseline;
+	gap: 22px;
+	margin: 0 0 26px;
+	font-size: 34px;
+	line-height: 1.25;
+}
+.bc-line[hidden] {
+	display: none;
+}
+/* Numbered: the number in an accent chip (the reference's ref-13, and the
+   way mustard may carry a number). Bulleted: an ink square. */
+.bc-list--number .bc-marker {
+	flex: none;
+	align-self: flex-start;
+	width: 46px;
+	height: 46px;
+	margin-top: -1px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--accent);
+	color: var(--on-accent);
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 30px;
+	line-height: 1;
+}
+.bc-list--square .bc-marker {
+	flex: none;
+	width: 14px;
+	height: 14px;
+	background: var(--fore);
+	transform: translateY(-6px);
+}
+
+/* ---- split.html: the 45/55 split ------------------------------------- */
+
+.bc-panel {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 864px; /* 45 % of 1920 */
+	height: 1080px;
+	box-sizing: border-box;
+	background: var(--ground);
+	border-right: 2px solid var(--fore);
+	overflow: hidden;
+}
+/* The magazine's halftone, 6 %, in the panel's lower-left. */
+.bc-halftone {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 520px;
+	height: 420px;
+	opacity: 0.06;
+	background-image: radial-gradient(var(--fore) 35%, transparent 37%);
+	background-size: 14px 14px;
+	-webkit-mask-image: radial-gradient(circle at 0 100%, var(--ink) 30%, transparent 75%);
+	mask-image: radial-gradient(circle at 0 100%, var(--ink) 30%, transparent 75%);
+}
+
+/* ---- full.html and framed.html: the matte and its holes ------------- */
+
+.bc-matte {
+	position: absolute;
+	left: 0;
+	top: 0;
+	fill: var(--ground);
+}
+/* The camera tile: 300×420, radius 24, 2px ink border, a paper-dark shadow.
+   The hole is cut in the matte; this draws its edge. */
+.bc-tile {
+	position: absolute;
+	box-sizing: border-box;
+	border: 2px solid var(--fore);
+	border-radius: 24px;
+	box-shadow: 10px 10px 0 var(--paper-dark);
+}
+
+/* mode=title: one line, 140px, centred, a rule in the accent beneath. */
+.bc-headline {
+	position: absolute;
+	left: 160px;
+	right: 160px;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+.bc-headline .bc-kicker {
+	margin-bottom: 24px;
+}
+.bc-headline-text {
+	margin: 0;
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 140px;
+	line-height: 0.92;
+	text-transform: uppercase;
+}
+.bc-headline-rule {
+	width: 240px;
+	height: 6px;
+	margin-top: 36px;
+	background: var(--accent);
+}
+
+/* mode=progress: the plan of the issue — a horizontal rule, ticks alternating
+   above and below; done in ink, the current step in the accent, upcoming in caption. */
+.bc-progress {
+	position: absolute;
+	left: 200px;
+	top: 0;
+	height: 1080px;
+}
+.bc-progress-kicker {
+	position: absolute;
+	left: 0;
+	top: 250px;
+	white-space: nowrap;
+}
+.bc-progress-rule {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 560px;
+	height: 2px;
+	background: var(--fore);
+}
+.bc-step {
+	position: absolute;
+	top: 561px;
+	width: 0;
+}
+.bc-step-dot {
+	position: absolute;
+	left: -11px;
+	top: -11px;
+	width: 22px;
+	height: 22px;
+	box-sizing: border-box;
+	border-radius: 50%;
+	border: 2px solid var(--fore);
+	background: var(--fore);
+}
+.bc-step-stem {
+	position: absolute;
+	left: -1px;
+	width: 2px;
+	height: 56px;
+	background: var(--fore);
+}
+.bc-step--above .bc-step-stem { bottom: 11px; }
+.bc-step--below .bc-step-stem { top: 11px; }
+.bc-step-label {
+	position: absolute;
+	left: -160px;
+	width: 320px;
+	text-align: center;
+}
+.bc-step--above .bc-step-label { bottom: 80px; }
+.bc-step--below .bc-step-label { top: 80px; }
+.bc-step-n {
+	display: block;
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 28px;
+	line-height: 1;
+	letter-spacing: 0.08em;
+	margin-bottom: 8px;
+}
+.bc-step-text {
+	font-size: 30px;
+	line-height: 1.2;
+}
+.bc-step--done .bc-step-label { color: var(--fore); }
+.bc-step--next .bc-step-label { color: var(--past); }
+.bc-step--next .bc-step-dot,
+.bc-step--next .bc-step-stem { border-color: var(--past); background: var(--past); }
+.bc-step--next .bc-step-dot { background: var(--ground); }
+.bc-step--now .bc-step-dot {
+	left: -16px;
+	top: -16px;
+	width: 32px;
+	height: 32px;
+	border-color: var(--fore);
+	background: var(--accent);
+}
+.bc-step--now .bc-step-n {
+	display: table;
+	margin: 0 auto 8px;
+	padding: 4px 8px 3px;
+	background: var(--accent);
+	color: var(--on-accent);
+}
+.bc-step--now .bc-step-text {
+	font-weight: 600;
+}
+
+/* framed.html: the 1440×810 window's edge, radius 12, and its caption. */
+.bc-window {
+	position: absolute;
+	box-sizing: border-box;
+	border: 2px solid var(--fore);
+	border-radius: 12px;
+}
+.bc-caption {
+	position: absolute;
+	margin: 0;
+	font-size: 26px;
+	font-style: italic;
+	line-height: 1.2;
+	text-align: center;
+}
+
+/* ---- lower.html: the caption plate on the bottom rule ---------------- */
+
+.bc-lower {
+	position: absolute;
+	left: 48px;
+	bottom: 26px; /* sits on the frame's bottom rule (camera.html, 24px + 2px) */
+	display: flex;
+	align-items: stretch;
+	border: 2px solid var(--ink);
+	border-bottom: 0;
+	background: var(--paper);
+	color: var(--ink);
+}
+.bc-lower[hidden] {
+	display: none;
+}
+.bc-lower-tab {
+	display: flex;
+	align-items: center;
+	padding: 0 18px;
+	background: var(--accent);
+	color: var(--on-accent);
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 22px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+.bc-lower-copy {
+	padding: 16px 28px 18px 24px;
+}
+.bc-lower-title {
+	margin: 0;
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 40px;
+	line-height: 1;
+	text-transform: uppercase;
+}
+.bc-lower-sub {
+	margin: 6px 0 0;
+	font-size: 26px;
+	line-height: 1.2;
+}

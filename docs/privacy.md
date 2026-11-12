@@ -28,12 +28,17 @@ with it, first.
 
 There is no env for these and no fallback. The site is Astro, built and
 deployed to **GitHub Pages** by `.github/workflows/deploy.yml` on every push to
-`main` (it is not on Vercel), and that workflow sets no environment, so an
-`import.meta.env.COMPANY_*` read would always be empty. The pages used to read
-such variables with the template's placeholders (`123 Innovation Boulevard,
-Future City`, `@oftomorrow.inc` mailboxes) behind `||`, and those placeholders
-were what went live. Now the `Company` type requires every field: leaving one
-out fails `npm run typecheck`, rather than printing a made-up address.
+`main` (it is not on Vercel). The workflow sets no environment of its own, but
+`.env` is tracked in git: `actions/checkout` puts it on the runner and
+`astro build` reads it. That is where the live placeholders came from. The
+pages used to read `import.meta.env.COMPANY_*`, and the tracked `.env` held the
+template's values (`123 Innovation Boulevard, Future City`, `@oftomorrow.inc`
+mailboxes); the `||` fallbacks in the pages were never reached. Those lines are
+gone from `.env` and the pages no longer read env, so a `COMPANY_*` value put
+back in `.env` would do nothing on these pages, but `.env` does reach the build:
+do not assume a value there is inert for other code.
+
+The `Company` type requires every field: leaving one out fails `npm run typecheck`, rather than printing a made-up address.
 
 ## Changing a value or the policy text
 

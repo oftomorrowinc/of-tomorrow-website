@@ -59,7 +59,11 @@ const files = (dir: string): string[] =>
 const textual = /\.(astro|ts|tsx|js|mjs|jsx|md|mdx|json|html|css|xml|txt|yml|yaml)$/;
 
 describe('no placeholder company anywhere', () => {
-	for (const dir of ['src', 'dist']) {
+	// src/ in full; of dist/, only the pages that print the company. The rest of
+	// dist/ (e.g. /log, built from the live public feed) can quote these strings
+	// in prose, which says nothing about the policies and would make the test
+	// turn on what the feed says that day.
+	for (const dir of ['src', 'dist/privacy-policy', 'dist/cookie-policy']) {
 		test.skipIf(!existsSync(dir))(`${dir}/ has no ${PLACEHOLDERS.join(' or ')}`, () => {
 			const hits = files(dir)
 				.filter((f) => textual.test(f))

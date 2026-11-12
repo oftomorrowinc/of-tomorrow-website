@@ -2,19 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import { ArrowLeft, Shield, Eye, Database, Clock, Mail, Scale } from 'lucide-react';
 
-const companyInfo = {
-  name: import.meta.env.COMPANY_NAME || 'Of Tomorrow, Inc.',
-  address: import.meta.env.COMPANY_ADDRESS || '123 Innovation Boulevard, Future City, FC 12345, United States',
-  email: import.meta.env.COMPANY_EMAIL || 'contact@oftomorrow.inc',
-  privacyEmail: import.meta.env.PRIVACY_CONTACT_EMAIL || 'privacy@oftomorrow.inc',
-  retentionDays: import.meta.env.DATA_RETENTION_DAYS || '365',
-};
+import { company, policiesUpdatedLabel } from '../config/company';
 
-const lastUpdated = new Date().toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-});
+// Fixed, not the build's day: bump company.policiesUpdated when the text changes (docs/privacy.md).
+const lastUpdated = policiesUpdatedLabel();
 ---
 
 <Layout title="Privacy Policy - Of Tomorrow, Inc.">
@@ -60,7 +51,7 @@ const lastUpdated = new Date().toLocaleDateString('en-US', {
           <section class="mb-12">
             <div class="bg-bg-secondary rounded-lg p-6 mb-8">
               <p class="text-text-primary font-medium mb-2">
-                Your privacy is important to us. This Privacy Policy explains how {companyInfo.name} 
+                Your privacy is important to us. This Privacy Policy explains how {company.name} 
                 collects, uses, and protects your information when you visit our website.
               </p>
               <p class="text-text-secondary text-sm">
@@ -249,7 +240,7 @@ const lastUpdated = new Date().toLocaleDateString('en-US', {
                   Standard Retention Period
                 </h3>
                 <p class="text-text-secondary">
-                  We typically retain personal data for <strong>{companyInfo.retentionDays} days</strong> 
+                  We typically retain personal data for <strong>{company.retentionDays} days</strong> 
                   after your last interaction with our services, unless you request earlier deletion 
                   or we have a legal obligation to retain it longer.
                 </p>
@@ -362,9 +353,9 @@ const lastUpdated = new Date().toLocaleDateString('en-US', {
               </p>
               
               <div class="space-y-2 text-text-secondary">
-                <p><strong>Email:</strong> <a href={`mailto:${companyInfo.privacyEmail}`} class="text-tomorrow-blue hover:underline">{companyInfo.privacyEmail}</a></p>
-                <p><strong>General Contact:</strong> <a href={`mailto:${companyInfo.email}`} class="text-tomorrow-blue hover:underline">{companyInfo.email}</a></p>
-                <p><strong>Address:</strong> {companyInfo.address}</p>
+                <p><strong>Email:</strong> <a href={`mailto:${company.privacyEmail}`} class="text-tomorrow-blue hover:underline">{company.privacyEmail}</a></p>
+                <p><strong>General Contact:</strong> <a href={`mailto:${company.email}`} class="text-tomorrow-blue hover:underline">{company.email}</a></p>
+                <p><strong>Address:</strong> {company.address}</p>
               </div>
             </div>
           </section>

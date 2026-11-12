@@ -2,17 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import { ArrowLeft, Cookie, Shield, BarChart3, Target, Settings, Info } from 'lucide-react';
 
-const companyInfo = {
-  name: import.meta.env.COMPANY_NAME || 'Of Tomorrow, Inc.',
-  email: import.meta.env.COMPANY_EMAIL || 'contact@oftomorrow.inc',
-  privacyEmail: import.meta.env.PRIVACY_CONTACT_EMAIL || 'privacy@oftomorrow.inc',
-};
+import { company, policiesUpdatedLabel } from '../config/company';
 
-const lastUpdated = new Date().toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-});
+// Fixed, not the build's day: bump company.policiesUpdated when the text changes (docs/privacy.md).
+const lastUpdated = policiesUpdatedLabel();
 
 // Cookie data for the detailed table
 const cookieData = [
@@ -461,8 +454,9 @@ const cookieData = [
               </p>
               
               <div class="space-y-2 text-text-secondary">
-                <p><strong>Privacy Contact:</strong> <a href={`mailto:${companyInfo.privacyEmail}`} class="text-tomorrow-blue hover:underline">{companyInfo.privacyEmail}</a></p>
-                <p><strong>General Contact:</strong> <a href={`mailto:${companyInfo.email}`} class="text-tomorrow-blue hover:underline">{companyInfo.email}</a></p>
+                <p><strong>Privacy Contact:</strong> <a href={`mailto:${company.privacyEmail}`} class="text-tomorrow-blue hover:underline">{company.privacyEmail}</a></p>
+                <p><strong>General Contact:</strong> <a href={`mailto:${company.email}`} class="text-tomorrow-blue hover:underline">{company.email}</a></p>
+                <p><strong>Address:</strong> {company.name}, {company.address}</p>
               </div>
             </div>
           </section>

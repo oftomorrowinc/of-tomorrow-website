@@ -1,5 +1,7 @@
 # Of Tomorrow, Inc. · oftomorrow.net
 
+The privacy and cookie policies (the privacy URL is on file with Amazon): [docs/privacy.md](docs/privacy.md).
+
 ## Today at Of Tomorrow (specs/news_001.md)
 
 The daily stream of little stories on the homepage, and all of them at `/today`.

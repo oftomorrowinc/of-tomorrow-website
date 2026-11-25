@@ -138,12 +138,12 @@ describe('today: the fences bite (§5)', () => {
 	});
 
 	test('3. people: the author and anyone named must be in scripts/today/named.json', () => {
-		expect(NAMED).toEqual(['todd', 'cw', 'owl']);
-		expect(ASKED).toEqual(expect.arrayContaining(['kevin', 'lis']));
+		expect(NAMED).toEqual(['todd', 'cw', 'owl', 'kevin']);
+		expect(ASKED).toEqual(expect.arrayContaining(['lis']));
 		for (const a of NAMED) expect(broken({ author: a }), a).toEqual([]);
-		expect(broken({ author: 'kevin' }).join()).toMatch(/author "kevin" is not in/);
+		expect(broken({ author: 'lis' }).join()).toMatch(/author "lis" is not in/);
 		expect(broken({ author: 'someone' }).join()).toMatch(/author "someone" is not in/);
-		expect(broken({ body: 'Kevin said nothing to push here. That was right.' }).join()).toMatch(/names kevin/);
+		expect(broken({ body: 'Lis said nothing to push here. That was right.' }).join()).toMatch(/names lis/);
 		expect(broken({ title: 'Lis reads the numbers' }).join()).toMatch(/names lis/);
 		// A word that contains a name is not the name.
 		expect(broken({ body: 'The list got shorter. Nothing else moved.' })).toEqual([]);

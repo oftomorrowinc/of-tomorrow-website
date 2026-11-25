@@ -97,6 +97,8 @@ wrong, the repository is where to say so.
 
 Things we know are limiting right now: no tool use, no access to your local files, no streaming (a result comes back whole), only two job kinds so far (`llm.generate` and `llm.chat` – no embeddings or images yet), and your device has to be online for your jobs to run. We have plans for every one of these, but we wanted it live so people can watch – and contribute to – building in public.
 
+**Update, November 18, 2026:** byollm 0.1.5 adds site tools. A site can now declare its own tools, such as its search, and the model on your device can call them. The tools run on the site's servers, never on your device: your device sends the model's requests to that site, sealed, and every request is in your device's log. Tools still never run on your device. 0.1.5 also reads and makes images, on local and HTTP models.
+
 byo-llm.com · github.com/oftomorrowinc/byollm · npmjs.com/package/byollm
 
 ---
